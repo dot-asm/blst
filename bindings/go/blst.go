@@ -16,6 +16,7 @@ import "C"
 import (
 	"fmt"
 	"runtime"
+	"sync"
 	"sync/atomic"
 )
 
@@ -318,9 +319,12 @@ func coreAggregateVerifyPkInG1(sigFn sigGetterP2, pkFn pkGetterP1,
 		useHash = optional[0]
 	}
 
-	numThreads := runtime.GOMAXPROCS(0)
+	numCores := runtime.GOMAXPROCS(0) - 1 // leave one for application
+	numThreads := numCores
 	if numThreads > n {
 		numThreads = n
+	} else if numThreads == 0 {
+		numThreads = 1
 	}
 	// Each thread will determine next message to process by atomically
 	// incrementing curItem, process corresponding pk,msg[,aug] tuple and
@@ -329,6 +333,9 @@ func coreAggregateVerifyPkInG1(sigFn sigGetterP2, pkFn pkGetterP1,
 	msgsCh := make(chan Pairing, numThreads)
 	valid := int32(1)
 	curItem := uint32(0)
+	mutex := sync.Mutex{}
+
+	mutex.Lock()
 	for tid := 0; tid < numThreads; tid++ {
 		go func() {
 			pairing := PairingCtx()
@@ -338,6 +345,10 @@ func coreAggregateVerifyPkInG1(sigFn sigGetterP2, pkFn pkGetterP1,
 				work := atomic.AddUint32(&curItem, 1) - 1
 				if work >= uint32(n) {
 					break
+				} else if work == 0 && numThreads >= numCores {
+					// let main thread ahead
+					mutex.Lock()
+					mutex.Unlock()
 				}
 
 				// pull Public Key and augmentation blob
@@ -372,6 +383,7 @@ func coreAggregateVerifyPkInG1(sigFn sigGetterP2, pkFn pkGetterP1,
 	} else {
 		C.blst_aggregated_in_g2(&gtsig, sig)
 	}
+	mutex.Unlock()
 
 	// Accumulate the thread results
 	var pairings Pairing
@@ -741,9 +753,12 @@ func coreAggregateVerifyPkInG2(sigFn sigGetterP1, pkFn pkGetterP2,
 		useHash = optional[0]
 	}
 
-	numThreads := runtime.GOMAXPROCS(0)
+	numCores := runtime.GOMAXPROCS(0) - 1 // leave one for application
+	numThreads := numCores
 	if numThreads > n {
 		numThreads = n
+	} else if numThreads == 0 {
+		numThreads = 1
 	}
 	// Each thread will determine next message to process by atomically
 	// incrementing curItem, process corresponding pk,msg[,aug] tuple and
@@ -752,6 +767,9 @@ func coreAggregateVerifyPkInG2(sigFn sigGetterP1, pkFn pkGetterP2,
 	msgsCh := make(chan Pairing, numThreads)
 	valid := int32(1)
 	curItem := uint32(0)
+	mutex := sync.Mutex{}
+
+	mutex.Lock()
 	for tid := 0; tid < numThreads; tid++ {
 		go func() {
 			pairing := PairingCtx()
@@ -761,6 +779,10 @@ func coreAggregateVerifyPkInG2(sigFn sigGetterP1, pkFn pkGetterP2,
 				work := atomic.AddUint32(&curItem, 1) - 1
 				if work >= uint32(n) {
 					break
+				} else if work == 0 && numThreads >= numCores {
+					// let main thread ahead
+					mutex.Lock()
+					mutex.Unlock()
 				}
 
 				// pull Public Key and augmentation blob
@@ -795,6 +817,7 @@ func coreAggregateVerifyPkInG2(sigFn sigGetterP1, pkFn pkGetterP2,
 	} else {
 		C.blst_aggregated_in_g1(&gtsig, sig)
 	}
+	mutex.Unlock()
 
 	// Accumulate the thread results
 	var pairings Pairing
