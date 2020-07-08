@@ -68,7 +68,7 @@
 };
 
 %typemap(in, numinputs=0) blst_pairing *new_ctx {
-    $1 = calloc(1, blst_pairing_sizeof());
+    $1 = (blst_pairing *)calloc(1, blst_pairing_sizeof());
 };
 %typemap(argout) blst_pairing *new_ctx {
     $result = SWIG_NewPointerObj($1, $descriptor, SWIG_POINTER_NEW);
@@ -85,7 +85,7 @@
 %include "blst.h"
 %include "blst_aux.h"
 %extend blst_pairing {
-    blst_pairing()  { return calloc(1, blst_pairing_sizeof()); }
+    blst_pairing()  { return (blst_pairing *)calloc(1, blst_pairing_sizeof()); }
     ~blst_pairing() { free($self); }
 };
 
