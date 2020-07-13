@@ -13,9 +13,12 @@
 # endif
 
 %include "exception.i"
+#ifdef __cplusplus
+%include "std_string.i"
+#endif
 
 // some sorcery to allow assignments as output, e.g.
-//      P = blst.encode_to_g1(b"foo")
+//      hash = p.encode_to(b"foo")
 
 # if defined(SWIGPYTHON)
 %typemap(out) void " $result = NULL; ";
@@ -37,13 +40,13 @@
                                      $descriptor, SWIG_POINTER_NEW);
 # endif
 };
-%apply OBJECT *OUTPUT { blst_p1 *out, blst_p1 *out_pk, blst_p1 *out_sig };
-%apply OBJECT *OUTPUT { blst_p1_affine *out, blst_p1_affine *out_pk,
-                                             blst_p1_affine *out_sig };
-%apply OBJECT *OUTPUT { blst_p2 *out, blst_p2 *out_pk, blst_p2 *out_sig };
-%apply OBJECT *OUTPUT { blst_p2_affine *out, blst_p2_affine *out_pk,
-                                             blst_p2_affine *out_sig };
-%apply OBJECT *OUTPUT { blst_scalar *out, blst_scalar *out_SK, blst_fp12 *out };
+%apply OBJECT *OUTPUT {
+    blst_p1 *out, blst_p1 *out_pk, blst_p1 *out_sig,
+    blst_p1_affine *out, blst_p1_affine *out_pk, blst_p1_affine *out_sig,
+    blst_p2 *out, blst_p2 *out_pk, blst_p2 *out_sig,
+    blst_p2_affine *out, blst_p2_affine *out_pk, blst_p2_affine *out_sig,
+    blst_scalar *out, blst_scalar *out_SK, blst_fp12 *out
+};
 
 %typemap(out) BLST_ERROR {
     if ($1 != BLST_SUCCESS) {
@@ -75,12 +78,42 @@
 };
 #endif	// defined(SWIGPYTHON) || defined(SWIGPERL)
 
-%apply (char *STRING, size_t LENGTH) { (const byte *msg, size_t msg_len) };
-%apply (char *STRING, size_t LENGTH) { (const byte *DST, size_t DST_len) };
-%apply (char *STRING, size_t LENGTH) { (const byte *aug, size_t aug_len) };
-%apply (char *STRING, size_t LENGTH) { (const byte *IKM, size_t IKM_len) };
-%apply (char *STRING, size_t LENGTH) { (const byte *info, size_t info_len) };
 %apply const char * { const byte in[ANY] };
+%apply const char * { const byte *in };
+%apply const std::string& { const std::string* };
+%apply (const char *STRING, size_t LENGTH) {
+    (const byte *msg, size_t msg_len),
+    (const byte *DST, size_t DST_len),
+    (const byte *aug, size_t aug_len),
+    (const byte *IKM, size_t IKM_len),
+    (const byte *info, size_t info_len)
+};
+
+#ifdef __cplusplus
+#pragma SWIG nowarn=509
+
+%ignore nullptr;
+%catches(BLST_ERROR) P1(const byte *in);
+%catches(BLST_ERROR) P1_Affine(const byte *in);
+
+%catches(BLST_ERROR) P2(const byte *in);
+%catches(BLST_ERROR) P2_Affine(const byte *in);
+
+typedef enum {
+    BLST_SUCCESS = 0,
+    BLST_BAD_ENCODING,
+    BLST_POINT_NOT_ON_CURVE,
+    BLST_POINT_NOT_IN_GROUP,
+    BLST_AGGR_TYPE_MISMATCH,
+    BLST_VERIFY_FAIL,
+} BLST_ERROR;
+
+%include "blst.hpp"
+#else
+%ignore blst_fr;
+%ignore blst_fp;
+%ignore blst_fp2;
+%ignore blst_fp6;
 
 %include "blst.h"
 %include "blst_aux.h"
@@ -88,9 +121,14 @@
     blst_pairing()  { return (blst_pairing *)calloc(1, blst_pairing_sizeof()); }
     ~blst_pairing() { free($self); }
 };
+#endif
 
 %begin %{
-#include "blst.h"
+#ifdef __cplusplus
+# include "blst.hpp"
+#else
+# include "blst.h"
+#endif
 
 static const char *const BLST_ERROR_str [] = {
     "success",
