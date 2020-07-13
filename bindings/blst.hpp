@@ -64,8 +64,8 @@ struct SecretKey {
     void from_bendian(const byte in[32]) { blst_scalar_from_bendian(&key, in); }
     void from_lendian(const byte in[32]) { blst_scalar_from_lendian(&key, in); }
 
-    void to_bendian(byte out[32]) { blst_bendian_from_scalar(out, &key); }
-    void to_lendian(byte out[32]) { blst_lendian_from_scalar(out, &key); }
+    void to_bendian(byte out[32]) const { blst_bendian_from_scalar(out, &key); }
+    void to_lendian(byte out[32]) const { blst_lendian_from_scalar(out, &key); }
 };
 
 class P1_Affine {
@@ -81,21 +81,22 @@ public:
     }
     P1_Affine(const P1& jacobian);
 
-    void serialize(byte out[96]) { blst_p1_affine_serialize(out, &point);  }
-    void compress(byte out[48])  { blst_p1_affine_compress(out, &point);   }
-    bool on_curve()              { return blst_p1_affine_on_curve(&point); }
-    bool in_group()              { return blst_p1_affine_in_g1(&point);    }
+    void serialize(byte out[96]) const
+    {   blst_p1_affine_serialize(out, &point);   }
+    void compress(byte out[48]) const
+    {   blst_p1_affine_compress(out, &point);   }
+    bool on_curve() const { return blst_p1_affine_on_curve(&point); }
+    bool in_group() const { return blst_p1_affine_in_g1(&point);    }
     BLST_ERROR core_verify(const P2_Affine& pk, bool hash_or_encode,
                            const byte* msg, size_t msg_len,
                            const std::string* DST = nullptr,
-                           const byte* aug = nullptr, size_t aug_len = 0);
+                           const byte* aug = nullptr, size_t aug_len = 0) const;
 #if __cplusplus >= 201703L
     BLST_ERROR core_verify(const P2_Affine& pk, bool hash_or_encode,
                            const app__string_view msg,
                            const std::string* DST = nullptr,
-                           const app__string_view* aug = nullptr);
+                           const app__string_view* aug = nullptr) const;
 #endif
-    static P1_Affine* null() { return nullptr; }
 
 private:
     friend class Pairing;
@@ -118,9 +119,9 @@ public:
         blst_p1_from_affine(&point, &a);
     }
 
-    P1_Affine to_affine()        { P1_Affine ret(*this); return ret;  }
-    void serialize(byte out[96]) { blst_p1_serialize(out, &point);    }
-    void compress(byte out[48])  { blst_p1_compress(out, &point);     }
+    P1_Affine to_affine() const         { P1_Affine ret(*this); return ret;  }
+    void serialize(byte out[96]) const  { blst_p1_serialize(out, &point);    }
+    void compress(byte out[48]) const   { blst_p1_compress(out, &point);     }
     P1* sign_with(SecretKey& sk)
     {   blst_p1_mult_w5(&point, &point, &sk.key, 255); return this;   }
     P1* hash_to(const byte* msg, size_t msg_len,
@@ -188,21 +189,22 @@ public:
     }
     P2_Affine(const P2& jacobian);
 
-    void serialize(byte out[192]) { blst_p2_affine_serialize(out, &point);  }
-    void compress(byte out[96])   { blst_p2_affine_compress(out, &point);   }
-    bool on_curve()               { return blst_p2_affine_on_curve(&point); }
-    bool in_group()               { return blst_p2_affine_in_g2(&point);    }
+    void serialize(byte out[192]) const
+    {   blst_p2_affine_serialize(out, &point);   }
+    void compress(byte out[96]) const
+    {   blst_p2_affine_compress(out, &point);   }
+    bool on_curve() const { return blst_p2_affine_on_curve(&point); }
+    bool in_group() const { return blst_p2_affine_in_g2(&point);    }
     BLST_ERROR core_verify(const P1_Affine& pk, bool hash_or_encode,
                            const byte* msg, size_t msg_len,
                            const std::string* DST = nullptr,
-                           const byte* aug = nullptr, size_t aug_len = 0);
+                           const byte* aug = nullptr, size_t aug_len = 0) const;
 #if __cplusplus >= 201703L
     BLST_ERROR core_verify(const P1_Affine& pk, bool hash_or_encode,
                            const app__string_view msg,
                            const std::string* DST = nullptr,
-                           const app__string_view* aug = nullptr);
+                           const app__string_view* aug = nullptr) const;
 #endif
-    static P2_Affine* null() { return nullptr; }
 
 private:
     friend class Pairing;
@@ -225,9 +227,9 @@ public:
         blst_p2_from_affine(&point, &a);
     }
 
-    P2_Affine to_affine()         { P2_Affine ret(*this); return ret; }
-    void serialize(byte out[192]) { blst_p2_serialize(out, &point);   }
-    void compress(byte out[96])   { blst_p2_compress(out, &point);    }
+    P2_Affine to_affine() const         { P2_Affine ret(*this); return ret; }
+    void serialize(byte out[192]) const { blst_p2_serialize(out, &point);   }
+    void compress(byte out[96]) const   { blst_p2_compress(out, &point);    }
     P2* sign_with(SecretKey& sk)
     {   blst_p2_mult_w5(&point, &point, &sk.key, 255); return this;   }
     P2* hash_to(const byte* msg, size_t msg_len,
@@ -291,7 +293,7 @@ inline BLST_ERROR P1_Affine::core_verify(const P2_Affine& pk,
                                          bool hash_or_encode,
                                          const byte* msg, size_t msg_len,
                                          const std::string* DST,
-                                         const byte* aug, size_t aug_len)
+                                         const byte* aug, size_t aug_len) const
 {   if (DST == nullptr)
         return blst_core_verify_pk_in_g2(pk, &point, hash_or_encode,
                                 msg, msg_len, nullptr, 0, nullptr, 0);
@@ -305,7 +307,7 @@ inline BLST_ERROR P2_Affine::core_verify(const P1_Affine& pk,
                                          bool hash_or_encode,
                                          const byte* msg, size_t msg_len,
                                          const std::string* DST,
-                                         const byte* aug, size_t aug_len)
+                                         const byte* aug, size_t aug_len) const
 {   if (DST == nullptr)
         return blst_core_verify_pk_in_g1(pk, &point, hash_or_encode,
                                 msg, msg_len, nullptr, 0, nullptr, 0);
@@ -320,7 +322,7 @@ inline BLST_ERROR P1_Affine::core_verify(const P2_Affine& pk,
                                          bool hash_or_encode,
                                          const app__string_view msg,
                                          const std::string* DST,
-                                         const app__string_view* aug)
+                                         const app__string_view* aug) const
 {   if (aug == nullptr)
         return core_verify(pk, hash_or_encode,
                            reinterpret_cast<const byte *>(msg.data()),
@@ -336,7 +338,7 @@ inline BLST_ERROR P2_Affine::core_verify(const P1_Affine& pk,
                                          bool hash_or_encode,
                                          const app__string_view msg,
                                          const std::string* DST,
-                                         const app__string_view* aug)
+                                         const app__string_view* aug) const
 {   if (aug == nullptr)
         return core_verify(pk, hash_or_encode,
                            reinterpret_cast<const byte *>(msg.data()),
@@ -352,10 +354,6 @@ inline BLST_ERROR P2_Affine::core_verify(const P1_Affine& pk,
 
 class Pairing {
 private:
-    blst_pairing* c_ptr()
-    {   return reinterpret_cast<blst_pairing *>(this);   }
-    const blst_pairing* c_ptr() const
-    {   return reinterpret_cast<const blst_pairing *>(this);   }
     operator blst_pairing*()
     {   return reinterpret_cast<blst_pairing *>(this);   }
     operator const blst_pairing*() const
@@ -366,37 +364,37 @@ public:
     void* operator new(size_t)
     {   return new uint64_t[blst_pairing_sizeof()/sizeof(uint64_t)];  }
 #endif
-    Pairing() { blst_pairing_init(c_ptr()); }
+    Pairing() { blst_pairing_init(*this); }
 
-    void init() { blst_pairing_init(c_ptr()); }
-    BLST_ERROR aggregate(const P1_Affine& pk, const P2_Affine& sig,
+    void init() { blst_pairing_init(*this); }
+    BLST_ERROR aggregate(const P1_Affine* pk, const P2_Affine* sig,
                          bool hash_or_encode, const byte* msg, size_t msg_len,
                          const std::string* DST = nullptr,
                          const byte* aug = nullptr, size_t aug_len = 0)
     {   if (DST == nullptr)
-            return blst_pairing_aggregate_pk_in_g1(c_ptr(), pk, sig,
+            return blst_pairing_aggregate_pk_in_g1(*this, *pk, *sig,
                          hash_or_encode, msg, msg_len, nullptr, 0, nullptr, 0);
         else
-            return blst_pairing_aggregate_pk_in_g1(c_ptr(), pk, sig,
+            return blst_pairing_aggregate_pk_in_g1(*this, *pk, *sig,
                          hash_or_encode, msg, msg_len,
                          reinterpret_cast<const byte *>(DST->data()),
                          DST->size(), aug, aug_len);
     }
-    BLST_ERROR aggregate(const P2_Affine& pk, const P1_Affine& sig,
+    BLST_ERROR aggregate(const P2_Affine* pk, const P1_Affine* sig,
                          bool hash_or_encode, const byte* msg, size_t msg_len,
                          const std::string* DST = nullptr,
                          const byte* aug = nullptr, size_t aug_len = 0)
     {   if (DST == nullptr)
-            return blst_pairing_aggregate_pk_in_g2(c_ptr(), pk, sig,
+            return blst_pairing_aggregate_pk_in_g2(*this, *pk, *sig,
                          hash_or_encode, msg, msg_len, nullptr, 0, nullptr, 0);
         else
-            return blst_pairing_aggregate_pk_in_g2(c_ptr(), pk, sig,
+            return blst_pairing_aggregate_pk_in_g2(*this, *pk, *sig,
                          hash_or_encode, msg, msg_len,
                          reinterpret_cast<const byte *>(DST->data()),
                          DST->size(), aug, aug_len);
     }
 #if __cplusplus >= 201703L
-    BLST_ERROR aggregate(const P1_Affine& pk, const P2_Affine& sig,
+    BLST_ERROR aggregate(const P1_Affine* pk, const P2_Affine* sig,
                          bool hash_or_encode, const app__string_view msg,
                          const std::string* DST = nullptr,
                          const app__string_view* aug = nullptr)
@@ -411,7 +409,7 @@ public:
                              reinterpret_cast<const byte *>(aug->data()),
                              aug->size());
     }
-    BLST_ERROR aggregate(const P2_Affine& pk, const P1_Affine& sig,
+    BLST_ERROR aggregate(const P2_Affine* pk, const P1_Affine* sig,
                          bool hash_or_encode, const app__string_view msg,
                          const std::string* DST = nullptr,
                          const app__string_view* aug = nullptr)
@@ -428,11 +426,11 @@ public:
     }
 #endif
     void commit()
-    {   blst_pairing_commit(c_ptr());   }
+    {   blst_pairing_commit(*this);   }
     BLST_ERROR merge(const Pairing* ctx)
-    {   return blst_pairing_merge(c_ptr(), ctx->c_ptr());   }
-    bool finalverify(const blst_fp12* sig = nullptr)
-    {   return blst_pairing_finalverify(c_ptr(), sig);   }
+    {   return blst_pairing_merge(*this, *ctx);   }
+    bool finalverify(const blst_fp12* sig = nullptr) const
+    {   return blst_pairing_finalverify(*this, sig);   }
 };
 
 class Fp12 {
