@@ -123,7 +123,7 @@ public:
     void serialize(byte out[96]) const  { blst_p1_serialize(out, &point);    }
     void compress(byte out[48]) const   { blst_p1_compress(out, &point);     }
     P1* sign_with(SecretKey& sk)
-    {   blst_p1_mult_w5(&point, &point, &sk.key, 255); return this;   }
+    {   blst_p1_mult(&point, &point, &sk.key, 255); return this;   }
     P1* hash_to(const byte* msg, size_t msg_len,
                 const std::string* DST = nullptr,
                 const byte* aug = nullptr, size_t aug_len = 0)
@@ -231,7 +231,7 @@ public:
     void serialize(byte out[192]) const { blst_p2_serialize(out, &point);   }
     void compress(byte out[96]) const   { blst_p2_compress(out, &point);    }
     P2* sign_with(SecretKey& sk)
-    {   blst_p2_mult_w5(&point, &point, &sk.key, 255); return this;   }
+    {   blst_p2_mult(&point, &point, &sk.key, 255); return this;   }
     P2* hash_to(const byte* msg, size_t msg_len,
                 const std::string* DST = nullptr,
                 const byte* aug = nullptr, size_t aug_len = 0)
@@ -364,63 +364,55 @@ public:
     void* operator new(size_t)
     {   return new uint64_t[blst_pairing_sizeof()/sizeof(uint64_t)];  }
 #endif
-    Pairing() { blst_pairing_init(*this); }
+    Pairing(bool hash_or_encode, std::string DST)
+    {   blst_pairing_init(*this, hash_or_encode,
+                          reinterpret_cast<const byte *>(DST.data()),
+                          DST.size());
+    }
 
-    void init() { blst_pairing_init(*this); }
+    void init(bool hash_or_encode, std::string DST)
+    {   blst_pairing_init(*this, hash_or_encode,
+                          reinterpret_cast<const byte *>(DST.data()),
+                          DST.size());
+    }
     BLST_ERROR aggregate(const P1_Affine* pk, const P2_Affine* sig,
-                         bool hash_or_encode, const byte* msg, size_t msg_len,
-                         const std::string* DST = nullptr,
+                         const byte* msg, size_t msg_len,
                          const byte* aug = nullptr, size_t aug_len = 0)
-    {   if (DST == nullptr)
-            return blst_pairing_aggregate_pk_in_g1(*this, *pk, *sig,
-                         hash_or_encode, msg, msg_len, nullptr, 0, nullptr, 0);
-        else
-            return blst_pairing_aggregate_pk_in_g1(*this, *pk, *sig,
-                         hash_or_encode, msg, msg_len,
-                         reinterpret_cast<const byte *>(DST->data()),
-                         DST->size(), aug, aug_len);
+    {   return blst_pairing_aggregate_pk_in_g1(*this, *pk, *sig,
+                         msg, msg_len, aug, aug_len);
     }
     BLST_ERROR aggregate(const P2_Affine* pk, const P1_Affine* sig,
-                         bool hash_or_encode, const byte* msg, size_t msg_len,
-                         const std::string* DST = nullptr,
+                         const byte* msg, size_t msg_len,
                          const byte* aug = nullptr, size_t aug_len = 0)
-    {   if (DST == nullptr)
-            return blst_pairing_aggregate_pk_in_g2(*this, *pk, *sig,
-                         hash_or_encode, msg, msg_len, nullptr, 0, nullptr, 0);
-        else
-            return blst_pairing_aggregate_pk_in_g2(*this, *pk, *sig,
-                         hash_or_encode, msg, msg_len,
-                         reinterpret_cast<const byte *>(DST->data()),
-                         DST->size(), aug, aug_len);
+    {   return blst_pairing_aggregate_pk_in_g2(*this, *pk, *sig,
+                         msg, msg_len, aug, aug_len);
     }
 #if __cplusplus >= 201703L
     BLST_ERROR aggregate(const P1_Affine* pk, const P2_Affine* sig,
-                         bool hash_or_encode, const app__string_view msg,
-                         const std::string* DST = nullptr,
+                         const app__string_view msg,
                          const app__string_view* aug = nullptr)
     {   if (aug == nullptr)
-            return aggregate(pk, sig, hash_or_encode,
+            return aggregate(pk, sig,
                              reinterpret_cast<const byte *>(msg.data()),
-                             msg.size(), DST, nullptr, 0);
+                             msg.size(), nullptr, 0);
         else
-            return aggregate(pk, sig, hash_or_encode,
+            return aggregate(pk, sig,
                              reinterpret_cast<const byte *>(msg.data()),
-                             msg.size(), DST,
+                             msg.size(),
                              reinterpret_cast<const byte *>(aug->data()),
                              aug->size());
     }
     BLST_ERROR aggregate(const P2_Affine* pk, const P1_Affine* sig,
-                         bool hash_or_encode, const app__string_view msg,
-                         const std::string* DST = nullptr,
+                         const app__string_view msg,
                          const app__string_view* aug = nullptr)
     {   if (aug == nullptr)
-            return aggregate(pk, sig, hash_or_encode,
+            return aggregate(pk, sig,
                              reinterpret_cast<const byte *>(msg.data()),
-                             msg.size(), DST, nullptr, 0);
+                             msg.size(), nullptr, 0);
         else
-            return aggregate(pk, sig, hash_or_encode,
+            return aggregate(pk, sig,
                              reinterpret_cast<const byte *>(msg.data()),
-                             msg.size(), DST,
+                             msg.size(),
                              reinterpret_cast<const byte *>(aug->data()),
                              aug->size());
     }

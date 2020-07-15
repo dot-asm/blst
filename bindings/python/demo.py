@@ -65,10 +65,8 @@ sig_for_wire = sig.hash_to(msg, DST, pk_for_wire) \
 sig = blst.P2_Affine(sig_for_wire)
 pk  = blst.P1_Affine(pk_for_wire)
 if pk.in_group() :		# vet the public key
-    ctx = blst.Pairing()
-    ctx.aggregate(pk, sig,
-                  True,		# because "sender" called hash_to
-                  msg, DST, pk_for_wire)
+    ctx = blst.Pairing(True, DST)
+    ctx.aggregate(pk, sig, msg, pk_for_wire)
     ctx.commit()
     print(ctx.finalverify())
 else :
@@ -92,10 +90,8 @@ sig_for_wire = sig.hash_to(msg, DST, pk_for_wire) \
 sig = blst.P1_Affine(sig_for_wire)
 pk  = blst.P2_Affine(pk_for_wire)
 if pk.in_group() :		# vet the public key
-    ctx = blst.Pairing()
-    ctx.aggregate(pk, sig,
-                  True,		# because "sender" called hash_to
-                  msg, DST, pk_for_wire)
+    ctx = blst.Pairing(True, DST)
+    ctx.aggregate(pk, sig, msg, pk_for_wire)
     ctx.commit()
     print(ctx.finalverify())
 else :
