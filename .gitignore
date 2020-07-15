@@ -61,3 +61,8 @@ dkms.conf
 Cargo.lock
 bindings/rust/target
 bindings/rust/blst
+
+# Swig artefacts
+blst_wrap.*
+blst.py
+__pycache__
