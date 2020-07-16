@@ -365,10 +365,7 @@ public:
     {   return new uint64_t[blst_pairing_sizeof()/sizeof(uint64_t)];  }
 #endif
     Pairing(bool hash_or_encode, std::string DST)
-    {   blst_pairing_init(*this, hash_or_encode,
-                          reinterpret_cast<const byte *>(DST.data()),
-                          DST.size());
-    }
+    {   init(hash_or_encode, DST);   }
 
     void init(bool hash_or_encode, std::string DST)
     {   blst_pairing_init(*this, hash_or_encode,
