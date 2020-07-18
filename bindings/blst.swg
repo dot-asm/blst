@@ -5,17 +5,17 @@
 %module blst
 %rename("%(strip:[blst_])s") "";    // prefix is redundant in named module
 
+%include "exception.i"
+#ifdef __cplusplus
+%include "std_string.i"
+#endif
+
 #if defined(SWIGPYTHON) || defined(SWIGPERL)
 # if defined(SWIGPYTHON)
 %begin %{
 #define SWIG_PYTHON_STRICT_BYTE_CHAR
 %}
 # endif
-
-%include "exception.i"
-#ifdef __cplusplus
-%include "std_string.i"
-#endif
 
 // some sorcery to allow assignments as output, e.g.
 //      hash = p.encode_to(b"foo")
@@ -80,7 +80,6 @@
 
 %apply const char * { const byte in[ANY] };
 %apply const char * { const byte *in };
-%apply const std::string& { const std::string* };
 %apply (const char *STRING, size_t LENGTH) {
     (const byte *msg, size_t msg_len),
     (const byte *DST, size_t DST_len),
@@ -90,7 +89,9 @@
 };
 
 #ifdef __cplusplus
-#pragma SWIG nowarn=509
+%apply const std::string& { const std::string* };
+
+#pragma SWIG nowarn=509,516
 
 %ignore nullptr;
 %catches(BLST_ERROR) P1(const byte *in);
@@ -118,7 +119,7 @@ typedef enum {
 %include "blst.h"
 %include "blst_aux.h"
 %extend blst_pairing {
-    blst_pairing()  { return (blst_pairing *)calloc(1, blst_pairing_sizeof()); }
+    blst_pairing()  { return NULL; } // adhere to pairing_init!
     ~blst_pairing() { free($self); }
 };
 #endif
