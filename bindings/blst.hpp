@@ -9,6 +9,7 @@
 #include "blst.h"
 
 #include <string>
+#include <cstring>
 
 #if __cplusplus >= 201703L
 # include <string_view>
@@ -358,20 +359,35 @@ private:
     {   return reinterpret_cast<blst_pairing *>(this);   }
     operator const blst_pairing*() const
     {   return reinterpret_cast<const blst_pairing *>(this);   }
+    void init(bool hash_or_encode, const byte* DST, size_t DST_len)
+    {   // Copy to heap, std::string can be volatile, especially in SWIG:-(
+        byte *dst = new byte[DST_len];
+        memcpy(dst, DST, DST_len);
+        blst_pairing_init(*this, hash_or_encode, dst, DST_len);
+    }
 
 public:
+    Pairing(bool hash_or_encode, const byte* DST, size_t DST_len)
+    {   init(hash_or_encode, DST, DST_len);   }
+    ~Pairing() { delete[] blst_pairing_get_dst(*this); }
 #ifndef SWIG
     void* operator new(size_t)
-    {   return new uint64_t[blst_pairing_sizeof()/sizeof(uint64_t)];  }
-#endif
-    Pairing(bool hash_or_encode, std::string DST)
-    {   init(hash_or_encode, DST);   }
+    {   return new uint64_t[blst_pairing_sizeof()/sizeof(uint64_t)];   }
+    void operator delete(void *ptr)
+    {   delete[] static_cast<uint64_t*>(ptr);   }
 
-    void init(bool hash_or_encode, std::string DST)
-    {   blst_pairing_init(*this, hash_or_encode,
-                          reinterpret_cast<const byte *>(DST.data()),
-                          DST.size());
+    Pairing(bool hash_or_encode, const std::string& DST)
+    {   init(hash_or_encode, reinterpret_cast<const byte*>(DST.data()),
+                             DST.size());
     }
+#if __cplusplus >= 201703L
+    Pairing(bool hash_or_encode, app__string_view DST)
+    {   init(hash_or_encode, reinterpret_cast<const byte*>(DST.data()),
+                             DST.size());
+    }
+#endif
+#endif
+
     BLST_ERROR aggregate(const P1_Affine* pk, const P2_Affine* sig,
                          const byte* msg, size_t msg_len,
                          const byte* aug = nullptr, size_t aug_len = 0)
