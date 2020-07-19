@@ -10,6 +10,8 @@
 %include "std_string.i"
 #endif
 
+typedef void void_;
+
 #if defined(SWIGPYTHON) || defined(SWIGPERL)
 # if defined(SWIGPYTHON)
 %begin %{
@@ -78,8 +80,31 @@
 };
 #endif	// defined(SWIGPYTHON) || defined(SWIGPERL)
 
-%apply const char * { const byte in[ANY] };
-%apply const char * { const byte *in };
+#if defined(SWIGJAVA) && defined(__cplusplus)
+%include "arrays_java.i"
+
+// some sorcery to return byte[] from serialization methods
+%typemap(in, numinputs=0) byte out[ANY](byte temp[$1_dim0]) {
+    $1 = temp;
+};
+%typemap(argout) byte out[ANY] {
+    $result = jenv->NewByteArray($1_dim0);
+    if ($result != $null) {
+        jenv->SetByteArrayRegion($result, 0, $1_dim0, (const jbyte *)$1);
+    }
+};
+%typemap(jni)     void_ "jbyteArray"
+%typemap(jtype)   void_ "byte[]"
+%typemap(jstype)  void_ "byte[]"
+%typemap(javaout) void_ "{ return $jnicall; }"
+
+%apply signed char[] { const signed char[] }
+%typemap(argout) const signed char[] "" // drop SWIG_JavaArrayArgoutSchar
+
+%apply const signed char[] { const byte in[ANY], const byte *in }
+#else
+%apply const char *        { const byte in[ANY], const byte *in }
+#endif
 %apply (const char *STRING, size_t LENGTH) {
     (const byte *msg, size_t msg_len),
     (const byte *DST, size_t DST_len),
@@ -141,4 +166,6 @@ static const char *const BLST_ERROR_str [] = {
 };
 %}
 
+#if defined(SWIGPYTHON) || defined(SWIGPERL)
 %include "cdata.i"
+#endif

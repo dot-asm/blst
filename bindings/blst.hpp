@@ -28,6 +28,10 @@
 
 namespace blst {
 
+#ifndef SWIG
+typedef void void_;
+#endif
+
 class P1_Affine;
 class P1;
 class P2_Affine;
@@ -44,8 +48,14 @@ class Pairing;
  * doesn't really apply to SWIG-assisted interfaces...
  */
 struct SecretKey {
+#ifdef SWIG
+private:
+#endif
     blst_scalar key;
 
+#ifdef SWIG
+public:
+#endif
     void keygen(const byte* IKM, size_t IKM_len,
                 const std::string* info = nullptr)
     {   if (info == nullptr)
@@ -65,8 +75,10 @@ struct SecretKey {
     void from_bendian(const byte in[32]) { blst_scalar_from_bendian(&key, in); }
     void from_lendian(const byte in[32]) { blst_scalar_from_lendian(&key, in); }
 
-    void to_bendian(byte out[32]) const { blst_bendian_from_scalar(out, &key); }
-    void to_lendian(byte out[32]) const { blst_lendian_from_scalar(out, &key); }
+    void_ to_bendian(byte out[32]) const
+    {   blst_bendian_from_scalar(out, &key);   }
+    void_ to_lendian(byte out[32]) const
+    {   blst_lendian_from_scalar(out, &key);   }
 };
 
 class P1_Affine {
@@ -82,9 +94,9 @@ public:
     }
     P1_Affine(const P1& jacobian);
 
-    void serialize(byte out[96]) const
+    void_ serialize(byte out[96]) const
     {   blst_p1_affine_serialize(out, &point);   }
-    void compress(byte out[48]) const
+    void_ compress(byte out[48]) const
     {   blst_p1_affine_compress(out, &point);   }
     bool on_curve() const { return blst_p1_affine_on_curve(&point); }
     bool in_group() const { return blst_p1_affine_in_g1(&point);    }
@@ -121,8 +133,8 @@ public:
     }
 
     P1_Affine to_affine() const         { P1_Affine ret(*this); return ret;  }
-    void serialize(byte out[96]) const  { blst_p1_serialize(out, &point);    }
-    void compress(byte out[48]) const   { blst_p1_compress(out, &point);     }
+    void_ serialize(byte out[96]) const { blst_p1_serialize(out, &point);    }
+    void_ compress(byte out[48]) const  { blst_p1_compress(out, &point);     }
     P1* sign_with(SecretKey& sk)
     {   blst_p1_mult(&point, &point, &sk.key, 255); return this;   }
     P1* hash_to(const byte* msg, size_t msg_len,
@@ -190,9 +202,9 @@ public:
     }
     P2_Affine(const P2& jacobian);
 
-    void serialize(byte out[192]) const
+    void_ serialize(byte out[192]) const
     {   blst_p2_affine_serialize(out, &point);   }
-    void compress(byte out[96]) const
+    void_ compress(byte out[96]) const
     {   blst_p2_affine_compress(out, &point);   }
     bool on_curve() const { return blst_p2_affine_on_curve(&point); }
     bool in_group() const { return blst_p2_affine_in_g2(&point);    }
@@ -228,9 +240,9 @@ public:
         blst_p2_from_affine(&point, &a);
     }
 
-    P2_Affine to_affine() const         { P2_Affine ret(*this); return ret; }
-    void serialize(byte out[192]) const { blst_p2_serialize(out, &point);   }
-    void compress(byte out[96]) const   { blst_p2_compress(out, &point);    }
+    P2_Affine to_affine() const          { P2_Affine ret(*this); return ret; }
+    void_ serialize(byte out[192]) const { blst_p2_serialize(out, &point);   }
+    void_ compress(byte out[96]) const   { blst_p2_compress(out, &point);    }
     P2* sign_with(SecretKey& sk)
     {   blst_p2_mult(&point, &point, &sk.key, 255); return this;   }
     P2* hash_to(const byte* msg, size_t msg_len,
@@ -353,29 +365,42 @@ inline BLST_ERROR P2_Affine::core_verify(const P1_Affine& pk,
 }
 #endif
 
+class Fp12 {
+private:
+    blst_fp12 value;
+
+public:
+    Fp12() {}
+
+private:
+    friend class Pairing;
+    operator const blst_fp12*() const { return &value; }
+};
+
 class Pairing {
 private:
     operator blst_pairing*()
     {   return reinterpret_cast<blst_pairing *>(this);   }
     operator const blst_pairing*() const
     {   return reinterpret_cast<const blst_pairing *>(this);   }
+
     void init(bool hash_or_encode, const byte* DST, size_t DST_len)
-    {   // Copy to heap, std::string can be volatile, especially in SWIG:-(
+    {   // Copy DST to heap, std::string can be volatile, especially in SWIG:-(
         byte *dst = new byte[DST_len];
         memcpy(dst, DST, DST_len);
         blst_pairing_init(*this, hash_or_encode, dst, DST_len);
     }
 
 public:
-    Pairing(bool hash_or_encode, const byte* DST, size_t DST_len)
-    {   init(hash_or_encode, DST, DST_len);   }
-    ~Pairing() { delete[] blst_pairing_get_dst(*this); }
 #ifndef SWIG
     void* operator new(size_t)
     {   return new uint64_t[blst_pairing_sizeof()/sizeof(uint64_t)];   }
     void operator delete(void *ptr)
     {   delete[] static_cast<uint64_t*>(ptr);   }
+#endif
 
+    Pairing(bool hash_or_encode, const byte* DST, size_t DST_len)
+    {   init(hash_or_encode, DST, DST_len);   }
     Pairing(bool hash_or_encode, const std::string& DST)
     {   init(hash_or_encode, reinterpret_cast<const byte*>(DST.data()),
                              DST.size());
@@ -386,7 +411,7 @@ public:
                              DST.size());
     }
 #endif
-#endif
+    ~Pairing() { delete[] blst_pairing_get_dst(*this); }
 
     BLST_ERROR aggregate(const P1_Affine* pk, const P2_Affine* sig,
                          const byte* msg, size_t msg_len,
@@ -434,16 +459,8 @@ public:
     {   blst_pairing_commit(*this);   }
     BLST_ERROR merge(const Pairing* ctx)
     {   return blst_pairing_merge(*this, *ctx);   }
-    bool finalverify(const blst_fp12* sig = nullptr) const
-    {   return blst_pairing_finalverify(*this, sig);   }
-};
-
-class Fp12 {
-private:
-    blst_fp12 value;
-
-public:
-    Fp12() {}
+    bool finalverify(const Fp12* sig = nullptr) const
+    {   return blst_pairing_finalverify(*this, *sig);   }
 };
 
 } // namespace blst
