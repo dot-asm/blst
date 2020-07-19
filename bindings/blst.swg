@@ -81,6 +81,8 @@ typedef void void_;
 #endif	// defined(SWIGPYTHON) || defined(SWIGPERL)
 
 #if defined(SWIGJAVA) && defined(__cplusplus)
+%include "enums.swg"
+%javaconst(1);
 %include "arrays_java.i"
 
 // some sorcery to return byte[] from serialization methods
