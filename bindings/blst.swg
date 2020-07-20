@@ -13,12 +13,6 @@
 typedef void void_;
 
 #if defined(SWIGPYTHON) || defined(SWIGPERL)
-# if defined(SWIGPYTHON)
-%begin %{
-#define SWIG_PYTHON_STRICT_BYTE_CHAR
-%}
-# endif
-
 // some sorcery to allow assignments as output, e.g.
 //      hash = p.encode_to(b"foo")
 
@@ -43,11 +37,12 @@ typedef void void_;
 # endif
 };
 %apply OBJECT *OUTPUT {
-    blst_p1 *out, blst_p1 *out_pk, blst_p1 *out_sig,
+    blst_p1        *out, blst_p1        *out_pk, blst_p1        *out_sig,
     blst_p1_affine *out, blst_p1_affine *out_pk, blst_p1_affine *out_sig,
-    blst_p2 *out, blst_p2 *out_pk, blst_p2 *out_sig,
+    blst_p2        *out, blst_p2        *out_pk, blst_p2        *out_sig,
     blst_p2_affine *out, blst_p2_affine *out_pk, blst_p2_affine *out_sig,
-    blst_scalar *out, blst_scalar *out_SK, blst_fp12 *out
+    blst_scalar    *out, blst_scalar    *out_SK,
+    blst_fp12      *out
 };
 
 %typemap(out) BLST_ERROR {
@@ -55,7 +50,7 @@ typedef void void_;
         SWIG_exception(SWIG_ValueError, BLST_ERROR_str[$1]);
         SWIG_fail;
     }
-    resultobj = SWIG_From_int($1);
+    $result = SWIG_From_int($1);
 };
 
 %typemap(in, numinputs=0) byte out[ANY](byte temp[$1_dim0]) {
@@ -108,11 +103,11 @@ typedef void void_;
 %apply const char *        { const byte in[ANY], const byte *in }
 #endif
 %apply (const char *STRING, size_t LENGTH) {
-    (const byte *msg, size_t msg_len),
-    (const byte *DST, size_t DST_len),
-    (const byte *aug, size_t aug_len),
-    (const byte *IKM, size_t IKM_len),
-    (const byte *info, size_t info_len)
+       (const byte *msg,    size_t msg_len),
+       (const byte *DST,    size_t DST_len),
+       (const byte *aug,    size_t aug_len),
+       (const byte *IKM,    size_t IKM_len),
+       (const byte *info,   size_t info_len)
 };
 
 #ifdef __cplusplus
@@ -146,7 +141,7 @@ typedef enum {
 %include "blst.h"
 %include "blst_aux.h"
 %extend blst_pairing {
-    blst_pairing()  { return NULL; } // adhere to pairing_init!
+    blst_pairing()  { return NULL; } // steer user toward pairing_init!
     ~blst_pairing() { free($self); }
 };
 #endif
@@ -166,6 +161,8 @@ static const char *const BLST_ERROR_str [] = {
     "context type mismatch",
     "verify failed",
 };
+
+#define SWIG_PYTHON_STRICT_BYTE_CHAR
 %}
 
 #if defined(SWIGPYTHON) || defined(SWIGPERL)
