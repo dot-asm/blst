@@ -62,7 +62,6 @@ Cargo.lock
 bindings/rust/target
 bindings/rust/blst
 
-# Swig artefacts
-blst_wrap.*
-blst.py
-__pycache__
+# These are customarily filled with swig artefacts
+bindings/python
+bindings/java
