@@ -116,11 +116,13 @@ typedef void void_;
 #pragma SWIG nowarn=509,516
 
 %ignore nullptr;
-%catches(BLST_ERROR) P1(const byte *in);
-%catches(BLST_ERROR) P1_Affine(const byte *in);
+%catches(BLST_ERROR) P1(const byte* in);
+%catches(BLST_ERROR) P1_Affine(const byte* in);
+%catches(BLST_ERROR) aggregate(const P1_Affine& in);
 
-%catches(BLST_ERROR) P2(const byte *in);
-%catches(BLST_ERROR) P2_Affine(const byte *in);
+%catches(BLST_ERROR) P2(const byte* in);
+%catches(BLST_ERROR) P2_Affine(const byte* in);
+%catches(BLST_ERROR) aggregate(const P2_Affine& in);
 
 typedef enum {
     BLST_SUCCESS = 0,

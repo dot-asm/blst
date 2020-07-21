@@ -86,7 +86,7 @@ private:
     blst_p1_affine point;
 
 public:
-    P1_Affine() {}
+    P1_Affine() { memset(&point, 0, sizeof(point)); }
     P1_Affine(const byte *in)
     {   BLST_ERROR err = blst_p1_deserialize(&point, in);
         if (err != BLST_SUCCESS)
@@ -114,6 +114,8 @@ public:
 private:
     friend class Pairing;
     friend class P2_Affine;
+    friend class Fp12;
+    friend class P1;
     operator const blst_p1_affine*() const { return &point; }
 };
 
@@ -122,7 +124,7 @@ private:
     blst_p1 point;
 
 public:
-    P1() {}
+    P1() { memset(&point, 0, sizeof(point)); }
     P1(SecretKey& sk) { blst_sk_to_pk_in_g1(&point, &sk.key); }
     P1(const byte *in)
     {   blst_p1_affine a;
@@ -135,6 +137,12 @@ public:
     P1_Affine to_affine() const         { P1_Affine ret(*this); return ret;  }
     void_ serialize(byte out[96]) const { blst_p1_serialize(out, &point);    }
     void_ compress(byte out[48]) const  { blst_p1_compress(out, &point);     }
+    void aggregate(const P1_Affine& in)
+    {   if (blst_p1_affine_in_g1(in))
+            blst_p1_add_or_double_affine(&point, &point, in);
+        else
+            throw BLST_POINT_NOT_IN_GROUP;
+    }
     P1* sign_with(SecretKey& sk)
     {   blst_p1_mult(&point, &point, &sk.key, 255); return this;   }
     P1* hash_to(const byte* msg, size_t msg_len,
@@ -194,7 +202,7 @@ private:
     blst_p2_affine point;
 
 public:
-    P2_Affine() {}
+    P2_Affine() { memset(&point, 0, sizeof(point)); }
     P2_Affine(const byte *in)
     {   BLST_ERROR err = blst_p2_deserialize(&point, in);
         if (err != BLST_SUCCESS)
@@ -222,6 +230,8 @@ public:
 private:
     friend class Pairing;
     friend class P1_Affine;
+    friend class Fp12;
+    friend class P2;
     operator const blst_p2_affine*() const { return &point; }
 };
 
@@ -230,7 +240,7 @@ private:
     blst_p2 point;
 
 public:
-    P2() {}
+    P2() { memset(&point, 0, sizeof(point)); }
     P2(SecretKey& sk) { blst_sk_to_pk_in_g2(&point, &sk.key); }
     P2(const byte *in)
     {   blst_p2_affine a;
@@ -243,6 +253,12 @@ public:
     P2_Affine to_affine() const          { P2_Affine ret(*this); return ret; }
     void_ serialize(byte out[192]) const { blst_p2_serialize(out, &point);   }
     void_ compress(byte out[96]) const   { blst_p2_compress(out, &point);    }
+    void aggregate(const P2_Affine& in)
+    {   if (blst_p2_affine_in_g2(in))
+            blst_p2_add_or_double_affine(&point, &point, in);
+        else
+            throw BLST_POINT_NOT_IN_GROUP;
+    }
     P2* sign_with(SecretKey& sk)
     {   blst_p2_mult(&point, &point, &sk.key, 255); return this;   }
     P2* hash_to(const byte* msg, size_t msg_len,
@@ -269,7 +285,7 @@ public:
     }
 #if __cplusplus >= 201703L
     P2* hash_to(const app__string_view msg, const std::string* DST = nullptr,
-                 const app__string_view* aug = nullptr)
+                const app__string_view* aug = nullptr)
     {   if (aug == nullptr)
             return hash_to(reinterpret_cast<const byte *>(msg.data()),
                            msg.size(), DST, nullptr, 0);
@@ -370,7 +386,8 @@ private:
     blst_fp12 value;
 
 public:
-    Fp12() {}
+    Fp12(const P1_Affine& p) { blst_aggregated_in_g1(&value, p); }
+    Fp12(const P2_Affine& p) { blst_aggregated_in_g2(&value, p); }
 
 private:
     friend class Pairing;
