@@ -4,7 +4,7 @@ cd `dirname $0`
 
 #unset _JAVA_OPTIONS
 JDK=`java -XshowSettings:properties -version 2>&1 | \
-     awk 'BEGIN { FS="=\\\s*" } /java.home/ { print $2 }'`
+     awk 'BEGIN { FS="=\\\s*" } /java\.home/ { print $2 }'`
 
 if [ ! -f libblst.a ]; then
     ../../build.sh
@@ -17,14 +17,14 @@ if [ ! -f blst_wrap.cpp -o ../blst.swg -nt blst_wrap.cpp \
 fi
 
 if [ ! -f libblst.so -o blst_wrap.cpp -nt libblst.so \
-                     -o libblst.a      -nt libblst.so ]; then
+                     -o libblst.a     -nt libblst.so ]; then
     (set -x; c++ -shared -o libblst.so -fPIC \
                  -I${JDK}/include -I${JDK}/include/linux -I.. \
                  -O -Wall -Wno-unused-function blst_wrap.cpp \
                  libblst.a -Wl,-Bsymbolic)
 fi
 
-if [ ! -f blst.class -o blst.java -nt blst.class \
+if [ ! -f blst.class -o blst.java     -nt blst.class \
                      -o runnable.java -nt runnable.class ]; then
     (set -x; javac *.java)
 fi

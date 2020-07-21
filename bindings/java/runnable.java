@@ -43,7 +43,7 @@ public class runnable {
         var SK = new SecretKey();
         SK.keygen("passw@rd".getBytes());
 
-        // generate public key and serialized it...
+        // generate public key and serialize it...
         var pk_ = new P1(SK);
         var pk_for_wire = pk_.serialize();
 
@@ -56,13 +56,13 @@ public class runnable {
         // now on "receiving" side, start with deserialization...
         var _sig = new P2_Affine(sig_for_wire);
         var _pk = new P1_Affine(pk_for_wire);
-        if (_pk.in_group()) {
-            var ctx = new Pairing(true, DST);
-            ctx.aggregate(_pk, _sig, msg, pk_for_wire);
-            ctx.commit();
-            System.out.println(ctx.finalverify());
-        } else {
-            System.out.println("disaster");
-        }
+        if (!_pk.in_group())
+            throw new java.lang.RuntimeException("disaster");
+        var ctx = new Pairing(true, DST);
+        ctx.aggregate(_pk, _sig, msg, pk_for_wire);
+        ctx.commit();
+        if (!ctx.finalverify())
+            throw new java.lang.RuntimeException("disaster");
+        System.out.println("OK");
     }
 }

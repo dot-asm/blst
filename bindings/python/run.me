@@ -5,6 +5,10 @@ import sys
 import subprocess
 import re
 
+here = re.split(r'/(?=[^/]*$)', sys.argv[0])
+if len(here) > 1:
+    os.chdir(here[0])
+
 def newer(*files) :
     assert len(files) > 1
     rh = files[-1]
@@ -15,27 +19,23 @@ def newer(*files) :
             return True
     return False
 
-here = re.split(r'/(?=[^/]*$)', sys.argv[0])
-if len(here) > 1:
-    os.chdir(here[0])
-
 if not os.path.exists("libblst.a") :
     print("building libblst.a...")
-    subprocess.call(["../../build.sh"]) == 0 or sys.exit(1)
+    subprocess.check_call(["../../build.sh"])
 
 if newer("../blst.swg", "../blst.h", "../blst.hpp", "blst_wrap.cpp") :
     print("swig-ing...")
-    subprocess.call(["swig", "-c++", "-python", "-O",
-                     "-o", "blst_wrap.cpp", "-outdir", ".",
-                     "../blst.swg"]) == 0 or sys.exit(1)
+    subprocess.check_call(["swig", "-c++", "-python", "-O",
+                                   "-o", "blst_wrap.cpp", "-outdir", ".",
+                                   "../blst.swg"])
 
 if newer("blst_wrap.cpp", "libblst.a", "_blst.so") :
     print("compiling _blst.so...")
     maj_min = "{}.{}".format(sys.version_info.major, sys.version_info.minor)
-    subprocess.call(["c++", "-shared", "-o", "_blst.so", "-fPIC", #"-std=c++17",
-                     "-I/usr/include/python" + maj_min, "-I..", "-O", "-Wall",
-                     "blst_wrap.cpp", "libblst.a", "-Wl,-Bsymbolic"]) == 0 \
-    or sys.exit(1)
+    subprocess.check_call(["c++", "-shared", "-o", "_blst.so", "-fPIC",
+                                  "-I/usr/include/python"+maj_min, "-I..",
+                                  "-O", "-Wall", "blst_wrap.cpp",
+                                  "libblst.a", "-Wl,-Bsymbolic"])
 
 print("testing...")
 ########################################################################
@@ -64,13 +64,13 @@ sig_for_wire = sig.hash_to(msg, DST, pk_for_wire) \
 
 sig = blst.P2_Affine(sig_for_wire)
 pk  = blst.P1_Affine(pk_for_wire)
-if pk.in_group() :		# vet the public key
-    ctx = blst.Pairing(True, DST)
-    ctx.aggregate(pk, sig, msg, pk_for_wire)
-    ctx.commit()
-    print(ctx.finalverify())
-else :
-    print("disaster")
+if not pk.in_group() :		# vet the public key
+    raise AssertionError("disaster")
+ctx = blst.Pairing(True, DST)
+ctx.aggregate(pk, sig, msg, pk_for_wire)
+ctx.commit()
+if not ctx.finalverify() :
+    raise AssertionError("disaster")
 
 ########################################################################
 # generate public key and signature
@@ -89,13 +89,13 @@ sig_for_wire = sig.hash_to(msg, DST, pk_for_wire) \
 
 sig = blst.P1_Affine(sig_for_wire)
 pk  = blst.P2_Affine(pk_for_wire)
-if pk.in_group() :		# vet the public key
-    ctx = blst.Pairing(True, DST)
-    ctx.aggregate(pk, sig, msg, pk_for_wire)
-    ctx.commit()
-    print(ctx.finalverify())
-else :
-    print("disaster")
+if not pk.in_group() :		# vet the public key
+    raise AssertionError("disaster")
+ctx = blst.Pairing(True, DST)
+ctx.aggregate(pk, sig, msg, pk_for_wire)
+ctx.commit()
+if not ctx.finalverify() :
+    raise AssertionError("disaster")
 
 ########################################################################
 # from https://github.com/supranational/blst/issues/5
@@ -107,7 +107,9 @@ DST = bytes.fromhex("424c535f5349475f424c53313233383147325f584d443a5348412d32353
 
 sig = blst.P2_Affine(sig_for_wire)
 pk  = blst.P1_Affine(pk_for_wire)
-if pk.in_group() :	# vet the public key
-    print(sig.core_verify(pk, True, msg, DST) == blst.BLST_SUCCESS)
-else :
-    print("disaster")
+if not pk.in_group() :		# vet the public key
+    raise AssertionError("disaster")
+if sig.core_verify(pk, True, msg, DST) != blst.BLST_SUCCESS :
+    raise AssertionError("disaster")
+
+print("OK")
