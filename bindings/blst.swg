@@ -45,6 +45,7 @@ typedef void void_;
     blst_fp12      *out
 };
 
+#ifdef __cplusplus
 %typemap(out) BLST_ERROR {
     if ($1 != BLST_SUCCESS) {
         SWIG_exception(SWIG_ValueError, BLST_ERROR_str[$1]);
@@ -52,6 +53,7 @@ typedef void void_;
     }
     $result = SWIG_From_int($1);
 };
+#endif
 
 %typemap(in, numinputs=0) byte out[ANY](byte temp[$1_dim0]) {
     $1 = temp;
@@ -79,6 +81,11 @@ typedef void void_;
 %include "enums.swg"
 %javaconst(1);
 %include "arrays_java.i"
+
+%typemap(throws) BLST_ERROR %{
+    SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException,
+                                  BLST_ERROR_str[$1]);
+%};
 
 // some sorcery to return byte[] from serialization methods
 %typemap(in, numinputs=0) byte out[ANY](byte temp[$1_dim0]) {
@@ -156,12 +163,12 @@ typedef enum {
 #endif
 
 static const char *const BLST_ERROR_str [] = {
-    "success",
-    "bad point encoding",
-    "point is not on curve",
-    "point is not in group",
-    "context type mismatch",
-    "verify failed",
+    "BLST_ERROR: success",
+    "BLST_ERROR: bad point encoding",
+    "BLST_ERROR: point is not on curve",
+    "BLST_ERROR: point is not in group",
+    "BLST_ERROR: context type mismatch",
+    "BLST_ERROR: verify failed",
 };
 
 #define SWIG_PYTHON_STRICT_BYTE_CHAR
