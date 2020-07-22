@@ -123,6 +123,7 @@ typedef void void_;
 #pragma SWIG nowarn=509,516
 
 %ignore nullptr;
+%ignore None;
 %catches(BLST_ERROR) P1(const byte* in);
 %catches(BLST_ERROR) P1_Affine(const byte* in);
 %catches(BLST_ERROR) aggregate(const P1_Affine& in);
@@ -158,6 +159,7 @@ typedef enum {
 %begin %{
 #ifdef __cplusplus
 # include "blst.hpp"
+using namespace blst;
 #else
 # include "blst.h"
 #endif
