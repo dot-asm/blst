@@ -102,12 +102,32 @@ typedef void void_;
 %typemap(jstype)  void_ "byte[]"
 %typemap(javaout) void_ "{ return $jnicall; }"
 
-%apply signed char[] { const signed char[] }
-%typemap(argout) const signed char[] "" // drop SWIG_JavaArrayArgoutSchar
+// handle input const byte[] more efficiently...
+%apply signed char[] { const byte in[ANY] }
+%typemap(in) const byte in[ANY] (byte temp[$1_dim0]) {
+    size_t sz = jenv->GetArrayLength($input);
+    $1 = ($1_ltype)jenv->GetByteArrayElements($input, 0);
+    if (sz == $1_dim0) memcpy(temp, $1, sz);
+    jenv->ReleaseByteArrayElements($input, (jbyte *)$1, JNI_ABORT);
+    if (sz != $1_dim0) SWIG_JavaThrowException(jenv,
+                                SWIG_JavaIndexOutOfBoundsException,
+                                "input size mismatch");
+    $1 = temp;
+};
+%typemap(argout)  const byte in[ANY] ""
+%typemap(freearg) const byte in[ANY] ""
 
-%apply const signed char[] { const byte in[ANY], const byte *in }
+%apply const byte in[ANY] { const byte* in }
+%typemap(in) const byte* in {
+    size_t sz = jenv->GetArrayLength($input);
+    $1_basetype* temp = ($1_basetype*)alloca(sz);
+    $1 = ($1_ltype)jenv->GetByteArrayElements($input, 0);
+    memcpy(temp, $1, sz);
+    jenv->ReleaseByteArrayElements($input, (jbyte *)$1, JNI_ABORT);
+    $1 = temp;
+};
 #else
-%apply const char *        { const byte in[ANY], const byte *in }
+%apply const char * { const byte in[ANY], const byte *in }
 #endif
 %apply (const char *STRING, size_t LENGTH) {
        (const byte *msg,    size_t msg_len),
