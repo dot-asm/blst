@@ -103,29 +103,42 @@ typedef void void_;
 %typemap(javaout) void_ "{ return $jnicall; }"
 
 // handle input const byte[] more efficiently...
-%apply signed char[] { const byte in[ANY] }
-%typemap(in) const byte in[ANY] (byte temp[$1_dim0]) {
-    size_t sz = jenv->GetArrayLength($input);
+%apply signed char[] { const byte* in }
+%typemap(in) const byte* in %{
     $1 = ($1_ltype)jenv->GetByteArrayElements($input, 0);
-    if (sz == $1_dim0) memcpy(temp, $1, sz);
+%};
+%typemap(argout)  const byte* in ""
+%typemap(freearg) const byte* in %{
     jenv->ReleaseByteArrayElements($input, (jbyte *)$1, JNI_ABORT);
-    if (sz != $1_dim0) SWIG_JavaThrowException(jenv,
-                                SWIG_JavaIndexOutOfBoundsException,
-                                "input size mismatch");
-    $1 = temp;
-};
-%typemap(argout)  const byte in[ANY] ""
-%typemap(freearg) const byte in[ANY] ""
+%};
 
-%apply const byte in[ANY] { const byte* in }
-%typemap(in) const byte* in {
+%apply const byte* in { const byte in[ANY] }
+%typemap(in) const byte in[ANY] {
     size_t sz = jenv->GetArrayLength($input);
-    $1_basetype* temp = ($1_basetype*)alloca(sz);
+    if (sz != $1_dim0) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException,
+                                      "BLST_ERROR: input size mismatch");
+        return $null;
+    }
     $1 = ($1_ltype)jenv->GetByteArrayElements($input, 0);
-    memcpy(temp, $1, sz);
-    jenv->ReleaseByteArrayElements($input, (jbyte *)$1, JNI_ABORT);
-    $1 = temp;
 };
+
+%apply long long[] { const limb_t* scalar }
+%typemap(in) const limb_t* scalar (size_t _global_scalar_sz) %{
+    $1 = ($1_ltype)jenv->GetLongArrayElements($input, 0);
+    _global_scalar_sz = jenv->GetArrayLength($input);
+%};
+%typemap(argout)  const limb_t* scalar ""
+%typemap(freearg) const limb_t* scalar %{
+    jenv->ReleaseLongArrayElements($input, (jlong *)$1, JNI_ABORT);
+%};
+%typemap(in) size_t nbits %{
+    if (($1 = (size_t)$input) > 8*sizeof(jlong)*_global_scalar_sz) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException,
+                                      "BLST_ERROR: scalar size mismatch");
+        $1 = 8*sizeof(jlong)*_global_scalar_sz;
+    }
+%};
 #else
 %apply const char * { const byte in[ANY], const byte *in }
 #endif
