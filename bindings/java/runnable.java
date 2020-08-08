@@ -3,6 +3,37 @@ public class runnable {
         System.loadLibrary("blst");
     }
 
+    public static void main(String argv[]) {
+        final var msg = "assertion".getBytes();
+        final var DST = "MY-DST";
+
+        var SK = new SecretKey();
+        SK.keygen("passw@rd".getBytes());
+
+        // generate public key and serialize it...
+        var pk_ = new P1(SK);
+        var pk_for_wire = pk_.serialize();
+
+        // sign |msg| and serialize the signature...
+        var sig_ = new P2();
+        var sig_for_wire = sig_.hash_to(msg, DST, pk_for_wire)
+                               .sign_with(SK)
+                               .serialize();
+
+        // now on "receiving" side, start with deserialization...
+        var _sig = new P2_Affine(sig_for_wire);
+        var _pk = new P1_Affine(pk_for_wire);
+        if (!_pk.in_group())
+            throw new java.lang.RuntimeException("disaster");
+        var ctx = new Pairing(true, DST);
+        ctx.aggregate(_pk, _sig, msg, pk_for_wire);
+        ctx.commit();
+        if (!ctx.finalverify())
+            throw new java.lang.RuntimeException("disaster");
+        System.out.println("OK");
+    }
+
+    // helpers...
     final protected static char[] HEXARRAY = "0123456789abcdef".toCharArray();
 
     protected static String toHexString(byte[] bytes) {
@@ -34,35 +65,5 @@ public class runnable {
         }
 
         return bytes;
-    }
-
-    public static void main(String argv[]) {
-        final var msg = "assertion".getBytes();
-        final var DST = "MY-DST";
-
-        var SK = new SecretKey();
-        SK.keygen("passw@rd".getBytes());
-
-        // generate public key and serialize it...
-        var pk_ = new P1(SK);
-        var pk_for_wire = pk_.serialize();
-
-        // sign |msg| and serialize the signature...
-        var sig_ = new P2();
-        var sig_for_wire = sig_.hash_to(msg, DST, pk_for_wire)
-                               .sign_with(SK)
-                               .serialize();
-
-        // now on "receiving" side, start with deserialization...
-        var _sig = new P2_Affine(sig_for_wire);
-        var _pk = new P1_Affine(pk_for_wire);
-        if (!_pk.in_group())
-            throw new java.lang.RuntimeException("disaster");
-        var ctx = new Pairing(true, DST);
-        ctx.aggregate(_pk, _sig, msg, pk_for_wire);
-        ctx.commit();
-        if (!ctx.finalverify())
-            throw new java.lang.RuntimeException("disaster");
-        System.out.println("OK");
     }
 }
