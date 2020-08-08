@@ -9,6 +9,7 @@
 #ifdef __cplusplus
 %include "std_string.i"
 #endif
+%include "stdint.i"
 
 typedef void void_;
 
@@ -139,6 +140,9 @@ typedef void void_;
         $1 = 8*sizeof(jlong)*_global_scalar_sz;
     }
 %};
+#if SWIG_VERSION < 0x040000
+%apply (char *STRING, size_t LENGTH) { (const char *STRING, size_t LENGTH) }
+#endif
 #else
 %apply const char * { const byte in[ANY], const byte *in }
 #endif
