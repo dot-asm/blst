@@ -3,8 +3,10 @@
 cd `dirname $0`
 
 #unset _JAVA_OPTIONS
-JDK=`java -XshowSettings:properties -version 2>&1 | \
-     awk 'BEGIN { FS="=\\\s*" } /java\.home/ { print $2 }'`
+if [ "x$JAVA_HOME" = "x" ]; then
+    JAVA_HOME=`java -XshowSettings:properties -version 2>&1 | \
+               awk 'BEGIN { FS="=\\\s*" } /java\.home/ { print $2 }'`
+fi
 
 if [ ! -f libblst.a ]; then
     ../../build.sh
@@ -19,7 +21,7 @@ fi
 if [ ! -f libblst.so -o blst_wrap.cpp -nt libblst.so \
                      -o libblst.a     -nt libblst.so ]; then
     (set -x; c++ -shared -o libblst.so -fPIC \
-                 -I${JDK}/include -I${JDK}/include/linux -I.. \
+                 -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux -I.. \
                  -O -Wall -Wno-unused-function blst_wrap.cpp \
                  libblst.a -Wl,-Bsymbolic)
 fi
