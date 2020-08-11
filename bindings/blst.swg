@@ -8,20 +8,17 @@
 %include "exception.i"
 #ifdef __cplusplus
 %include "std_string.i"
+#else
+#warning consider using C++ interface
 #endif
 %include "stdint.i"
 
-typedef void void_;
+%apply const char* { const byte*, const byte[ANY] }
 
 #if defined(SWIGPYTHON) || defined(SWIGPERL)
+
 // some sorcery to allow assignments as output, e.g.
 //      hash = p.encode_to(b"foo")
-
-# if defined(SWIGPYTHON)
-%typemap(out) void " $result = NULL; ";
-%typemap(ret) void " if ($result == NULL) $result = SWIG_Py_Void(); ";
-# endif
-
 %typemap(in, numinputs=0) OBJECT *OUTPUT($1_basetype temp) { $1 = &temp; };
 %typemap(argout) OBJECT *OUTPUT {
 # ifdef SWIGPYTHON
@@ -56,72 +53,44 @@ typedef void void_;
 };
 #endif
 
-%typemap(in, numinputs=0) byte out[ANY](byte temp[$1_dim0]) {
-    $1 = temp;
-};
-%typemap(argout) byte out[ANY] {
-# ifdef SWIGPYTHON
-    PyObject *obj = SWIG_FromCharPtrAndSize((char *)$1, $1_dim0);
-    $result = ($result==NULL) ? obj
-                              : SWIG_Python_AppendOutput($result, obj);
-# else // TODO: figure out more language-specific ways to return multi-values...
-    if ($result == NULL)
-        $result = SWIG_FromCharPtrAndSize((char *)$1, $1_dim0);
-# endif
-};
+#elif defined(SWIGJAVA)
 
-%typemap(in, numinputs=0) blst_pairing *new_ctx {
-    $1 = (blst_pairing *)calloc(1, blst_pairing_sizeof());
-};
-%typemap(argout) blst_pairing *new_ctx {
-    $result = SWIG_NewPointerObj($1, $descriptor, SWIG_POINTER_NEW);
-};
-#endif	// defined(SWIGPYTHON) || defined(SWIGPERL)
+%header %{
+#ifdef __cplusplus
+# define JCALL(func, ...) jenv->func(__VA_ARGS__)
+#else
+# define JCALL(func, ...) (*jenv)->func(jenv, __VA_ARGS__)
+#endif
+%}
 
-#if defined(SWIGJAVA) && defined(__cplusplus)
 %include "enums.swg"
-%javaconst(1);
 %include "arrays_java.i"
+%javaconst(1);
 
 %typemap(throws) BLST_ERROR %{
     SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException,
                                   BLST_ERROR_str[$1]);
 %};
 
-// some sorcery to return byte[] from serialization methods
-%typemap(in, numinputs=0) byte out[ANY](byte temp[$1_dim0]) {
-    $1 = temp;
-};
-%typemap(argout) byte out[ANY] {
-    $result = jenv->NewByteArray($1_dim0);
-    if ($result != $null) {
-        jenv->SetByteArrayRegion($result, 0, $1_dim0, (const jbyte *)$1);
-    }
-};
-%typemap(jni)     void_ "jbyteArray"
-%typemap(jtype)   void_ "byte[]"
-%typemap(jstype)  void_ "byte[]"
-%typemap(javaout) void_ "{ return $jnicall; }"
-
 // handle input const byte[] more efficiently...
-%apply signed char[] { const byte* in }
-%typemap(in) const byte* in %{
-    $1 = ($1_ltype)jenv->GetByteArrayElements($input, 0);
+%apply signed char[] { const byte* }
+%typemap(in) const byte* %{
+    $1 = ($1_ltype)JCALL(GetByteArrayElements, $input, 0);
 %};
-%typemap(argout)  const byte* in ""
-%typemap(freearg) const byte* in %{
-    jenv->ReleaseByteArrayElements($input, (jbyte *)$1, JNI_ABORT);
+%typemap(argout)  const byte* ""
+%typemap(freearg) const byte* %{
+    JCALL(ReleaseByteArrayElements, $input, (jbyte *)$1, JNI_ABORT);
 %};
 
-%apply const byte* in { const byte in[ANY] }
-%typemap(in) const byte in[ANY] {
-    size_t sz = jenv->GetArrayLength($input);
+%apply const byte* { const byte[ANY] }
+%typemap(in) const byte[ANY] {
+    size_t sz = JCALL(GetArrayLength, $input);
     if (sz != $1_dim0) {
         SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException,
                                       "BLST_ERROR: input size mismatch");
         return $null;
     }
-    $1 = ($1_ltype)jenv->GetByteArrayElements($input, 0);
+    $1 = ($1_ltype)JCALL(GetByteArrayElements, $input, 0);
 };
 
 %apply long long[] { const limb_t* scalar }
@@ -133,6 +102,7 @@ typedef void void_;
 %typemap(freearg) const limb_t* scalar %{
     jenv->ReleaseLongArrayElements($input, (jlong *)$1, JNI_ABORT);
 %};
+#ifdef __cplusplus
 %typemap(in) size_t nbits %{
     if (($1 = (size_t)$input) > 8*sizeof(jlong)*_global_scalar_sz) {
         SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException,
@@ -140,11 +110,13 @@ typedef void void_;
         $1 = 8*sizeof(jlong)*_global_scalar_sz;
     }
 %};
-#if SWIG_VERSION < 0x040000
-%apply (char *STRING, size_t LENGTH) { (const char *STRING, size_t LENGTH) }
 #endif
-#else
-%apply const char * { const byte in[ANY], const byte *in }
+
+#endif  // SWIG<language>
+
+// everybody has a way to bundle pointer and buffer size, but C:-(
+#if SWIG_VERSION < 0x040000 && defined(SWIGJAVA)
+%apply (char *STRING, size_t LENGTH) { (const char *STRING, size_t LENGTH) }
 #endif
 %apply (const char *STRING, size_t LENGTH) {
        (const byte *msg,    size_t msg_len),
@@ -152,6 +124,43 @@ typedef void void_;
        (const byte *aug,    size_t aug_len),
        (const byte *IKM,    size_t IKM_len),
        (const byte *info,   size_t info_len)
+};
+
+// some sorcery to return byte[] from serialization methods
+%typemap(in, numinputs=0) byte out[ANY] (byte temp[$1_dim0]) {
+    $1 = temp;
+};
+%typemap(argout) byte out[ANY] {
+#if defined(SWIGPYTHON)
+    PyObject *obj = SWIG_FromCharPtrAndSize((char *)$1, $1_dim0);
+    $result = ($result==NULL) ? obj
+                              : SWIG_Python_AppendOutput($result, obj);
+#elif defined(SWIGJAVA)
+    $result = JCALL(NewByteArray, $1_dim0);
+    if ($result != $null) {
+        JCALL(SetByteArrayRegion, $result, 0, $1_dim0, (const jbyte *)$1);
+    }
+#else // TODO: figure out more language-specific ways to return multi-values...
+    if ($result == NULL)
+        $result = SWIG_FromCharPtrAndSize((char *)$1, $1_dim0);
+#endif
+};
+%typemap(freearg) byte out[ANY] ""
+#ifdef SWIGJAVA
+%typemap(jni)     byte out[ANY] "jbyteArray"
+%typemap(jtype)   byte out[ANY] "byte[]"
+%typemap(jstype)  byte out[ANY] "byte[]"
+%typemap(javaout) byte out[ANY] "{ return $jnicall; }"
+#endif
+%apply byte out[ANY] {
+    void to_bendian,    void blst_bendian_from_scalar,
+    void to_lendian,    void blst_lendian_from_scalar,
+    void serialize,     void blst_p1_serialize, void blst_p1_affine_serialize,
+                        void blst_p2_serialize, void blst_p2_affine_serialize,
+    void compress,      void blst_p1_compress,  void blst_p1_affine_compress,
+                        void blst_p2_compress,  void blst_p2_affine_compress,
+    void blst_sk_to_pk2_in_g1,  void blst_sign_pk2_in_g1,
+    void blst_sk_to_pk2_in_g2,  void blst_sign_pk2_in_g2
 };
 
 #ifdef __cplusplus
@@ -184,12 +193,33 @@ typedef enum {
 %ignore blst_fp;
 %ignore blst_fp2;
 %ignore blst_fp6;
+%ignore blst_scalar_from_uint32;
+%ignore blst_scalar_from_uint64;
+%ignore blst_uint32_from_scalar;
+%ignore blst_uint64_from_scalar;
+%ignore blst_pairing_init;
+%ignore blst_pairing_get_dst;
 
 %include "blst.h"
 %include "blst_aux.h"
 %extend blst_pairing {
-    blst_pairing()  { return NULL; } // steer user toward pairing_init!
-    ~blst_pairing() { free($self); }
+    blst_pairing(bool hash_or_encode, const byte *DST DEFNULL,
+                                      size_t DST_len DEFNULL)
+    {   void *ret = malloc(blst_pairing_sizeof());
+        if (DST_len != 0) {
+            void *dst = malloc(DST_len);
+            memcpy(dst, DST, DST_len);
+            blst_pairing_init(ret, hash_or_encode, dst, DST_len);
+        } else {
+            blst_pairing_init(ret, hash_or_encode, NULL, 0);
+        }
+        return ret;
+    }
+    ~blst_pairing()
+    {   void *dst = (void *)blst_pairing_get_dst($self);
+        if (dst != NULL) free(dst);
+        free($self);
+    }
 };
 #endif
 

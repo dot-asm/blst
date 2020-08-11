@@ -32,10 +32,6 @@ static const app__string_view None;
 
 #include "blst.h"
 
-#ifndef SWIG
-typedef void void_;
-#endif
-
 class P1_Affine;
 class P1;
 class P2_Affine;
@@ -76,9 +72,9 @@ public:
     void from_bendian(const byte in[32]) { blst_scalar_from_bendian(&key, in); }
     void from_lendian(const byte in[32]) { blst_scalar_from_lendian(&key, in); }
 
-    void_ to_bendian(byte out[32]) const
+    void to_bendian(byte out[32]) const
     {   blst_bendian_from_scalar(out, &key);   }
-    void_ to_lendian(byte out[32]) const
+    void to_lendian(byte out[32]) const
     {   blst_lendian_from_scalar(out, &key);   }
 };
 
@@ -95,9 +91,9 @@ public:
     }
     P1_Affine(const P1& jacobian);
 
-    void_ serialize(byte out[96]) const
+    void serialize(byte out[96]) const
     {   blst_p1_affine_serialize(out, &point);   }
-    void_ compress(byte out[48]) const
+    void compress(byte out[48]) const
     {   blst_p1_affine_compress(out, &point);   }
     bool on_curve() const { return blst_p1_affine_on_curve(&point); }
     bool in_group() const { return blst_p1_affine_in_g1(&point);    }
@@ -136,8 +132,8 @@ public:
     }
 
     P1_Affine to_affine() const         { P1_Affine ret(*this); return ret;  }
-    void_ serialize(byte out[96]) const { blst_p1_serialize(out, &point);    }
-    void_ compress(byte out[48]) const  { blst_p1_compress(out, &point);     }
+    void serialize(byte out[96]) const  { blst_p1_serialize(out, &point);    }
+    void compress(byte out[48]) const   { blst_p1_compress(out, &point);     }
     void aggregate(const P1_Affine& in)
     {   if (blst_p1_affine_in_g1(in))
             blst_p1_add_or_double_affine(&point, &point, in);
@@ -197,9 +193,9 @@ public:
     }
     P2_Affine(const P2& jacobian);
 
-    void_ serialize(byte out[192]) const
+    void serialize(byte out[192]) const
     {   blst_p2_affine_serialize(out, &point);   }
-    void_ compress(byte out[96]) const
+    void compress(byte out[96]) const
     {   blst_p2_affine_compress(out, &point);   }
     bool on_curve() const { return blst_p2_affine_on_curve(&point); }
     bool in_group() const { return blst_p2_affine_in_g2(&point);    }
@@ -237,9 +233,9 @@ public:
         blst_p2_from_affine(&point, &a);
     }
 
-    P2_Affine to_affine() const          { P2_Affine ret(*this); return ret; }
-    void_ serialize(byte out[192]) const { blst_p2_serialize(out, &point);   }
-    void_ compress(byte out[96]) const   { blst_p2_compress(out, &point);    }
+    P2_Affine to_affine() const         { P2_Affine ret(*this); return ret; }
+    void serialize(byte out[192]) const { blst_p2_serialize(out, &point);   }
+    void compress(byte out[96]) const   { blst_p2_compress(out, &point);    }
     void aggregate(const P2_Affine& in)
     {   if (blst_p2_affine_in_g2(in))
             blst_p2_add_or_double_affine(&point, &point, in);
