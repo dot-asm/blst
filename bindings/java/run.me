@@ -8,8 +8,8 @@ if [ "x$JAVA_HOME" = "x" ]; then
                awk 'BEGIN { FS="=\\\s*" } /java\.home/ { print $2 }'`
 fi
 
-if [ ! -f libblst.a ]; then
-    ../../build.sh
+if [ ! -f ../libblst.a ]; then
+    (cd ..; ../build.sh)
 fi
 
 if [ ! -f blst_wrap.cpp -o ../blst.swg -nt blst_wrap.cpp \
@@ -19,11 +19,11 @@ if [ ! -f blst_wrap.cpp -o ../blst.swg -nt blst_wrap.cpp \
 fi
 
 if [ ! -f libblst.so -o blst_wrap.cpp -nt libblst.so \
-                     -o libblst.a     -nt libblst.so ]; then
+                     -o ../libblst.a  -nt libblst.so ]; then
     (set -x; c++ -shared -o libblst.so -fPIC \
                  -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux -I.. \
                  -O -Wall -Wno-unused-function blst_wrap.cpp \
-                 libblst.a -Wl,-Bsymbolic)
+                 ../libblst.a -Wl,-Bsymbolic)
 fi
 
 if [ ! -f blst.class -o blst.java     -nt blst.class \

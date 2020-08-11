@@ -19,9 +19,9 @@ def newer(*files) :
             return True
     return False
 
-if not os.path.exists("libblst.a") :
+if not os.path.exists("../libblst.a") :
     print("building libblst.a...")
-    subprocess.check_call(["../../build.sh"])
+    subprocess.check_call(["../build.sh"], cwd="..")
 
 if newer("../blst.swg", "../blst.h", "../blst.hpp", "blst_wrap.cpp") :
     print("swig-ing...")
@@ -29,13 +29,13 @@ if newer("../blst.swg", "../blst.h", "../blst.hpp", "blst_wrap.cpp") :
                                    "-o", "blst_wrap.cpp", "-outdir", ".",
                                    "../blst.swg"])
 
-if newer("blst_wrap.cpp", "libblst.a", "_blst.so") :
+if newer("blst_wrap.cpp", "../libblst.a", "_blst.so") :
     print("compiling _blst.so...")
     maj_min = "{}.{}".format(sys.version_info.major, sys.version_info.minor)
     subprocess.check_call(["c++", "-shared", "-o", "_blst.so", "-fPIC",
                                   "-I/usr/include/python"+maj_min, "-I..",
                                   "-O", "-Wall", "blst_wrap.cpp",
-                                  "libblst.a", "-Wl,-Bsymbolic"])
+                                  "../libblst.a", "-Wl,-Bsymbolic"])
 
 print("testing...")
 ########################################################################
