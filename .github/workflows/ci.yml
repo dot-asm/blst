@@ -21,7 +21,7 @@ jobs:
 
     - uses: actions/cache@v2
       with:
-        path: **/Cargo.lock
+        path: '**/Cargo.lock'
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
   
     - uses: actions/cache@v2
