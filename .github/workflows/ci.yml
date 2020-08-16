@@ -23,7 +23,7 @@ jobs:
       with:
         path: '**/Cargo.lock'
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-  
+
     - uses: actions/cache@v2
       with:
         path: |
@@ -42,6 +42,9 @@ jobs:
       run: |
         rustc --version
         cd bindings/rust
+        if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            cargo update
+        fi
         cargo test --release
         cargo clean -p blst
         cargo clean -p blst --release
