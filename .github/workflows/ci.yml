@@ -21,6 +21,11 @@ jobs:
 
     - uses: actions/cache@v2
       with:
+        path: **/Cargo.lock
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+  
+    - uses: actions/cache@v2
+      with:
         path: |
           ~/.cargo/registry
           **/bindings/rust/target
@@ -40,7 +45,6 @@ jobs:
         cargo test --release
         cargo clean -p blst
         cargo clean -p blst --release
-        mv Cargo.lock target/
         rm -rf target/.rustc_info.json
         rm -rf target/{debug,release}/*/blst-*
         rm -rf target/{debug,release}/incremental
