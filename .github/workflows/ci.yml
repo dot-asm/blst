@@ -55,6 +55,7 @@ jobs:
         rm -rf target/{debug,release}/incremental
         rm -rf target/{debug,release}/build/src
         rm -rf target/{debug,release}/build/build
+        cp -f Cargo.lock target
         rm -rf ~/.cargo/registry/src
         rm -rf ~/.cargo/registry/index/*/.cache
 
