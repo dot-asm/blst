@@ -44,6 +44,9 @@ jobs:
       run: |
         rustc --version
         cd bindings/rust
+        if [ -f target/Cargo.lock ]; then
+            mv -f target/Cargo.lock .
+        fi
         if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
             cargo update
         fi
@@ -55,7 +58,7 @@ jobs:
         rm -rf target/{debug,release}/incremental
         rm -rf target/{debug,release}/build/src
         rm -rf target/{debug,release}/build/build
-        cp -f Cargo.lock target
+        mv -f Cargo.lock target
         rm -rf ~/.cargo/registry/src
         rm -rf ~/.cargo/registry/index/*/.cache
 
