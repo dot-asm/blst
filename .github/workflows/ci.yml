@@ -38,14 +38,6 @@ jobs:
         lscpu
         echo ---
         env | sort
-        echo "::set-env name=STATE_CACHE_RESULT::none"
-
-    - name: Dump steps context
-      env:
-        STEPS_CONTEXT: ${{ toJson(steps) }}
-      run: |
-        echo "$STEPS_CONTEXT"
-        set
 
     - name: Rust
       run: |
