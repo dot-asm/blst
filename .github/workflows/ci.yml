@@ -24,8 +24,6 @@ jobs:
       with:
         path: '**/Cargo.lock'
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-      outputs:
-        cache-hit: false
       env:
         CACHE_RESULT: ${{ hashFiles('**/Cargo.lock') }}
 
@@ -36,8 +34,6 @@ jobs:
           ~/.cargo/registry
           **/bindings/rust/target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      outputs:
-        cache-hit: false
 
     - uses: actions/setup-java@v1
       with:
@@ -48,13 +44,13 @@ jobs:
         lscpu
         echo ---
         env | sort
+        echo "::set-output name=steps.cargo-toml.outputs.cache-hit::false"
 
     - name: Dump steps context
       env:
         STEPS_CONTEXT: ${{ toJson(steps) }}
       run: |
         echo "$STEPS_CONTEXT"
-        echo 
 
     - name: Rust
       run: |
