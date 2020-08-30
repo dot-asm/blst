@@ -23,6 +23,8 @@ jobs:
       with:
         path: '**/Cargo.lock'
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+        env:
+          CACHE_RESULT: ${{ hashFiles('**/Cargo.lock }}
 
     - uses: actions/cache@v2
       with:
@@ -38,7 +40,8 @@ jobs:
     - name: Environment
       run: |
         lscpu
-        env
+        echo ---
+        env | sort
 
     - name: Rust
       run: |
@@ -62,7 +65,7 @@ jobs:
       run: |
         go version
         if ! (grep -q -e '^flags.*\badx\b' /proc/cpuinfo) 2>/dev/null; then
-            export CGO_CFLAGS="-D__BLST_PORTABLE__"
+            export CGO_CFLAGS="-O -D__BLST_PORTABLE__"
         fi
         cd bindings/go
         go test -test.v
