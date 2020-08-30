@@ -23,7 +23,7 @@ jobs:
       id: cargo-toml
       with:
         path: '**/Cargo.lock'
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.tom') }}
       env:
         STATE_CACHE_RESULT: ${{ hashFiles('**/Cargo.lock') }}
 
@@ -38,8 +38,6 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: 11
-
-    - uses: ./.github/actions
 
     - name: Environment
       run: |
