@@ -25,6 +25,7 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
       env:
         CACHE_RESULT: ${{ hashFiles('**/Cargo.lock') }}
+      run: echo "$CACHE_RESULT"
 
     - uses: actions/cache@v2
       with:
