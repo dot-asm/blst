@@ -1,3 +1,8 @@
 name: 'private'
+description: 'wheeee'
+outputs:
+  time:
+    description: 'time'
 runs:
+  using: 'node12'
   main: 'index.js'
