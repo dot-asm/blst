@@ -39,6 +39,8 @@ jobs:
       with:
         java-version: 11
 
+    - uses: ./.github/workflows/index.js
+
     - name: Environment
       run: |
         lscpu
