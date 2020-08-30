@@ -1,0 +1,3 @@
+name: 'private'
+runs:
+  main: 'index.js'

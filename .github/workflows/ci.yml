@@ -39,7 +39,7 @@ jobs:
       with:
         java-version: 11
 
-    - uses: ./.github/workflows/index.js
+    - uses: ./.github/actions
 
     - name: Environment
       run: |
