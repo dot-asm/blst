@@ -84,7 +84,7 @@ $code.=<<___;
 .text
 
 .globl	ct_inverse_mod_383
-.type	ct_nverse_mod_383,\@function,3,"unwind"
+.type	ct_inverse_mod_383,\@function,3,"unwind"
 .align	32
 ct_inverse_mod_383:
 .cfi_startproc
