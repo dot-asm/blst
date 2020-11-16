@@ -5,6 +5,11 @@
 #  else
 #   include "elf/sha256-x86_64.s"
 #  endif
+#  if defined(__ADX__) && !defined(__BLST_PORTABLE__)
+#   include "elf/ctx_inverse_mod_384-x86_64.s"
+#  else
+#   include "elf/ctq_inverse_mod_384-x86_64.s"
+#  endif
 #  include "elf/inverse_mod_384-x86_64.s"
 #  include "elf/add_mod_384-x86_64.s"
 #  include "elf/add_mod_384x384-x86_64.s"
@@ -27,6 +32,11 @@
 #  else
 #   include "coff/sha256-x86_64.s"
 #  endif
+#  if defined(__ADX__) && !defined(__BLST_PORTABLE__)
+#   include "coff/ctx_inverse_mod_384-x86_64.s"
+#  else
+#   include "coff/ctq_inverse_mod_384-x86_64.s"
+#  endif
 #  include "coff/inverse_mod_384-x86_64.s"
 #  include "coff/add_mod_384-x86_64.s"
 #  include "coff/add_mod_384x384-x86_64.s"
@@ -45,6 +55,11 @@
 #  include "coff/div3w-x86_64.s"
 # elif defined(__APPLE__)
 #  include "mach-o/sha256-x86_64.s"
+#  if defined(__ADX__) && !defined(__BLST_PORTABLE__)
+#   include "mach-o/ctx_inverse_mod_384-x86_64.s"
+#  else
+#   include "mach-o/ctq_inverse_mod_384-x86_64.s"
+#  endif
 #  include "mach-o/inverse_mod_384-x86_64.s"
 #  include "mach-o/add_mod_384-x86_64.s"
 #  include "mach-o/add_mod_384x384-x86_64.s"
