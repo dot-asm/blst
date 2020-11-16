@@ -1514,10 +1514,10 @@ L$oop_31:
 	movq	%r10,%rbx
 	movq	%rcx,%rbp
 	movq	%r13,%r14
-	cmovb	%r10,%r8
-	cmovb	%rax,%r10
-	cmovb	%r13,%rcx
-	cmovb	%rbp,%r13
+	cmovbq	%r10,%r8
+	cmovbq	%rax,%r10
+	cmovbq	%r13,%rcx
+	cmovbq	%rbp,%r13
 
 	subq	%r10,%r8
 	subq	%r13,%rcx

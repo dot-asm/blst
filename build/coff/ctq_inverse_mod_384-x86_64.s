@@ -1,9 +1,18 @@
 .text	
 
 .globl	ct_inverse_mod_383
-.def	ct_nverse_mod_383;	.scl 3;	.type 32;	.endef
+.def	ct_inverse_mod_383;	.scl 2;	.type 32;	.endef
 .p2align	5
 ct_inverse_mod_383:
+	.byte	0xf3,0x0f,0x1e,0xfa
+	movq	%rdi,8(%rsp)
+	movq	%rsi,16(%rsp)
+	movq	%rsp,%r11
+.LSEH_begin_ct_inverse_mod_383:
+	movq	%rcx,%rdi
+	movq	%rdx,%rsi
+	movq	%r8,%rdx
+
 
 	pushq	%rbp
 
@@ -19,7 +28,7 @@ ct_inverse_mod_383:
 
 	subq	$1112,%rsp
 
-.LSEH_body_ct_nverse_mod_383:
+.LSEH_body_ct_inverse_mod_383:
 
 
 	leaq	88+511(%rsp),%rax
@@ -560,13 +569,13 @@ ct_inverse_mod_383:
 
 	leaq	48(%r8),%rsp
 
-.LSEH_epilogue_ct_nverse_mod_383:
+.LSEH_epilogue_ct_inverse_mod_383:
 	mov	8(%rsp),%rdi
 	mov	16(%rsp),%rsi
 
 	.byte	0xf3,0xc3
 
-.LSEH_end_ct_nverse_mod_383:
+.LSEH_end_ct_inverse_mod_383:
 .def	__smulq_767x62;	.scl 3;	.type 32;	.endef
 .p2align	5
 __smulq_767x62:
@@ -1223,27 +1232,27 @@ __inner_loop_62:
 
 .section	.pdata
 .p2align	2
-.rva	.LSEH_begin_ct_nverse_mod_383
-.rva	.LSEH_body_ct_nverse_mod_383
-.rva	.LSEH_info_ct_nverse_mod_383_prologue
+.rva	.LSEH_begin_ct_inverse_mod_383
+.rva	.LSEH_body_ct_inverse_mod_383
+.rva	.LSEH_info_ct_inverse_mod_383_prologue
 
-.rva	.LSEH_body_ct_nverse_mod_383
-.rva	.LSEH_epilogue_ct_nverse_mod_383
-.rva	.LSEH_info_ct_nverse_mod_383_body
+.rva	.LSEH_body_ct_inverse_mod_383
+.rva	.LSEH_epilogue_ct_inverse_mod_383
+.rva	.LSEH_info_ct_inverse_mod_383_body
 
-.rva	.LSEH_epilogue_ct_nverse_mod_383
-.rva	.LSEH_end_ct_nverse_mod_383
-.rva	.LSEH_info_ct_nverse_mod_383_epilogue
+.rva	.LSEH_epilogue_ct_inverse_mod_383
+.rva	.LSEH_end_ct_inverse_mod_383
+.rva	.LSEH_info_ct_inverse_mod_383_epilogue
 
 .section	.xdata
 .p2align	3
-.LSEH_info_ct_nverse_mod_383_prologue:
+.LSEH_info_ct_inverse_mod_383_prologue:
 .byte	1,0,5,0x0b
 .byte	0,0x74,1,0
 .byte	0,0x64,2,0
 .byte	0,0x03
 .byte	0,0
-.LSEH_info_ct_nverse_mod_383_body:
+.LSEH_info_ct_inverse_mod_383_body:
 .byte	1,0,18,0
 .byte	0x00,0xf4,0x8b,0x00
 .byte	0x00,0xe4,0x8c,0x00
@@ -1254,7 +1263,7 @@ __inner_loop_62:
 .byte	0x00,0x74,0x92,0x00
 .byte	0x00,0x64,0x93,0x00
 .byte	0x00,0x01,0x91,0x00
-.LSEH_info_ct_nverse_mod_383_epilogue:
+.LSEH_info_ct_inverse_mod_383_epilogue:
 .byte	1,0,4,0
 .byte	0x00,0x74,0x01,0x00
 .byte	0x00,0x64,0x02,0x00

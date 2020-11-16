@@ -4,7 +4,17 @@ OPTION	DOTNAME
 PUBLIC	ct_inverse_mod_383
 
 ALIGN	32
-ct_inverse_mod_383::
+ct_inverse_mod_383	PROC PUBLIC
+	DB	243,15,30,250
+	mov	QWORD PTR[8+rsp],rdi	;WIN64 prologue
+	mov	QWORD PTR[16+rsp],rsi
+	mov	r11,rsp
+$L$SEH_begin_ct_inverse_mod_383::
+	mov	rdi,rcx
+	mov	rsi,rdx
+	mov	rdx,r8
+
+
 
 	push	rbp
 
@@ -20,7 +30,7 @@ ct_inverse_mod_383::
 
 	sub	rsp,1112
 
-$L$SEH_body_ct_nverse_mod_383::
+$L$SEH_body_ct_inverse_mod_383::
 
 
 	lea	rax,QWORD PTR[((88+511))+rsp]
@@ -561,14 +571,14 @@ $L$SEH_body_ct_nverse_mod_383::
 
 	lea	rsp,QWORD PTR[48+r8]
 
-$L$SEH_epilogue_ct_nverse_mod_383::
+$L$SEH_epilogue_ct_inverse_mod_383::
 	mov	rdi,QWORD PTR[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD PTR[16+rsp]
 
 	DB	0F3h,0C3h		;repret
 
-$L$SEH_end_ct_nverse_mod_383::
-ct_nverse_mod_383	ENDP
+$L$SEH_end_ct_inverse_mod_383::
+ct_inverse_mod_383	ENDP
 
 ALIGN	32
 __smulq_767x62	PROC PRIVATE
@@ -1221,28 +1231,28 @@ __inner_loop_62	ENDP
 .text$	ENDS
 .pdata	SEGMENT READONLY ALIGN(4)
 ALIGN	4
-	DD	imagerel $L$SEH_begin_ct_nverse_mod_383
-	DD	imagerel $L$SEH_body_ct_nverse_mod_383
-	DD	imagerel $L$SEH_info_ct_nverse_mod_383_prologue
+	DD	imagerel $L$SEH_begin_ct_inverse_mod_383
+	DD	imagerel $L$SEH_body_ct_inverse_mod_383
+	DD	imagerel $L$SEH_info_ct_inverse_mod_383_prologue
 
-	DD	imagerel $L$SEH_body_ct_nverse_mod_383
-	DD	imagerel $L$SEH_epilogue_ct_nverse_mod_383
-	DD	imagerel $L$SEH_info_ct_nverse_mod_383_body
+	DD	imagerel $L$SEH_body_ct_inverse_mod_383
+	DD	imagerel $L$SEH_epilogue_ct_inverse_mod_383
+	DD	imagerel $L$SEH_info_ct_inverse_mod_383_body
 
-	DD	imagerel $L$SEH_epilogue_ct_nverse_mod_383
-	DD	imagerel $L$SEH_end_ct_nverse_mod_383
-	DD	imagerel $L$SEH_info_ct_nverse_mod_383_epilogue
+	DD	imagerel $L$SEH_epilogue_ct_inverse_mod_383
+	DD	imagerel $L$SEH_end_ct_inverse_mod_383
+	DD	imagerel $L$SEH_info_ct_inverse_mod_383_epilogue
 
 .pdata	ENDS
 .xdata	SEGMENT READONLY ALIGN(8)
 ALIGN	8
-$L$SEH_info_ct_nverse_mod_383_prologue::
+$L$SEH_info_ct_inverse_mod_383_prologue::
 DB	1,0,5,00bh
 DB	0,074h,1,0
 DB	0,064h,2,0
 DB	0,003h
 DB	0,0
-$L$SEH_info_ct_nverse_mod_383_body::
+$L$SEH_info_ct_inverse_mod_383_body::
 DB	1,0,18,0
 DB	000h,0f4h,08bh,000h
 DB	000h,0e4h,08ch,000h
@@ -1253,7 +1263,7 @@ DB	000h,054h,090h,000h
 DB	000h,074h,092h,000h
 DB	000h,064h,093h,000h
 DB	000h,001h,091h,000h
-$L$SEH_info_ct_nverse_mod_383_epilogue::
+$L$SEH_info_ct_inverse_mod_383_epilogue::
 DB	1,0,4,0
 DB	000h,074h,001h,000h
 DB	000h,064h,002h,000h

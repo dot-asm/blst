@@ -4,7 +4,10 @@
 
 .p2align	5
 _ct_inverse_mod_383:
-.cfi_startproc	
+.cfi_startproc
+	.byte	0xf3,0x0f,0x1e,0xfa
+
+
 	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbp,-16

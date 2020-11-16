@@ -1,10 +1,13 @@
 .text	
 
 .globl	ct_inverse_mod_383
-.type	ct_nverse_mod_383,@function
+.type	ct_inverse_mod_383,@function
 .align	32
 ct_inverse_mod_383:
-.cfi_startproc	
+.cfi_startproc
+	.byte	0xf3,0x0f,0x1e,0xfa
+
+
 	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbp,-16

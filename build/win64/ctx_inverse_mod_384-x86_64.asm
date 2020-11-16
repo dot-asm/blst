@@ -1504,10 +1504,10 @@ $L$oop_31::
 	mov	rbx,r10
 	mov	rbp,rcx
 	mov	r14,r13
-	cmov	r8,r10
-	cmov	r10,rax
-	cmov	rcx,r13
-	cmov	r13,rbp
+	cmovb	r8,r10
+	cmovb	r10,rax
+	cmovb	rcx,r13
+	cmovb	r13,rbp
 
 	sub	r8,r10
 	sub	rcx,r13
