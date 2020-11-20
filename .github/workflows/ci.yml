@@ -15,7 +15,7 @@ jobs:
   rust-n-go:
     strategy:
       matrix:
-        os [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
 
     runs-on: ${{ matrix.os }}
 
