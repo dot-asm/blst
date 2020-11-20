@@ -1,4 +1,4 @@
-name: ubuntu-latest
+name: build
 
 on:
   push:
@@ -13,7 +13,11 @@ on:
 
 jobs:
   rust-n-go:
-    runs-on: [ ubuntu-latest, windows-latest ]
+    strategy:
+      matrix:
+        os [ ubuntu-latest, windows-latest ]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
@@ -28,12 +32,13 @@ jobs:
         restore-keys: ${{ runner.os }}-cargo-4
 
     - name: Environment
+      shell: bash
       run: |
         lscpu 2>/dev/null && echo --- || true
         env | sort
-      shell: bash
 
     - name: Rust
+      shell: bash
       run: |
         rustc --version
         cd bindings/rust
@@ -50,9 +55,9 @@ jobs:
         rm -rf target/{debug,release}/build/build
         rm -rf ~/.cargo/registry/src
         rm -rf ~/.cargo/registry/index/*/.cache
-      shell: bash
 
     - name: Go
+      shell: bash
       run: |
         go version
         if ! (grep -q -e '^flags.*\badx\b' /proc/cpuinfo) 2>/dev/null; then
@@ -60,7 +65,6 @@ jobs:
         fi
         cd bindings/go
         go test -test.v
-      shell: bash
 
   misc:
     runs-on: ubuntu-latest
