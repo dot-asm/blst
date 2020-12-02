@@ -173,7 +173,8 @@ static bool_t sqrt_fp(vec384 out, const vec384 inp);
 static void exp_mont_384x(vec384x out, const vec384x inp, const byte *pow,
                           size_t pow_bits, const vec384 p, limb_t n0);
 static void reciprocal_fp2(vec384x out, const vec384x inp);
-static bool_t recip_sqrt_fp2(vec384x out, const vec384x inp);
+static bool_t recip_sqrt_fp2(vec384x out, const vec384x inp,
+                             const vec384x recip_ZZZ, const vec384x magic_ZZZ);
 static bool_t sqrt_fp2(vec384x out, const vec384x inp);
 static bool_t sqrt_align_fp2(vec384x out, const vec384x ret,
                              const vec384x sqrt, const vec384x inp);

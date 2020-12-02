@@ -156,8 +156,11 @@ static bool_t sqrt_align_fp2(vec384x out, const vec384x ret,
     return is_sqrt;
 }
 
-static bool_t recip_sqrt_fp2(vec384x out, const vec384x inp)
+static bool_t recip_sqrt_fp2(vec384x out, const vec384x inp,
+                                          const vec384x recip_ZZZ,
+                                          const vec384x magic_ZZZ)
 {
+#if 0
     vec384x ret, sqrt;
 
     recip_sqrt_fp2_9mod16(ret, inp);
@@ -168,14 +171,84 @@ static bool_t recip_sqrt_fp2(vec384x out, const vec384x inp)
      */
 
     return sqrt_align_fp2(out, ret, sqrt, inp);
+#else
+    vec384 aa, bb, cc, za, zc;
+    vec384x inp_;
+    bool_t is_sqrt;
+
+    /* |inp| = a + b*i                                                    */
+
+    sqr_fp(aa, inp[0]);
+    sqr_fp(bb, inp[1]);
+    add_fp(aa, aa, bb);
+
+    is_sqrt = recip_sqrt_fp(cc, aa);  /* 1/sqrt(a²+b²)                    */
+
+    /* if |inp| doesn't have quadratic residue, multiply by 1/Z^3 ...     */
+    mul_fp2(inp_, inp, recip_ZZZ);
+    /* ... and adjust |aa| and |cc| accordingly                           */
+    mul_fp(za, aa, magic_ZZZ[0]);     /* aa*(za² + zb²)                   */
+    mul_fp(zc, cc, magic_ZZZ[1]);     /* cc*(za² + zb²)^((p-3)/4)         */
+    vec_select(inp_, inp, inp_, sizeof(inp_), is_sqrt);
+    vec_select(aa, aa, za, sizeof(aa), is_sqrt);
+    vec_select(cc, cc, zc, sizeof(cc), is_sqrt);
+
+    mul_fp(aa, aa, cc);               /* sqrt(a²+b²)                      */
+
+    sub_fp(bb, inp_[0], aa);
+    add_fp(aa, inp_[0], aa);
+    vec_select(aa, bb, aa, sizeof(aa), vec_is_zero(aa, sizeof(aa)));
+    div_by_2_fp(aa, aa);              /* (a ± sqrt(a²+b²))/2              */
+
+    /* if it says "no sqrt," final "align" will find right one...         */
+    (void)recip_sqrt_fp(out[0], aa);  /* 1/sqrt((a ± sqrt(a²+b²))/2)      */
+
+    div_by_2_fp(out[1], inp_[1]);
+    mul_fp(out[1], out[1], out[0]);   /* b/(2*sqrt((a ± sqrt(a²+b²))/2))  */
+    mul_fp(out[0], out[0], aa);       /* sqrt((a ± sqrt(a²+b²))/2)        */
+
+    /* bound to succeed                                                   */
+    (void)sqrt_align_fp2(out, out, out, inp_);
+
+    mul_fp(out[0], out[0], cc);       /* inverse the result               */
+    mul_fp(out[1], out[1], cc);
+    neg_fp(out[1], out[1]);
+
+    return is_sqrt;
+#endif
 }
 
 static bool_t sqrt_fp2(vec384x out, const vec384x inp)
 {
     vec384x ret;
+#if 0
 
     recip_sqrt_fp2_9mod16(ret, inp);
     mul_fp2(ret, ret, inp);
+#else
+    vec384 aa, bb;
+
+    /* |inp| = a + b*i                                                    */
+
+    sqr_fp(aa, inp[0]);
+    sqr_fp(bb, inp[1]);
+    add_fp(aa, aa, bb);
+
+    /* don't pay attention to return value, final "align" will tell...    */
+    (void)sqrt_fp(aa, aa);            /* sqrt(a²+b²)                      */
+
+    sub_fp(bb, inp[0], aa);
+    add_fp(aa, inp[0], aa);
+    vec_select(aa, bb, aa, sizeof(aa), vec_is_zero(aa, sizeof(aa)));
+    div_by_2_fp(aa, aa);              /* (a ± sqrt(a²+b²))/2              */
+
+    /* if it says "no sqrt," final "align" will find right one...         */
+    (void)recip_sqrt_fp(ret[0], aa);  /* 1/sqrt((a ± sqrt(a²+b²))/2)      */
+
+    div_by_2_fp(ret[1], inp[1]);
+    mul_fp(ret[1], ret[1], ret[0]);   /* b/(2*sqrt((a ± sqrt(a²+b²))/2))  */
+    mul_fp(ret[0], ret[0], aa);       /* sqrt((a ± sqrt(a²+b²))/2)        */
+#endif
 
     /*
      * Now see if |ret| is or can be made sqrt(|inp|)...
