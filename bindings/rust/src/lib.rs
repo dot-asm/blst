@@ -696,11 +696,9 @@ macro_rules! sig_variant_impl {
                 pks_validate: bool,
             ) -> BLST_ERROR {
                 let n_elems = pks.len();
-                if n_elems == 0 || msgs.len() != n_elems {
+                if n_elems == 0 || msgs.len() != n_elems || !uniq(msgs) {
                     return BLST_ERROR::BLST_VERIFY_FAIL;
                 }
-
-                // TODO - check msg uniqueness?
 
                 let pool = da_pool();
                 let (tx, rx) = channel();

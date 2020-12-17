@@ -402,13 +402,12 @@ func (dummy *P2Affine) AggregateVerifyCompressed(sig []byte, sigGroupcheck bool,
 		msgs, dst, useHash)
 }
 
-// TODO: check message uniqueness
 func coreAggregateVerifyPkInG1(sigFn sigGetterP2, sigGroupcheck bool,
 	pkFn pkGetterP1, pkValidate bool, msgs []Message, dst []byte,
 	optional ...bool) bool { // useHash
 
 	n := len(msgs)
-	if n == 0 {
+	if n == 0 || !Uniq(msgs) {
 		return false
 	}
 
@@ -1001,13 +1000,12 @@ func (dummy *P1Affine) AggregateVerifyCompressed(sig []byte, sigGroupcheck bool,
 		msgs, dst, useHash)
 }
 
-// TODO: check message uniqueness
 func coreAggregateVerifyPkInG2(sigFn sigGetterP1, sigGroupcheck bool,
 	pkFn pkGetterP2, pkValidate bool, msgs []Message, dst []byte,
 	optional ...bool) bool { // useHash
 
 	n := len(msgs)
-	if n == 0 {
+	if n == 0 || !Uniq(msgs) {
 		return false
 	}
 
