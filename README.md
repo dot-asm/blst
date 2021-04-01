@@ -146,7 +146,7 @@ Windows (Visual C)
 \some\where\build.bat
 ```
 
-If final application crashes with an "illegal instruction" exception [after copying to another system], pass <code nowrap>-D__BLST_PORTABLE__</code> on `build.sh` command line. If you don't use build.sh, complement the `CFLAGS` environment variable with the said command line option. If you compile a Go application, you will need to modify the `CGO_CFLAGS` variable instead. And if you compile a Rust application, you can pass <code nowrap>--features portable</code> to `cargo build`. Alternatively, if you compile on an older Intel system, but will execute application on a newer one, consider instead passing <code nowrap>--features force-adx</code> for better performance.
+If final application crashes with an "illegal instruction" exception [after copying to another system], pass <code nowrap="nowrap">-D__BLST_PORTABLE__</code> on `build.sh` command line. If you don't use build.sh, complement the `CFLAGS` environment variable with the said command line option. If you compile a Go application, you will need to modify the `CGO_CFLAGS` variable instead. And if you compile a Rust application, you can pass <code nowrap="nowrap">--features portable</code> to `cargo build`. Alternatively, if you compile on an older Intel system, but will execute application on a newer one, consider instead passing <code nowrap="nowrap">--features force-adx</code> for better performance.
 
 ## Language-specific notes
 
