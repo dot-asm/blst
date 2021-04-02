@@ -32,7 +32,7 @@ jobs:
         queries: security-extended
 
     - if: matrix.language == 'cpp'
-      run: ./build.sh -m32
+      run: ./build.sh
 
     - if: matrix.language == 'go'
       run: (cd bindings/go; go test -c)
