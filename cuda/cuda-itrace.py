@@ -201,7 +201,7 @@ class NVIDIA(Extractor):
             return mnemonic
 
         ### simplify LOP3.LUT
-	elif re.match(r'^LOP3\.LUT', mnemonic):
+        elif re.match(r'^LOP3\.LUT', mnemonic):
             m = re.match(r'^LOP3\.LUT(.*)(,\s*RZ,\s*0xc0,\s*\!PT)\s*$',
                          mnemonic)
             if m:
@@ -242,7 +242,7 @@ def trace():
     arch = frame.architecture()
 
     while(frame.is_valid()):
-        insns = arch.disassemble(frame.pc(), count=1)
+        insns = arch.disassemble(frame.pc())
         mnemonic = extr.fixup(insns[0]["asm"], frame)
         b = extr.isBranch(insns, frame)
         if b:                               # skip over flow control
