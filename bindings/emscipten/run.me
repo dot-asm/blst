@@ -1,0 +1,211 @@
+#!/usr/bin/env python3
+# Copyright Supranational LLC
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+import os
+import re
+import sys
+import shutil
+import subprocess
+
+emcc = shutil.which("emcc")
+if emcc is None:
+    print("FATAL: no 'emcc' on the program search path", file=sys.stderr)
+    sys.exit(2)
+
+common_cpp = """
+#include <emscripten.h>
+#include <blst.hpp>
+using namespace blst;
+#pragma GCC diagnostic ignored "-Wreturn-stack-address"
+extern "C" {
+"""
+p1_cpp = """
+P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_0()
+{   return new P1_Affine();   }
+P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_1(const P1* input)
+{   return new P1_Affine(*input);   }
+P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_2(const byte* input, long len)
+{   return new P1_Affine(input, len);   }
+void EMSCRIPTEN_KEEPALIVE P1_Affine__destroy__0(P1_Affine* self)
+{   delete self;   }
+"""
+p1_js = """
+/** @suppress {undefinedVars, duplicate} @this{Object} */function P1_Affine(input)
+{
+    ensureCache.prepare();
+    if (input === undefined) {
+        this.ptr = _P1_Affine_0();
+    } else if (input instanceof Uint8Array) {
+        this.ptr = _P1_Affine_2(ensureInt8(input), input.length);
+    } else if (input instanceof P1) {
+        this.ptr = _P1_Affine_1(input.ptr);
+    } else {
+        throw "unsupported type in P1_Affine constructor";
+    }
+    getCache(P1_Affine)[this.ptr] = this;
+}
+P1_Affine.prototype = Object.create(WrapperObject.prototype);
+P1_Affine.prototype.constructor = P1_Affine;
+P1_Affine.prototype.__class__ = P1_Affine;
+P1_Affine.__cache__ = {};
+Module['P1_Affine'] = P1_Affine;
+P1_Affine.prototype['__destroy__'] = P1_Affine.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   _P1_Affine__destroy__0(this.ptr);   };;
+"""
+p1_cpp += """
+P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_dup_0(const P1_Affine* self)
+{   return new P1_Affine(self->dup());   }
+"""
+p1_js += """
+P1_Affine.prototype['dup'] = P1_Affine.prototype.dup = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return wrapPointer(_P1_Affine_dup_0(this.ptr), P1_Affine);   };;
+"""
+p1_cpp += """
+P1* EMSCRIPTEN_KEEPALIVE P1_Affine_to_jacobian_0(const P1_Affine* self)
+{   return new P1(self->to_jacobian());   }
+"""
+p1_js += """
+P1_Affine.prototype['to_jacobian'] = P1_Affine.prototype.to_jacobian = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return wrapPointer(_P1_Affine_to_jacobian_0(this.ptr), P1);   };;
+"""
+p1_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE P1_Affine_serialize_0(const P1_Affine* self)
+{
+    byte out[96*1];
+    self->serialize(out);
+    return out;
+}
+"""
+p1_js += """
+P1_Affine.prototype['serialize'] = P1_Affine.prototype.serialize = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{
+    var out = _P1_Affine_serialize_0(this.ptr);
+    return new Uint8Array(HEAPU8.subarray(out, out + 96*1));
+};;
+"""
+p1_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE P1_Affine_compress_0(const P1_Affine* self)
+{
+    byte out[48*1];
+    self->compress(out);
+    return out;
+}
+"""
+p1_js += """
+P1_Affine.prototype['compress'] = P1_Affine.prototype.compress = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{
+    var out = _P1_Affine_compress_0(this.ptr);
+    return new Uint8Array(HEAPU8.subarray(out, out + 48*1));
+};;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_Affine_on_curve_0(const P1_Affine* self)
+{   return self->on_curve();   }
+"""
+p1_js += """
+P1_Affine.prototype['on_curve'] = P1_Affine.prototype.on_curve = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return !!(_P1_Affine_on_curve_0(this.ptr));   };;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_Affine_in_group_0(const P1_Affine* self)
+{   return self->in_group();   }
+"""
+p1_js += """
+P1_Affine.prototype['in_group'] = P1_Affine.prototype.in_group = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return !!(_P1_Affine_in_group_0(this.ptr));   };;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_Affine_is_inf_0(const P1_Affine* self)
+{   return self->is_inf();   }
+"""
+p1_js += """
+P1_Affine.prototype['is_inf'] = P1_Affine.prototype.is_inf = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return !!(_P1_Affine_is_inf_0(this.ptr));   };;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_Affine_is_equal_1(const P1_Affine* self, const P1_Affine* p)
+{   return self->is_equal(*p);   }
+"""
+p1_js += """
+P1_Affine.prototype['is_equal'] = P1_Affine.prototype.is_equal = /** @suppress {undefinedVars, duplicate} @this{Object} */function(p)
+{
+    if (p instanceof P1_Affine)
+        return !!(_P1_Affine_is_equal_1(this.ptr, p.ptr));
+    throw "unsupported type"
+};;
+"""
+p1_cpp += """
+long EMSCRIPTEN_KEEPALIVE P1_Affine_core_verify_7(
+                        const P1_Affine* self,
+                        const P2_Affine* pk, bool hash_or_encode,
+                        const byte* msg, long msg_len,
+                        const char* DST,
+                        const byte* aug, long aug_len)
+{ return self->core_verify(*pk, hash_or_encode, msg, msg_len, DST, aug, aug_len); }
+"""
+p1_js += """
+P1_Affine.prototype['core_verify'] = P1_Affine.prototype.core_verify = /** @suppress {undefinedVars, duplicate} @this{Object} */function(pk, hash_or_encode, msg, DST, aug)
+{
+    if (!(pk instanceof P2_Affine))
+        throw "unsupported type"
+    ensureCache.prepare();
+    const [_msg, msg_len] = ensureRef(msg);
+    DST = ensureString(DST);
+    const [_aug, aug_len] = ensureRef(aug);
+    return _P1_Affine_core_verify_7(this.ptr, pk.ptr, hash_or_encode, _msg, msg_len, DST, _aug, aug_len);
+};;
+"""
+p1_cpp += """
+P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_generator_0()
+{   return new P1_Affine(P1_Affine::generator());   }
+"""
+p1_js += """
+P1_Affine.generator = /** @suppress {undefinedVars, duplicate} */function()
+{   return wrapPointer(_P1_Affine_generator_0(), P1_Affine);   }
+"""
+
+here = re.split(r'[/\\](?=[^/\\]*$)', sys.argv[0])
+if len(here) > 1:
+    os.chdir(here[0])
+
+
+def xchg_1vs2(matchobj):
+    if matchobj.group(2) == '1':
+        return matchobj.group(1) + '2'
+    else:
+        return matchobj.group(1) + '1'
+
+
+fd = open("blst_embind.cpp", "w")
+print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
+print("// DO NOT EDIT THIS FILE!!!",                         file=fd)
+print("// The file is auto-generated by " + here[-1],        file=fd)
+print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
+print(common_cpp, file=fd)
+print(p1_cpp, file=fd)
+print(re.sub(r'((?<!f)[pgPG\*])([12])', xchg_1vs2, p1_cpp), file=fd)
+print("}", file=fd)  # close extern "C" {
+fd.close()
+
+fd = open("blst_embind.js", "w")
+print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
+print("// DO NOT EDIT THIS FILE!!!",                         file=fd)
+print("// The file is auto-generated by " + here[-1],        file=fd)
+print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
+print(p1_js, file=fd)
+print(re.sub(r'((?<!f)[pgPG\*])([12])', xchg_1vs2, p1_js), file=fd)
+fd.close()
+
+subprocess.check_call([os.path.dirname(emcc) + os.path.normpath("/tools/webidl_binder"),
+                       os.devnull, "embind"])
+subprocess.check_call(["emcc", "-I..", "-fexceptions", "-include", "stddef.h",
+                       "embind.cpp", "--post-js", "embind.js",
+                       "blst_embind.cpp", "--post-js", "blst_embind.js",
+                       "../../src/server.c", "-lembind", "-o", "blst.js"] +
+                      sys.argv[1:])  # pass through flags, e.g. -Os
+
+env = os.environ.copy()
+env["NODE_PATH"] = "." + os.path.pathsep
+subprocess.check_call(["node", "runnable.js"], env=env)
