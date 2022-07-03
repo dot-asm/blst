@@ -156,13 +156,12 @@ P1_Affine.prototype['is_equal'] = P1_Affine.prototype.is_equal = /** @suppress {
 };;
 """
 p1_cpp += """
-int EMSCRIPTEN_KEEPALIVE P1_Affine_core_verify_7(
-                        const P1_Affine* self,
+int EMSCRIPTEN_KEEPALIVE P1_Affine_core_verify_7(const P1_Affine* self,
                         const P2_Affine* pk, bool hash_or_encode,
                         const byte* msg, size_t msg_len,
                         const char* DST,
                         const byte* aug, size_t aug_len)
-{ return self->core_verify(*pk, hash_or_encode, msg, msg_len, DST, aug, aug_len); }
+{ return self->core_verify(*pk, hash_or_encode, msg, msg_len, DST ? DST : "", aug, aug_len); }
 """
 p1_js += """
 P1_Affine.prototype['core_verify'] = P1_Affine.prototype.core_verify = /** @suppress {undefinedVars, duplicate} @this{Object} */function(pk, hash_or_encode, msg, DST, aug)
@@ -173,7 +172,7 @@ P1_Affine.prototype['core_verify'] = P1_Affine.prototype.core_verify = /** @supp
     const [_msg, msg_len] = ensureAny(msg);
     DST = ensureString(DST);
     const [_aug, aug_len] = ensureAny(aug);
-    return _P1_Affine_core_verify_7(this.ptr, pk.ptr, hash_or_encode, _msg, msg_len, DST, _aug, aug_len);
+    return _P1_Affine_core_verify_7(this.ptr, pk.ptr, !!hash_or_encode, _msg, msg_len, DST, _aug, aug_len);
 };;
 """
 p1_cpp += """
@@ -338,7 +337,7 @@ p1_cpp += """
 void EMSCRIPTEN_KEEPALIVE P1_hash_to_5(P1* self, const byte* msg, size_t msg_len,
                                                  const char* DST,
                                                  const byte* aug, size_t aug_len)
-{   (void)self->hash_to(msg, msg_len, DST, aug, aug_len);   }
+{   (void)self->hash_to(msg, msg_len, DST ? DST : "", aug, aug_len);   }
 """
 p1_js += """
 P1.prototype['hash_to'] = P1.prototype.hash_to = /** @suppress {undefinedVars, duplicate} @this{Object} */function(msg, DST, aug)
@@ -355,7 +354,7 @@ p1_cpp += """
 void EMSCRIPTEN_KEEPALIVE P1_encode_to_5(P1* self, const byte* msg, size_t msg_len,
                                                    const char* DST,
                                                    const byte* aug, size_t aug_len)
-{   (void)self->encode_to(msg, msg_len, DST, aug, aug_len);   }
+{   (void)self->encode_to(msg, msg_len, DST ? DST : "", aug, aug_len);   }
 """
 p1_js += """
 P1.prototype['encode_to'] = P1.prototype.encode_to = /** @suppress {undefinedVars, duplicate} @this{Object} */function(msg, DST, aug)
@@ -394,10 +393,7 @@ void EMSCRIPTEN_KEEPALIVE P1_cneg_1(P1* self, bool flag)
 p1_js += """
 P1.prototype['cneg'] = P1.prototype.cneg = /** @suppress {undefinedVars, duplicate} @this{Object} */function(flag)
 {
-    if (typeof flag === "boolean")
-        _P1_cneg_1(this.ptr, flag);
-    else
-        throw new Error(`unsupported type ${flag.constructor.name}`);
+    _P1_cneg_1(this.ptr, !!flag);
     return this;
 };;
 P1.prototype['neg'] = P1.prototype.neg = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
@@ -449,7 +445,6 @@ function ensureAny(value) {
     if (typeof value === "undefined" || value === null)
         return [0, 0];
 
-    ensureCache.prepare();
     switch (value.constructor.name) {
         case "String":
             return [ensureString(value), lengthBytesUTF8(value)];
@@ -469,6 +464,112 @@ function ensureAny(value) {
     }
 }
 """
+
+# ###### SecretKey
+common_cpp += """
+SecretKey* EMSCRIPTEN_KEEPALIVE SecretKey_0()
+{   return new SecretKey();   }
+void EMSCRIPTEN_KEEPALIVE SecretKey__destroy__0(SecretKey* self)
+{   explicit_bzero((void*)self, sizeof(*self)); delete self;   }
+"""
+common_js += """
+/** @suppress {undefinedVars, duplicate} @this{Object} */function SecretKey()
+{
+    this.ptr = _SecretKey_0();
+    getCache(SecretKey)[this.ptr] = this;
+}
+SecretKey.prototype = Object.create(WrapperObject.prototype);
+SecretKey.prototype.constructor = SecretKey;
+SecretKey.prototype.__class__ = SecretKey;
+SecretKey.__cache__ = {};
+Module['SecretKey'] = SecretKey;
+SecretKey.prototype['__destroy__'] = SecretKey.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   _SecretKey__destroy__0(this.ptr); this.ptr = 0;  };;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE SecretKey_keygen_3(SecretKey* self, const byte* IKM, size_t IKM_len, const char* info)
+{   self->keygen(IKM, IKM_len, info ? info : "");   }
+"""
+common_js += """
+SecretKey.prototype['keygen'] = SecretKey.prototype.keygen = /** @suppress {undefinedVars, duplicate} @this{Object} */function(IKM, info)
+{
+    ensureCache.prepare();
+    const [_IKM, IKM_len] = ensureAny(IKM);
+    if (IKM_len < 32)
+        throw new Error("IKM is too short");
+    info = ensureString(info);
+    _SecretKey_keygen_3(this.ptr, _IKM, IKM_len, info);
+    HEAP8.fill(0, _IKM, _IKM + IKM_len);
+}
+"""
+
+# ###### Pairing
+common_cpp += """
+Pairing* EMSCRIPTEN_KEEPALIVE Pairing_2(bool hash_or_encode, const char* DST)
+{   return new Pairing(hash_or_encode, DST ? DST : "");   }
+void EMSCRIPTEN_KEEPALIVE Pairing__destroy__0(Pairing* self)
+{   delete self;   }
+"""
+common_js += """
+/** @suppress {undefinedVars, duplicate} @this{Object} */function Pairing(hash_or_encode, DST)
+{
+    ensureCache.prepare();
+    DST = ensureString(DST);
+    this.ptr = _Pairing_2(!!hash_or_encode, DST);
+    getCache(SecretKey)[this.ptr] = this;
+}
+Pairing.prototype = Object.create(WrapperObject.prototype);
+Pairing.prototype.constructor = Pairing;
+Pairing.prototype.__class__ = Pairing;
+Pairing.__cache__ = {};
+Module['Pairing'] = Pairing;
+Pairing.prototype['__destroy__'] = Pairing.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   _Pairing__destroy__0(this.ptr); this.ptr = 0;  };;
+"""
+common_cpp += """
+int EMSCRIPTEN_KEEPALIVE Pairing_aggregate_pk_in_g1_6(Pairing* self,
+                        const P1_Affine* pk, const P2_Affine* sig,
+                        const byte* msg, size_t msg_len,
+                        const byte* aug, size_t aug_len)
+{   return self->aggregate(pk, sig, msg, msg_len, aug, aug_len);   }
+int EMSCRIPTEN_KEEPALIVE Pairing_aggregate_pk_in_g2_6(Pairing* self,
+                        const P2_Affine* pk, const P1_Affine* sig,
+                        const byte* msg, size_t msg_len,
+                        const byte* aug, size_t aug_len)
+{   return self->aggregate(pk, sig, msg, msg_len, aug, aug_len);   }
+"""
+common_js += """
+Pairing.prototype['aggregate'] = Pairing.aggregate = /** @suppress {undefinedVars, duplicate} @this{Object} */function(pk, sig, msg, aug)
+{
+    ensureCache.prepare();
+    const [_msg, msg_len] = ensureAny(msg);
+    const [_aug, aug_len] = ensureAny(aug);
+    if (pk instanceof P1_Affine && sig instanceof P2_Affine)
+        return _Pairing_aggregate_pk_in_g1_6(this.ptr, pk.ptr, sig.ptr, _msg, msg_len, _aug, aug_len);
+    else if (pk instanceof P2_Affine && sig instanceof P1_Affine)
+        return _Pairing_aggregate_pk_in_g2_6(this.ptr, pk.ptr, sig.ptr, _msg, msg_len, _aug, aug_len);
+    else
+        throw new Error(`unsupported types ${pk.constructor.name} and ${sig.constructor.name}`);
+    return -1;
+}
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Pairing_commit_0(Pairing* self)
+{   self->commit();   }
+"""
+common_js += """
+Pairing.prototype['commit'] = Pairing.commit = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   _Pairing_commit_0(this.ptr);    }
+"""
+common_cpp += """
+bool EMSCRIPTEN_KEEPALIVE Pairing_finalverify_0(Pairing* self)
+{   return self->finalverify();   }
+"""
+common_js += """
+Pairing.prototype['finalverify'] = Pairing.finalverify = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return !!(_Pairing_finalverify_0(this.ptr));    }
+"""
+
 
 here = re.split(r'[/\\](?=[^/\\]*$)', sys.argv[0])
 if len(here) > 1:
