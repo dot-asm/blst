@@ -20,14 +20,34 @@ common_cpp = """
 using namespace blst;
 #pragma GCC diagnostic ignored "-Wreturn-stack-address"
 extern "C" {
+
+EM_JS(void, blst_exception, (BLST_ERROR code), {
+    throw new Error(BLST_ERROR_str[code]);
+});
 """
+common_js = """
+const BLST_ERROR_str = [
+    "BLST_ERROR: success",
+    "BLST_ERROR: bad point encoding",
+    "BLST_ERROR: point is not on curve",
+    "BLST_ERROR: point is not in group",
+    "BLST_ERROR: context type mismatch",
+    "BLST_ERROR: verify failed",
+    "BLST_ERROR: public key is infinite",
+];
+"""
+
+# ###### P1_Affine
 p1_cpp = """
 P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_0()
 {   return new P1_Affine();   }
 P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_1(const P1* input)
 {   return new P1_Affine(*input);   }
-P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_2(const byte* input, long len)
-{   return new P1_Affine(input, len);   }
+P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_2(const byte* input, size_t len)
+{   try                         { return new P1_Affine(input, len); }
+    catch (const BLST_ERROR& e) { blst_exception(e);                }
+    return nullptr;
+}
 void EMSCRIPTEN_KEEPALIVE P1_Affine__destroy__0(P1_Affine* self)
 {   delete self;   }
 """
@@ -35,15 +55,14 @@ p1_js = """
 /** @suppress {undefinedVars, duplicate} @this{Object} */function P1_Affine(input)
 {
     ensureCache.prepare();
-    if (input === undefined) {
+    if (input === undefined)
         this.ptr = _P1_Affine_0();
-    } else if (input instanceof Uint8Array) {
+    else if (input instanceof Uint8Array)
         this.ptr = _P1_Affine_2(ensureInt8(input), input.length);
-    } else if (input instanceof P1) {
+    else if (input instanceof P1)
         this.ptr = _P1_Affine_1(input.ptr);
-    } else {
-        throw "unsupported type in P1_Affine constructor";
-    }
+    else
+        throw new Error(`unsupported type ${input.constructor.name}`);
     getCache(P1_Affine)[this.ptr] = this;
 }
 P1_Affine.prototype = Object.create(WrapperObject.prototype);
@@ -52,7 +71,7 @@ P1_Affine.prototype.__class__ = P1_Affine;
 P1_Affine.__cache__ = {};
 Module['P1_Affine'] = P1_Affine;
 P1_Affine.prototype['__destroy__'] = P1_Affine.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
-{   _P1_Affine__destroy__0(this.ptr);   };;
+{   _P1_Affine__destroy__0(this.ptr); this.ptr = 0;   };;
 """
 p1_cpp += """
 P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_dup_0(const P1_Affine* self)
@@ -133,27 +152,27 @@ P1_Affine.prototype['is_equal'] = P1_Affine.prototype.is_equal = /** @suppress {
 {
     if (p instanceof P1_Affine)
         return !!(_P1_Affine_is_equal_1(this.ptr, p.ptr));
-    throw "unsupported type"
+    throw new Error(`unsupported type ${p.constructor.name}`);
 };;
 """
 p1_cpp += """
-long EMSCRIPTEN_KEEPALIVE P1_Affine_core_verify_7(
+int EMSCRIPTEN_KEEPALIVE P1_Affine_core_verify_7(
                         const P1_Affine* self,
                         const P2_Affine* pk, bool hash_or_encode,
-                        const byte* msg, long msg_len,
+                        const byte* msg, size_t msg_len,
                         const char* DST,
-                        const byte* aug, long aug_len)
+                        const byte* aug, size_t aug_len)
 { return self->core_verify(*pk, hash_or_encode, msg, msg_len, DST, aug, aug_len); }
 """
 p1_js += """
 P1_Affine.prototype['core_verify'] = P1_Affine.prototype.core_verify = /** @suppress {undefinedVars, duplicate} @this{Object} */function(pk, hash_or_encode, msg, DST, aug)
 {
     if (!(pk instanceof P2_Affine))
-        throw "unsupported type"
+        throw new Error(`unsupported type ${pk.constructor.name}`);
     ensureCache.prepare();
-    const [_msg, msg_len] = ensureRef(msg);
+    const [_msg, msg_len] = ensureAny(msg);
     DST = ensureString(DST);
-    const [_aug, aug_len] = ensureRef(aug);
+    const [_aug, aug_len] = ensureAny(aug);
     return _P1_Affine_core_verify_7(this.ptr, pk.ptr, hash_or_encode, _msg, msg_len, DST, _aug, aug_len);
 };;
 """
@@ -164,6 +183,291 @@ P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_generator_0()
 p1_js += """
 P1_Affine.generator = /** @suppress {undefinedVars, duplicate} */function()
 {   return wrapPointer(_P1_Affine_generator_0(), P1_Affine);   }
+"""
+
+# ###### P1
+p1_cpp += """
+P1* EMSCRIPTEN_KEEPALIVE P1_0()
+{   return new P1();   }
+P1* EMSCRIPTEN_KEEPALIVE P1_affine_1(const P1_Affine* p)
+{   return new P1(*p);   }
+P1* EMSCRIPTEN_KEEPALIVE P1_secretkey_1(const SecretKey* sk)
+{   return new P1(*sk);   }
+P1* EMSCRIPTEN_KEEPALIVE P1_2(const byte* input, size_t len)
+{   try                         { return new P1(input, len); }
+    catch (const BLST_ERROR& e) { blst_exception(e);         }
+    return nullptr;
+}
+void EMSCRIPTEN_KEEPALIVE P1__destroy__0(P1* self)
+{   delete self;   }
+"""
+p1_js += """
+/** @suppress {undefinedVars, duplicate} @this{Object} */function P1(input)
+{
+    ensureCache.prepare();
+    if (input === undefined)
+        this.ptr = _P1_0();
+    else if (input instanceof Uint8Array)
+        this.ptr = _P1_2(ensureInt8(input), input.length);
+    else if (input instanceof P1_Affine)
+        this.ptr = _P1_affine_1(input.ptr);
+    else if (input instanceof SecretKey)
+        this.ptr = _P1_secretkey_1(input.ptr);
+    else
+        throw new Error(`unsupported type ${input.constructor.name}`);
+    getCache(P1)[this.ptr] = this;
+}
+P1.prototype = Object.create(WrapperObject.prototype);
+P1.prototype.constructor = P1;
+P1.prototype.__class__ = P1;
+P1.__cache__ = {};
+Module['P1'] = P1;
+P1.prototype['__destroy__'] = P1.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   _P1__destroy__0(this.ptr); this.ptr = 0;  };;
+"""
+p1_cpp += """
+P1* EMSCRIPTEN_KEEPALIVE P1_dup_0(const P1* self)
+{   return new P1(self->dup());   }
+"""
+p1_js += """
+P1.prototype['dup'] = P1.prototype.dup = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return wrapPointer(_P1_dup_0(this.ptr), P1);   };;
+"""
+p1_cpp += """
+P1* EMSCRIPTEN_KEEPALIVE P1_to_affine_0(const P1* self)
+{   return new P1(self->to_affine());   }
+"""
+p1_js += """
+P1.prototype['to_affine'] = P1.prototype.to_affine = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return wrapPointer(_P1_to_affine_0(this.ptr), P1_Affine);   };;
+"""
+p1_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE P1_serialize_0(const P1* self)
+{
+    byte out[96*1];
+    self->serialize(out);
+    return out;
+}
+"""
+p1_js += """
+P1.prototype['serialize'] = P1.prototype.serialize = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{
+    var out = _P1_serialize_0(this.ptr);
+    return new Uint8Array(HEAPU8.subarray(out, out + 96*1));
+};;
+"""
+p1_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE P1_compress_0(const P1* self)
+{
+    byte out[48*1];
+    self->compress(out);
+    return out;
+}
+"""
+p1_js += """
+P1.prototype['compress'] = P1.prototype.compress = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{
+    var out = _P1_compress_0(this.ptr);
+    return new Uint8Array(HEAPU8.subarray(out, out + 48*1));
+};;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_on_curve_0(const P1* self)
+{   return self->on_curve();   }
+"""
+p1_js += """
+P1.prototype['on_curve'] = P1.prototype.on_curve = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return !!(_P1_on_curve_0(this.ptr));   };;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_in_group_0(const P1* self)
+{   return self->in_group();   }
+"""
+p1_js += """
+P1.prototype['in_group'] = P1.prototype.in_group = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return !!(_P1_in_group_0(this.ptr));   };;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_is_inf_0(const P1* self)
+{   return self->is_inf();   }
+"""
+p1_js += """
+P1.prototype['is_inf'] = P1.prototype.is_inf = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{   return !!(_P1_is_inf_0(this.ptr));   };;
+"""
+p1_cpp += """
+bool EMSCRIPTEN_KEEPALIVE P1_is_equal_1(const P1* self, const P1* p)
+{   return self->is_equal(*p);   }
+"""
+p1_js += """
+P1.prototype['is_equal'] = P1.prototype.is_equal = /** @suppress {undefinedVars, duplicate} @this{Object} */function(p)
+{
+    if (p instanceof P1)
+        return !!(_P1_is_equal_1(this.ptr, p.ptr));
+    throw new Error(`unsupported type ${p.constructor.name}`);
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_aggregate_1(P1* self, const P1_Affine* p)
+{   return self->aggregate(*p);   }
+"""
+p1_js += """
+P1.prototype['aggregate'] = P1.prototype.aggregate = /** @suppress {undefinedVars, duplicate} @this{Object} */function(p)
+{
+    if (p instanceof P1_Affine)
+        _P1_aggregate_1(this.ptr, p.ptr);
+    else
+        throw new Error(`unsupported type ${p.constructor.name}`);
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_sign_with_1(P1* self, const SecretKey* sk)
+{   (void)self->sign_with(*sk);   }
+"""
+p1_js += """
+P1.prototype['sign_with'] = P1.prototype.sign_with = /** @suppress {undefinedVars, duplicate} @this{Object} */function(sk)
+{
+    if (sk instanceof SecretKey)
+        _P1_sign_with_1(this.ptr, sk.ptr);
+    else
+        throw new Error(`unsupported type ${sk.constructor.name}`);
+    return this;
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_hash_to_5(P1* self, const byte* msg, size_t msg_len,
+                                                 const char* DST,
+                                                 const byte* aug, size_t aug_len)
+{   (void)self->hash_to(msg, msg_len, DST, aug, aug_len);   }
+"""
+p1_js += """
+P1.prototype['hash_to'] = P1.prototype.hash_to = /** @suppress {undefinedVars, duplicate} @this{Object} */function(msg, DST, aug)
+{
+    ensureCache.prepare();
+    const [_msg, msg_len] = ensureAny(msg);
+    DST = ensureString(DST);
+    const [_aug, aug_len] = ensureAny(aug);
+    _P1_hash_to_5(this.ptr, _msg, msg_len, DST, _aug, aug_len);
+    return this;
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_encode_to_5(P1* self, const byte* msg, size_t msg_len,
+                                                   const char* DST,
+                                                   const byte* aug, size_t aug_len)
+{   (void)self->encode_to(msg, msg_len, DST, aug, aug_len);   }
+"""
+p1_js += """
+P1.prototype['encode_to'] = P1.prototype.encode_to = /** @suppress {undefinedVars, duplicate} @this{Object} */function(msg, DST, aug)
+{
+    ensureCache.prepare();
+    const [_msg, msg_len] = ensureAny(msg);
+    DST = ensureString(DST);
+    const [_aug, aug_len] = ensureAny(aug);
+    _P1_encode_to_5(this.ptr, _msg, msg_len, DST, _aug, aug_len);
+    return this;
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_mult_1(P1* self, const Scalar* scalar)
+{   (void)self->mult(*scalar);   }
+void EMSCRIPTEN_KEEPALIVE P1_mult_2(P1* self, const byte* scalar, size_t nbits)
+{   (void)self->mult(scalar, nbits);   }
+"""
+p1_js += """
+P1.prototype['mult'] = P1.prototype.mult = /** @suppress {undefinedVars, duplicate} @this{Object} */function(scalar)
+{
+    if (scalar instanceof Scalar) {
+        _P1_mult_1(this.ptr, scalar.ptr);
+    } else {
+        ensureCache.prepare();
+        const [_scalar, len] = ensureAny(scalar);
+        _P1_mult_2(this.ptr, _scalar, len*8);
+    }
+    return this;
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_cneg_1(P1* self, bool flag)
+{   (void)self->cneg(flag);   }
+"""
+p1_js += """
+P1.prototype['cneg'] = P1.prototype.cneg = /** @suppress {undefinedVars, duplicate} @this{Object} */function(flag)
+{
+    if (typeof flag === "boolean")
+        _P1_cneg_1(this.ptr, flag);
+    else
+        throw new Error(`unsupported type ${flag.constructor.name}`);
+    return this;
+};;
+P1.prototype['neg'] = P1.prototype.neg = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{
+    _P1_cneg_1(this.ptr, true);
+    return this;
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_add_1(P1* self, const P1* a)
+{   (void)self->add(*a);   }
+void EMSCRIPTEN_KEEPALIVE P1_add_affine_1(P1* self, const P1_Affine* a)
+{   (void)self->add(*a);   }
+"""
+p1_js += """
+P1.prototype['add'] = P1.prototype.add = /** @suppress {undefinedVars, duplicate} @this{Object} */function(a)
+{
+    if (a instanceof P1)
+        _P1_add_1(this.ptr, a.ptr);
+    else if (a instanceof P1_Affine)
+        _P1_add_affine_1(this.ptr, a.ptr);
+    else
+        throw new Error(`unsupported type ${a.constructor.name}`);
+    return this;
+};;
+"""
+p1_cpp += """
+void EMSCRIPTEN_KEEPALIVE P1_dbl_0(P1* self)
+{   (void)self->dbl();   }
+"""
+p1_js += """
+P1.prototype['dbl'] = P1.prototype.dbl = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+{
+    _P1_dbl_0(this.ptr);
+    return this;
+};;
+"""
+p1_cpp += """
+P1* EMSCRIPTEN_KEEPALIVE P1_generator_0()
+{   return new P1(P1::generator());   }
+"""
+p1_js += """
+P1.generator = /** @suppress {undefinedVars, duplicate} */function()
+{   return wrapPointer(_P1_generator_0(), P1);   }
+"""
+
+common_js += """
+function ensureAny(value) {
+    if (typeof value === "undefined" || value === null)
+        return [0, 0];
+
+    ensureCache.prepare();
+    switch (value.constructor.name) {
+        case "String":
+            return [ensureString(value), lengthBytesUTF8(value)];
+        case "Buffer": case "Uint8Array":
+            return [ensureInt8(value), value.length];
+        case "BigInt":
+            if (value < 0)
+                throw new Error("expecting unsigned BigInt value");
+            var temp = [];
+            while (value != 0) {
+                temp.push(Number(value & 255n));
+                value >>= 8n;
+            }
+            return [ensureInt8(temp), temp.length];
+        default:
+            throw new Error(`unsupported type for 'value': ${val.constructor.name}`);
+    }
+}
 """
 
 here = re.split(r'[/\\](?=[^/\\]*$)', sys.argv[0])
@@ -194,6 +498,7 @@ print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
 print("// DO NOT EDIT THIS FILE!!!",                         file=fd)
 print("// The file is auto-generated by " + here[-1],        file=fd)
 print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
+print(common_js, file=fd)
 print(p1_js, file=fd)
 print(re.sub(r'((?<!f)[pgPG\*])([12])', xchg_1vs2, p1_js), file=fd)
 fd.close()
