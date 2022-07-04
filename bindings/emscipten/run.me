@@ -34,6 +34,7 @@ const BLST_ERROR_str = [
     "BLST_ERROR: context type mismatch",
     "BLST_ERROR: verify failed",
     "BLST_ERROR: public key is infinite",
+    "BLST_ERROR: bad scalar",
 ];
 """
 
@@ -52,7 +53,8 @@ void EMSCRIPTEN_KEEPALIVE P1_Affine__destroy__0(P1_Affine* self)
 {   delete self;   }
 """
 p1_js = """
-/** @suppress {undefinedVars, duplicate} @this{Object} */function P1_Affine(input)
+/** @this{Object} */
+function P1_Affine(input)
 {
     ensureCache.prepare();
     if (input === undefined)
@@ -70,7 +72,8 @@ P1_Affine.prototype.constructor = P1_Affine;
 P1_Affine.prototype.__class__ = P1_Affine;
 P1_Affine.__cache__ = {};
 Module['P1_Affine'] = P1_Affine;
-P1_Affine.prototype['__destroy__'] = P1_Affine.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['__destroy__'] = P1_Affine.prototype.__destroy__ = /** @this{Object} */
+function()
 {   _P1_Affine__destroy__0(this.ptr); this.ptr = 0;   };;
 """
 p1_cpp += """
@@ -78,7 +81,8 @@ P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_dup_0(const P1_Affine* self)
 {   return new P1_Affine(self->dup());   }
 """
 p1_js += """
-P1_Affine.prototype['dup'] = P1_Affine.prototype.dup = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['dup'] = P1_Affine.prototype.dup = /** @this{Object} */
+function()
 {   return wrapPointer(_P1_Affine_dup_0(this.ptr), P1_Affine);   };;
 """
 p1_cpp += """
@@ -86,7 +90,8 @@ P1* EMSCRIPTEN_KEEPALIVE P1_Affine_to_jacobian_0(const P1_Affine* self)
 {   return new P1(self->to_jacobian());   }
 """
 p1_js += """
-P1_Affine.prototype['to_jacobian'] = P1_Affine.prototype.to_jacobian = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['to_jacobian'] = P1_Affine.prototype.to_jacobian = /** @this{Object} */
+function()
 {   return wrapPointer(_P1_Affine_to_jacobian_0(this.ptr), P1);   };;
 """
 p1_cpp += """
@@ -98,7 +103,8 @@ byte* EMSCRIPTEN_KEEPALIVE P1_Affine_serialize_0(const P1_Affine* self)
 }
 """
 p1_js += """
-P1_Affine.prototype['serialize'] = P1_Affine.prototype.serialize = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['serialize'] = P1_Affine.prototype.serialize = /** @this{Object} */
+function()
 {
     var out = _P1_Affine_serialize_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 96*1));
@@ -113,7 +119,8 @@ byte* EMSCRIPTEN_KEEPALIVE P1_Affine_compress_0(const P1_Affine* self)
 }
 """
 p1_js += """
-P1_Affine.prototype['compress'] = P1_Affine.prototype.compress = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['compress'] = P1_Affine.prototype.compress = /** @this{Object} */
+function()
 {
     var out = _P1_Affine_compress_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 48*1));
@@ -124,7 +131,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_Affine_on_curve_0(const P1_Affine* self)
 {   return self->on_curve();   }
 """
 p1_js += """
-P1_Affine.prototype['on_curve'] = P1_Affine.prototype.on_curve = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['on_curve'] = P1_Affine.prototype.on_curve = /** @this{Object} */
+function()
 {   return !!(_P1_Affine_on_curve_0(this.ptr));   };;
 """
 p1_cpp += """
@@ -132,7 +140,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_Affine_in_group_0(const P1_Affine* self)
 {   return self->in_group();   }
 """
 p1_js += """
-P1_Affine.prototype['in_group'] = P1_Affine.prototype.in_group = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['in_group'] = P1_Affine.prototype.in_group = /** @this{Object} */
+function()
 {   return !!(_P1_Affine_in_group_0(this.ptr));   };;
 """
 p1_cpp += """
@@ -140,7 +149,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_Affine_is_inf_0(const P1_Affine* self)
 {   return self->is_inf();   }
 """
 p1_js += """
-P1_Affine.prototype['is_inf'] = P1_Affine.prototype.is_inf = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1_Affine.prototype['is_inf'] = P1_Affine.prototype.is_inf = /** @this{Object} */
+function()
 {   return !!(_P1_Affine_is_inf_0(this.ptr));   };;
 """
 p1_cpp += """
@@ -148,7 +158,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_Affine_is_equal_1(const P1_Affine* self, const P1_A
 {   return self->is_equal(*p);   }
 """
 p1_js += """
-P1_Affine.prototype['is_equal'] = P1_Affine.prototype.is_equal = /** @suppress {undefinedVars, duplicate} @this{Object} */function(p)
+P1_Affine.prototype['is_equal'] = P1_Affine.prototype.is_equal = /** @this{Object} */
+function(p)
 {
     if (p instanceof P1_Affine)
         return !!(_P1_Affine_is_equal_1(this.ptr, p.ptr));
@@ -157,14 +168,15 @@ P1_Affine.prototype['is_equal'] = P1_Affine.prototype.is_equal = /** @suppress {
 """
 p1_cpp += """
 int EMSCRIPTEN_KEEPALIVE P1_Affine_core_verify_7(const P1_Affine* self,
-                        const P2_Affine* pk, bool hash_or_encode,
-                        const byte* msg, size_t msg_len,
-                        const char* DST,
-                        const byte* aug, size_t aug_len)
+                                const P2_Affine* pk, bool hash_or_encode,
+                                const byte* msg, size_t msg_len,
+                                const char* DST,
+                                const byte* aug, size_t aug_len)
 { return self->core_verify(*pk, hash_or_encode, msg, msg_len, DST ? DST : "", aug, aug_len); }
 """
 p1_js += """
-P1_Affine.prototype['core_verify'] = P1_Affine.prototype.core_verify = /** @suppress {undefinedVars, duplicate} @this{Object} */function(pk, hash_or_encode, msg, DST, aug)
+P1_Affine.prototype['core_verify'] = P1_Affine.prototype.core_verify = /** @this{Object} */
+function(pk, hash_or_encode, msg, DST, aug)
 {
     if (!(pk instanceof P2_Affine))
         throw new Error(`unsupported type ${pk.constructor.name}`);
@@ -180,7 +192,8 @@ P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_generator_0()
 {   return new P1_Affine(P1_Affine::generator());   }
 """
 p1_js += """
-P1_Affine.generator = /** @suppress {undefinedVars, duplicate} */function()
+P1_Affine.generator =
+function()
 {   return wrapPointer(_P1_Affine_generator_0(), P1_Affine);   }
 """
 
@@ -201,7 +214,8 @@ void EMSCRIPTEN_KEEPALIVE P1__destroy__0(P1* self)
 {   delete self;   }
 """
 p1_js += """
-/** @suppress {undefinedVars, duplicate} @this{Object} */function P1(input)
+/** @this{Object} */
+function P1(input)
 {
     ensureCache.prepare();
     if (input === undefined)
@@ -221,7 +235,8 @@ P1.prototype.constructor = P1;
 P1.prototype.__class__ = P1;
 P1.__cache__ = {};
 Module['P1'] = P1;
-P1.prototype['__destroy__'] = P1.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['__destroy__'] = P1.prototype.__destroy__ = /** @this{Object} */
+function()
 {   _P1__destroy__0(this.ptr); this.ptr = 0;  };;
 """
 p1_cpp += """
@@ -229,7 +244,8 @@ P1* EMSCRIPTEN_KEEPALIVE P1_dup_0(const P1* self)
 {   return new P1(self->dup());   }
 """
 p1_js += """
-P1.prototype['dup'] = P1.prototype.dup = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['dup'] = P1.prototype.dup = /** @this{Object} */
+function()
 {   return wrapPointer(_P1_dup_0(this.ptr), P1);   };;
 """
 p1_cpp += """
@@ -237,7 +253,8 @@ P1* EMSCRIPTEN_KEEPALIVE P1_to_affine_0(const P1* self)
 {   return new P1(self->to_affine());   }
 """
 p1_js += """
-P1.prototype['to_affine'] = P1.prototype.to_affine = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['to_affine'] = P1.prototype.to_affine = /** @this{Object} */
+function()
 {   return wrapPointer(_P1_to_affine_0(this.ptr), P1_Affine);   };;
 """
 p1_cpp += """
@@ -249,7 +266,8 @@ byte* EMSCRIPTEN_KEEPALIVE P1_serialize_0(const P1* self)
 }
 """
 p1_js += """
-P1.prototype['serialize'] = P1.prototype.serialize = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['serialize'] = P1.prototype.serialize = /** @this{Object} */
+function()
 {
     var out = _P1_serialize_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 96*1));
@@ -264,7 +282,8 @@ byte* EMSCRIPTEN_KEEPALIVE P1_compress_0(const P1* self)
 }
 """
 p1_js += """
-P1.prototype['compress'] = P1.prototype.compress = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['compress'] = P1.prototype.compress = /** @this{Object} */
+function()
 {
     var out = _P1_compress_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 48*1));
@@ -275,7 +294,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_on_curve_0(const P1* self)
 {   return self->on_curve();   }
 """
 p1_js += """
-P1.prototype['on_curve'] = P1.prototype.on_curve = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['on_curve'] = P1.prototype.on_curve = /** @this{Object} */
+function()
 {   return !!(_P1_on_curve_0(this.ptr));   };;
 """
 p1_cpp += """
@@ -283,7 +303,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_in_group_0(const P1* self)
 {   return self->in_group();   }
 """
 p1_js += """
-P1.prototype['in_group'] = P1.prototype.in_group = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['in_group'] = P1.prototype.in_group = /** @this{Object} */
+function()
 {   return !!(_P1_in_group_0(this.ptr));   };;
 """
 p1_cpp += """
@@ -291,7 +312,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_is_inf_0(const P1* self)
 {   return self->is_inf();   }
 """
 p1_js += """
-P1.prototype['is_inf'] = P1.prototype.is_inf = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['is_inf'] = P1.prototype.is_inf = /** @this{Object} */
+function()
 {   return !!(_P1_is_inf_0(this.ptr));   };;
 """
 p1_cpp += """
@@ -299,7 +321,8 @@ bool EMSCRIPTEN_KEEPALIVE P1_is_equal_1(const P1* self, const P1* p)
 {   return self->is_equal(*p);   }
 """
 p1_js += """
-P1.prototype['is_equal'] = P1.prototype.is_equal = /** @suppress {undefinedVars, duplicate} @this{Object} */function(p)
+P1.prototype['is_equal'] = P1.prototype.is_equal = /** @this{Object} */
+function(p)
 {
     if (p instanceof P1)
         return !!(_P1_is_equal_1(this.ptr, p.ptr));
@@ -311,7 +334,8 @@ void EMSCRIPTEN_KEEPALIVE P1_aggregate_1(P1* self, const P1_Affine* p)
 {   return self->aggregate(*p);   }
 """
 p1_js += """
-P1.prototype['aggregate'] = P1.prototype.aggregate = /** @suppress {undefinedVars, duplicate} @this{Object} */function(p)
+P1.prototype['aggregate'] = P1.prototype.aggregate = /** @this{Object} */
+function(p)
 {
     if (p instanceof P1_Affine)
         _P1_aggregate_1(this.ptr, p.ptr);
@@ -324,7 +348,8 @@ void EMSCRIPTEN_KEEPALIVE P1_sign_with_1(P1* self, const SecretKey* sk)
 {   (void)self->sign_with(*sk);   }
 """
 p1_js += """
-P1.prototype['sign_with'] = P1.prototype.sign_with = /** @suppress {undefinedVars, duplicate} @this{Object} */function(sk)
+P1.prototype['sign_with'] = P1.prototype.sign_with = /** @this{Object} */
+function(sk)
 {
     if (sk instanceof SecretKey)
         _P1_sign_with_1(this.ptr, sk.ptr);
@@ -340,7 +365,8 @@ void EMSCRIPTEN_KEEPALIVE P1_hash_to_5(P1* self, const byte* msg, size_t msg_len
 {   (void)self->hash_to(msg, msg_len, DST ? DST : "", aug, aug_len);   }
 """
 p1_js += """
-P1.prototype['hash_to'] = P1.prototype.hash_to = /** @suppress {undefinedVars, duplicate} @this{Object} */function(msg, DST, aug)
+P1.prototype['hash_to'] = P1.prototype.hash_to = /** @this{Object} */
+function(msg, DST, aug)
 {
     ensureCache.prepare();
     const [_msg, msg_len] = ensureAny(msg);
@@ -357,7 +383,8 @@ void EMSCRIPTEN_KEEPALIVE P1_encode_to_5(P1* self, const byte* msg, size_t msg_l
 {   (void)self->encode_to(msg, msg_len, DST ? DST : "", aug, aug_len);   }
 """
 p1_js += """
-P1.prototype['encode_to'] = P1.prototype.encode_to = /** @suppress {undefinedVars, duplicate} @this{Object} */function(msg, DST, aug)
+P1.prototype['encode_to'] = P1.prototype.encode_to = /** @this{Object} */
+function(msg, DST, aug)
 {
     ensureCache.prepare();
     const [_msg, msg_len] = ensureAny(msg);
@@ -374,11 +401,12 @@ void EMSCRIPTEN_KEEPALIVE P1_mult_2(P1* self, const byte* scalar, size_t nbits)
 {   (void)self->mult(scalar, nbits);   }
 """
 p1_js += """
-P1.prototype['mult'] = P1.prototype.mult = /** @suppress {undefinedVars, duplicate} @this{Object} */function(scalar)
+P1.prototype['mult'] = P1.prototype.mult = /** @this{Object} */
+function(scalar)
 {
-    if (scalar instanceof Scalar) {
+    /*if (scalar instanceof Scalar) {
         _P1_mult_1(this.ptr, scalar.ptr);
-    } else {
+    } else*/ {
         ensureCache.prepare();
         const [_scalar, len] = ensureAny(scalar);
         _P1_mult_2(this.ptr, _scalar, len*8);
@@ -391,12 +419,14 @@ void EMSCRIPTEN_KEEPALIVE P1_cneg_1(P1* self, bool flag)
 {   (void)self->cneg(flag);   }
 """
 p1_js += """
-P1.prototype['cneg'] = P1.prototype.cneg = /** @suppress {undefinedVars, duplicate} @this{Object} */function(flag)
+P1.prototype['cneg'] = P1.prototype.cneg = /** @this{Object} */
+function(flag)
 {
     _P1_cneg_1(this.ptr, !!flag);
     return this;
 };;
-P1.prototype['neg'] = P1.prototype.neg = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['neg'] = P1.prototype.neg = /** @this{Object} */
+function()
 {
     _P1_cneg_1(this.ptr, true);
     return this;
@@ -409,14 +439,15 @@ void EMSCRIPTEN_KEEPALIVE P1_add_affine_1(P1* self, const P1_Affine* a)
 {   (void)self->add(*a);   }
 """
 p1_js += """
-P1.prototype['add'] = P1.prototype.add = /** @suppress {undefinedVars, duplicate} @this{Object} */function(a)
+P1.prototype['add'] = P1.prototype.add = /** @this{Object} */
+function(p)
 {
-    if (a instanceof P1)
-        _P1_add_1(this.ptr, a.ptr);
-    else if (a instanceof P1_Affine)
-        _P1_add_affine_1(this.ptr, a.ptr);
+    if (p instanceof P1)
+        _P1_add_1(this.ptr, p.ptr);
+    else if (p instanceof P1_Affine)
+        _P1_add_affine_1(this.ptr, p.ptr);
     else
-        throw new Error(`unsupported type ${a.constructor.name}`);
+        throw new Error(`unsupported type ${p.constructor.name}`);
     return this;
 };;
 """
@@ -425,7 +456,8 @@ void EMSCRIPTEN_KEEPALIVE P1_dbl_0(P1* self)
 {   (void)self->dbl();   }
 """
 p1_js += """
-P1.prototype['dbl'] = P1.prototype.dbl = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+P1.prototype['dbl'] = P1.prototype.dbl = /** @this{Object} */
+function()
 {
     _P1_dbl_0(this.ptr);
     return this;
@@ -436,7 +468,8 @@ P1* EMSCRIPTEN_KEEPALIVE P1_generator_0()
 {   return new P1(P1::generator());   }
 """
 p1_js += """
-P1.generator = /** @suppress {undefinedVars, duplicate} */function()
+P1.generator =
+function()
 {   return wrapPointer(_P1_generator_0(), P1);   }
 """
 
@@ -460,7 +493,7 @@ function ensureAny(value) {
             }
             return [ensureInt8(temp), temp.length];
         default:
-            throw new Error(`unsupported type for 'value': ${val.constructor.name}`);
+            throw new Error(`unsupported type for 'value': ${value.constructor.name}`);
     }
 }
 """
@@ -473,7 +506,8 @@ void EMSCRIPTEN_KEEPALIVE SecretKey__destroy__0(SecretKey* self)
 {   explicit_bzero((void*)self, sizeof(*self)); delete self;   }
 """
 common_js += """
-/** @suppress {undefinedVars, duplicate} @this{Object} */function SecretKey()
+/** @this{Object} */
+function SecretKey()
 {
     this.ptr = _SecretKey_0();
     getCache(SecretKey)[this.ptr] = this;
@@ -483,7 +517,8 @@ SecretKey.prototype.constructor = SecretKey;
 SecretKey.prototype.__class__ = SecretKey;
 SecretKey.__cache__ = {};
 Module['SecretKey'] = SecretKey;
-SecretKey.prototype['__destroy__'] = SecretKey.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+SecretKey.prototype['__destroy__'] = SecretKey.prototype.__destroy__ = /** @this{Object} */
+function()
 {   _SecretKey__destroy__0(this.ptr); this.ptr = 0;  };;
 """
 common_cpp += """
@@ -491,7 +526,8 @@ void EMSCRIPTEN_KEEPALIVE SecretKey_keygen_3(SecretKey* self, const byte* IKM, s
 {   self->keygen(IKM, IKM_len, info ? info : "");   }
 """
 common_js += """
-SecretKey.prototype['keygen'] = SecretKey.prototype.keygen = /** @suppress {undefinedVars, duplicate} @this{Object} */function(IKM, info)
+SecretKey.prototype['keygen'] = SecretKey.prototype.keygen = /** @this{Object} */
+function(IKM, info)
 {
     ensureCache.prepare();
     const [_IKM, IKM_len] = ensureAny(IKM);
@@ -511,7 +547,8 @@ void EMSCRIPTEN_KEEPALIVE Pairing__destroy__0(Pairing* self)
 {   delete self;   }
 """
 common_js += """
-/** @suppress {undefinedVars, duplicate} @this{Object} */function Pairing(hash_or_encode, DST)
+/** @this{Object} */
+function Pairing(hash_or_encode, DST)
 {
     ensureCache.prepare();
     DST = ensureString(DST);
@@ -523,23 +560,25 @@ Pairing.prototype.constructor = Pairing;
 Pairing.prototype.__class__ = Pairing;
 Pairing.__cache__ = {};
 Module['Pairing'] = Pairing;
-Pairing.prototype['__destroy__'] = Pairing.prototype.__destroy__ = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+Pairing.prototype['__destroy__'] = Pairing.prototype.__destroy__ = /** @this{Object} */
+function()
 {   _Pairing__destroy__0(this.ptr); this.ptr = 0;  };;
 """
 common_cpp += """
 int EMSCRIPTEN_KEEPALIVE Pairing_aggregate_pk_in_g1_6(Pairing* self,
-                        const P1_Affine* pk, const P2_Affine* sig,
-                        const byte* msg, size_t msg_len,
-                        const byte* aug, size_t aug_len)
+                                const P1_Affine* pk, const P2_Affine* sig,
+                                const byte* msg, size_t msg_len,
+                                const byte* aug, size_t aug_len)
 {   return self->aggregate(pk, sig, msg, msg_len, aug, aug_len);   }
 int EMSCRIPTEN_KEEPALIVE Pairing_aggregate_pk_in_g2_6(Pairing* self,
-                        const P2_Affine* pk, const P1_Affine* sig,
-                        const byte* msg, size_t msg_len,
-                        const byte* aug, size_t aug_len)
+                                const P2_Affine* pk, const P1_Affine* sig,
+                                const byte* msg, size_t msg_len,
+                                const byte* aug, size_t aug_len)
 {   return self->aggregate(pk, sig, msg, msg_len, aug, aug_len);   }
 """
 common_js += """
-Pairing.prototype['aggregate'] = Pairing.aggregate = /** @suppress {undefinedVars, duplicate} @this{Object} */function(pk, sig, msg, aug)
+Pairing.prototype['aggregate'] = Pairing.aggregate = /** @this{Object} */
+function(pk, sig, msg, aug)
 {
     ensureCache.prepare();
     const [_msg, msg_len] = ensureAny(msg);
@@ -558,15 +597,17 @@ void EMSCRIPTEN_KEEPALIVE Pairing_commit_0(Pairing* self)
 {   self->commit();   }
 """
 common_js += """
-Pairing.prototype['commit'] = Pairing.commit = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+Pairing.prototype['commit'] = Pairing.commit = /** @this{Object} */
+function()
 {   _Pairing_commit_0(this.ptr);    }
 """
 common_cpp += """
-bool EMSCRIPTEN_KEEPALIVE Pairing_finalverify_0(Pairing* self)
+bool EMSCRIPTEN_KEEPALIVE Pairing_finalverify_0(const Pairing* self)
 {   return self->finalverify();   }
 """
 common_js += """
-Pairing.prototype['finalverify'] = Pairing.finalverify = /** @suppress {undefinedVars, duplicate} @this{Object} */function()
+Pairing.prototype['finalverify'] = Pairing.finalverify = /** @this{Object} */
+function()
 {   return !!(_Pairing_finalverify_0(this.ptr));    }
 """
 
