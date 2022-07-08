@@ -38,6 +38,73 @@ const BLST_ERROR_str = [
 ];
 """
 
+common_js += """
+function unsupported(type, extra)
+{   if (typeof extra === 'undefined')
+        return `${type ? type.constructor.name : 'none'}: unsupported type`;
+    else
+        return `${type ? type.constructor.name : 'none'}/${extra ? extra.constructor.name : 'none'}: unsupported types or combination thereof`;
+}
+
+function ensureAny(value)
+{   if (value === null)
+        return [0, 0];
+
+    switch (value.constructor) {
+        case String:
+            return [ensureString(value), lengthBytesUTF8(value)];
+        case ArrayBuffer:
+            return [ensureInt8(new Uint8Array(value)), value.byteLength];
+        case Buffer: case Uint8Array:
+            return [ensureInt8(value), value.length];
+        case BigInt:
+            if (value < 0)
+                throw new Error("expecting unsigned BigInt value");
+            var temp = [];
+            while (value != 0) {
+                temp.push(Number(value & 255n));
+                value >>= 8n;
+            }
+            return [ensureInt8(temp), temp.length];
+        default:
+            throw new Error(unsupported(value));
+    }
+}
+"""
+
+# ###### Constants
+common_cpp += """
+const P1_Affine* EMSCRIPTEN_KEEPALIVE const_G1()
+{   return reinterpret_cast<const P1_Affine*>(&BLS12_381_G1);   }
+const P2_Affine* EMSCRIPTEN_KEEPALIVE const_G2()
+{   return reinterpret_cast<const P2_Affine*>(&BLS12_381_G2);   }
+const P1_Affine* EMSCRIPTEN_KEEPALIVE const_NEG_G1()
+{   return reinterpret_cast<const P1_Affine*>(&BLS12_381_NEG_G1);   }
+const P2_Affine* EMSCRIPTEN_KEEPALIVE const_NEG_G2()
+{   return reinterpret_cast<const P2_Affine*>(&BLS12_381_NEG_G2);   }
+"""
+common_js += """
+(function() {
+    function setupConsts() {
+        var i = 0;
+        Module['BLST_SUCCESS'] = i++;
+        Module['BLST_BAD_ENCODING'] = i++;
+        Module['BLST_POINT_NOT_ON_CURVE'] = i++;
+        Module['BLST_POINT_NOT_IN_GROUP'] = i++;
+        Module['BLST_AGGR_TYPE_MISMATCH'] = i++;
+        Module['BLST_VERIFY_FAIL'] = i++;
+        Module['BLST_PK_IS_INFINITY'] = i++;
+        Module['BLST_BAD_SCALAR'] = i++;
+        Module['BLS12_381_G1'] = wrapPointer(_const_G1(), P1_Affine);
+        Module['BLS12_381_G2'] = wrapPointer(_const_G2(), P2_Affine);
+        Module['BLS12_381_NEG_G1'] = wrapPointer(_const_NEG_G1(), P1_Affine);
+        Module['BLS12_381_NEG_G2'] = wrapPointer(_const_NEG_G2(), P2_Affine);
+    }
+    if (runtimeInitialized) setupConsts();
+    else addOnInit(setupConsts);
+})();
+"""
+
 # ###### P1_Affine
 p1_cpp = """
 P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_0()
@@ -55,16 +122,15 @@ void EMSCRIPTEN_KEEPALIVE P1_Affine__destroy__0(P1_Affine* self)
 p1_js = """
 /** @this{Object} */
 function P1_Affine(input)
-{
-    ensureCache.prepare();
-    if (input === undefined)
+{   ensureCache.prepare();
+    if (typeof input === 'undefined' || input === null)
         this.ptr = _P1_Affine_0();
     else if (input instanceof Uint8Array)
         this.ptr = _P1_Affine_2(ensureInt8(input), input.length);
     else if (input instanceof P1)
         this.ptr = _P1_Affine_1(input.ptr);
     else
-        throw new Error(`unsupported type ${input.constructor.name}`);
+        throw new Error(unsupported(input));
     getCache(P1_Affine)[this.ptr] = this;
 }
 P1_Affine.prototype = Object.create(WrapperObject.prototype);
@@ -96,8 +162,7 @@ function()
 """
 p1_cpp += """
 byte* EMSCRIPTEN_KEEPALIVE P1_Affine_serialize_0(const P1_Affine* self)
-{
-    byte out[96*1];
+{   byte out[96*1];
     self->serialize(out);
     return out;
 }
@@ -105,15 +170,13 @@ byte* EMSCRIPTEN_KEEPALIVE P1_Affine_serialize_0(const P1_Affine* self)
 p1_js += """
 P1_Affine.prototype['serialize'] = P1_Affine.prototype.serialize = /** @this{Object} */
 function()
-{
-    var out = _P1_Affine_serialize_0(this.ptr);
+{   var out = _P1_Affine_serialize_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 96*1));
 };;
 """
 p1_cpp += """
 byte* EMSCRIPTEN_KEEPALIVE P1_Affine_compress_0(const P1_Affine* self)
-{
-    byte out[48*1];
+{   byte out[48*1];
     self->compress(out);
     return out;
 }
@@ -121,8 +184,7 @@ byte* EMSCRIPTEN_KEEPALIVE P1_Affine_compress_0(const P1_Affine* self)
 p1_js += """
 P1_Affine.prototype['compress'] = P1_Affine.prototype.compress = /** @this{Object} */
 function()
-{
-    var out = _P1_Affine_compress_0(this.ptr);
+{   var out = _P1_Affine_compress_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 48*1));
 };;
 """
@@ -160,10 +222,9 @@ bool EMSCRIPTEN_KEEPALIVE P1_Affine_is_equal_1(const P1_Affine* self, const P1_A
 p1_js += """
 P1_Affine.prototype['is_equal'] = P1_Affine.prototype.is_equal = /** @this{Object} */
 function(p)
-{
-    if (p instanceof P1_Affine)
+{   if (p instanceof P1_Affine)
         return !!(_P1_Affine_is_equal_1(this.ptr, p.ptr));
-    throw new Error(`unsupported type ${p.constructor.name}`);
+    throw new Error(unsupported(p));
 };;
 """
 p1_cpp += """
@@ -177,9 +238,8 @@ int EMSCRIPTEN_KEEPALIVE P1_Affine_core_verify_7(const P1_Affine* self,
 p1_js += """
 P1_Affine.prototype['core_verify'] = P1_Affine.prototype.core_verify = /** @this{Object} */
 function(pk, hash_or_encode, msg, DST, aug)
-{
-    if (!(pk instanceof P2_Affine))
-        throw new Error(`unsupported type ${pk.constructor.name}`);
+{   if (!(pk instanceof P2_Affine))
+        throw new Error(unsupported(pk));
     ensureCache.prepare();
     const [_msg, msg_len] = ensureAny(msg);
     DST = ensureString(DST);
@@ -192,9 +252,9 @@ P1_Affine* EMSCRIPTEN_KEEPALIVE P1_Affine_generator_0()
 {   return new P1_Affine(P1_Affine::generator());   }
 """
 p1_js += """
-P1_Affine.generator =
+P1_Affine['generator'] = P1_Affine.generator =
 function()
-{   return wrapPointer(_P1_Affine_generator_0(), P1_Affine);   }
+{   return wrapPointer(_P1_Affine_generator_0(), P1_Affine);   };;
 """
 
 # ###### P1
@@ -216,9 +276,8 @@ void EMSCRIPTEN_KEEPALIVE P1__destroy__0(P1* self)
 p1_js += """
 /** @this{Object} */
 function P1(input)
-{
-    ensureCache.prepare();
-    if (input === undefined)
+{   ensureCache.prepare();
+    if (typeof input === 'undefined' || input === null)
         this.ptr = _P1_0();
     else if (input instanceof Uint8Array)
         this.ptr = _P1_2(ensureInt8(input), input.length);
@@ -227,7 +286,7 @@ function P1(input)
     else if (input instanceof SecretKey)
         this.ptr = _P1_secretkey_1(input.ptr);
     else
-        throw new Error(`unsupported type ${input.constructor.name}`);
+        throw new Error(unsupported(input));
     getCache(P1)[this.ptr] = this;
 }
 P1.prototype = Object.create(WrapperObject.prototype);
@@ -259,8 +318,7 @@ function()
 """
 p1_cpp += """
 byte* EMSCRIPTEN_KEEPALIVE P1_serialize_0(const P1* self)
-{
-    byte out[96*1];
+{   byte out[96*1];
     self->serialize(out);
     return out;
 }
@@ -268,15 +326,13 @@ byte* EMSCRIPTEN_KEEPALIVE P1_serialize_0(const P1* self)
 p1_js += """
 P1.prototype['serialize'] = P1.prototype.serialize = /** @this{Object} */
 function()
-{
-    var out = _P1_serialize_0(this.ptr);
+{   var out = _P1_serialize_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 96*1));
 };;
 """
 p1_cpp += """
 byte* EMSCRIPTEN_KEEPALIVE P1_compress_0(const P1* self)
-{
-    byte out[48*1];
+{   byte out[48*1];
     self->compress(out);
     return out;
 }
@@ -284,8 +340,7 @@ byte* EMSCRIPTEN_KEEPALIVE P1_compress_0(const P1* self)
 p1_js += """
 P1.prototype['compress'] = P1.prototype.compress = /** @this{Object} */
 function()
-{
-    var out = _P1_compress_0(this.ptr);
+{   var out = _P1_compress_0(this.ptr);
     return new Uint8Array(HEAPU8.subarray(out, out + 48*1));
 };;
 """
@@ -323,10 +378,9 @@ bool EMSCRIPTEN_KEEPALIVE P1_is_equal_1(const P1* self, const P1* p)
 p1_js += """
 P1.prototype['is_equal'] = P1.prototype.is_equal = /** @this{Object} */
 function(p)
-{
-    if (p instanceof P1)
+{   if (p instanceof P1)
         return !!(_P1_is_equal_1(this.ptr, p.ptr));
-    throw new Error(`unsupported type ${p.constructor.name}`);
+    throw new Error(unsupported(p));
 };;
 """
 p1_cpp += """
@@ -336,11 +390,10 @@ void EMSCRIPTEN_KEEPALIVE P1_aggregate_1(P1* self, const P1_Affine* p)
 p1_js += """
 P1.prototype['aggregate'] = P1.prototype.aggregate = /** @this{Object} */
 function(p)
-{
-    if (p instanceof P1_Affine)
+{   if (p instanceof P1_Affine)
         _P1_aggregate_1(this.ptr, p.ptr);
     else
-        throw new Error(`unsupported type ${p.constructor.name}`);
+        throw new Error(unsupported(p));
 };;
 """
 p1_cpp += """
@@ -350,11 +403,10 @@ void EMSCRIPTEN_KEEPALIVE P1_sign_with_1(P1* self, const SecretKey* sk)
 p1_js += """
 P1.prototype['sign_with'] = P1.prototype.sign_with = /** @this{Object} */
 function(sk)
-{
-    if (sk instanceof SecretKey)
+{   if (sk instanceof SecretKey)
         _P1_sign_with_1(this.ptr, sk.ptr);
     else
-        throw new Error(`unsupported type ${sk.constructor.name}`);
+        throw new Error(unsupported(sk));
     return this;
 };;
 """
@@ -367,8 +419,7 @@ void EMSCRIPTEN_KEEPALIVE P1_hash_to_5(P1* self, const byte* msg, size_t msg_len
 p1_js += """
 P1.prototype['hash_to'] = P1.prototype.hash_to = /** @this{Object} */
 function(msg, DST, aug)
-{
-    ensureCache.prepare();
+{   ensureCache.prepare();
     const [_msg, msg_len] = ensureAny(msg);
     DST = ensureString(DST);
     const [_aug, aug_len] = ensureAny(aug);
@@ -385,8 +436,7 @@ void EMSCRIPTEN_KEEPALIVE P1_encode_to_5(P1* self, const byte* msg, size_t msg_l
 p1_js += """
 P1.prototype['encode_to'] = P1.prototype.encode_to = /** @this{Object} */
 function(msg, DST, aug)
-{
-    ensureCache.prepare();
+{   ensureCache.prepare();
     const [_msg, msg_len] = ensureAny(msg);
     DST = ensureString(DST);
     const [_aug, aug_len] = ensureAny(aug);
@@ -403,13 +453,14 @@ void EMSCRIPTEN_KEEPALIVE P1_mult_2(P1* self, const byte* scalar, size_t nbits)
 p1_js += """
 P1.prototype['mult'] = P1.prototype.mult = /** @this{Object} */
 function(scalar)
-{
-    /*if (scalar instanceof Scalar) {
+{   if (scalar instanceof Scalar) {
         _P1_mult_1(this.ptr, scalar.ptr);
-    } else*/ {
+    } else if (typeof scalar !== 'string') {
         ensureCache.prepare();
         const [_scalar, len] = ensureAny(scalar);
         _P1_mult_2(this.ptr, _scalar, len*8);
+    } else {
+        throw new Error(unsupported(scalar));
     }
     return this;
 };;
@@ -421,16 +472,10 @@ void EMSCRIPTEN_KEEPALIVE P1_cneg_1(P1* self, bool flag)
 p1_js += """
 P1.prototype['cneg'] = P1.prototype.cneg = /** @this{Object} */
 function(flag)
-{
-    _P1_cneg_1(this.ptr, !!flag);
-    return this;
-};;
+{   _P1_cneg_1(this.ptr, !!flag); return this;   };;
 P1.prototype['neg'] = P1.prototype.neg = /** @this{Object} */
 function()
-{
-    _P1_cneg_1(this.ptr, true);
-    return this;
-};;
+{   _P1_cneg_1(this.ptr, true); return this;   };;
 """
 p1_cpp += """
 void EMSCRIPTEN_KEEPALIVE P1_add_1(P1* self, const P1* a)
@@ -441,13 +486,12 @@ void EMSCRIPTEN_KEEPALIVE P1_add_affine_1(P1* self, const P1_Affine* a)
 p1_js += """
 P1.prototype['add'] = P1.prototype.add = /** @this{Object} */
 function(p)
-{
-    if (p instanceof P1)
+{   if (p instanceof P1)
         _P1_add_1(this.ptr, p.ptr);
     else if (p instanceof P1_Affine)
         _P1_add_affine_1(this.ptr, p.ptr);
     else
-        throw new Error(`unsupported type ${p.constructor.name}`);
+        throw new Error(unsupported(p));
     return this;
 };;
 """
@@ -458,44 +502,16 @@ void EMSCRIPTEN_KEEPALIVE P1_dbl_0(P1* self)
 p1_js += """
 P1.prototype['dbl'] = P1.prototype.dbl = /** @this{Object} */
 function()
-{
-    _P1_dbl_0(this.ptr);
-    return this;
-};;
+{   _P1_dbl_0(this.ptr); return this;   };;
 """
 p1_cpp += """
 P1* EMSCRIPTEN_KEEPALIVE P1_generator_0()
 {   return new P1(P1::generator());   }
 """
 p1_js += """
-P1.generator =
+Module['G1'] = P1['generator'] = P1.generator =
 function()
-{   return wrapPointer(_P1_generator_0(), P1);   }
-"""
-
-common_js += """
-function ensureAny(value) {
-    if (typeof value === "undefined" || value === null)
-        return [0, 0];
-
-    switch (value.constructor.name) {
-        case "String":
-            return [ensureString(value), lengthBytesUTF8(value)];
-        case "Buffer": case "Uint8Array":
-            return [ensureInt8(value), value.length];
-        case "BigInt":
-            if (value < 0)
-                throw new Error("expecting unsigned BigInt value");
-            var temp = [];
-            while (value != 0) {
-                temp.push(Number(value & 255n));
-                value >>= 8n;
-            }
-            return [ensureInt8(temp), temp.length];
-        default:
-            throw new Error(`unsupported type for 'value': ${value.constructor.name}`);
-    }
-}
+{   return wrapPointer(_P1_generator_0(), P1);   };;
 """
 
 # ###### SecretKey
@@ -508,8 +524,7 @@ void EMSCRIPTEN_KEEPALIVE SecretKey__destroy__0(SecretKey* self)
 common_js += """
 /** @this{Object} */
 function SecretKey()
-{
-    this.ptr = _SecretKey_0();
+{   this.ptr = _SecretKey_0();
     getCache(SecretKey)[this.ptr] = this;
 }
 SecretKey.prototype = Object.create(WrapperObject.prototype);
@@ -528,15 +543,420 @@ void EMSCRIPTEN_KEEPALIVE SecretKey_keygen_3(SecretKey* self, const byte* IKM, s
 common_js += """
 SecretKey.prototype['keygen'] = SecretKey.prototype.keygen = /** @this{Object} */
 function(IKM, info)
-{
-    ensureCache.prepare();
+{   ensureCache.prepare();
     const [_IKM, IKM_len] = ensureAny(IKM);
     if (IKM_len < 32)
-        throw new Error("IKM is too short");
+        throw new Error("BLST_ERROR: bad scalar");
     info = ensureString(info);
     _SecretKey_keygen_3(this.ptr, _IKM, IKM_len, info);
     HEAP8.fill(0, _IKM, _IKM + IKM_len);
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE SecretKey_derive_master_eip2333_2(SecretKey* self, const byte* IKM, size_t IKM_len)
+{   self->derive_master_eip2333(IKM, IKM_len);   }
+"""
+common_js += """
+SecretKey.prototype['derive_master_eip2333'] = SecretKey.prototype.derive_master_eip2333 = /** @this{Object} */
+function(IKM)
+{   ensureCache.prepare();
+    const [_IKM, IKM_len] = ensureAny(IKM);
+    if (IKM_len < 32)
+        throw new Error("BLST_ERROR: bad scalar");
+    _SecretKey_derive_master_eip2333_2(this.ptr, _IKM, IKM_len);
+    HEAP8.fill(0, _IKM, _IKM + IKM_len);
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE SecretKey_derive_child_eip2333_2(SecretKey* self, const SecretKey* sk, unsigned int child_index)
+{   self->derive_child_eip2333(*sk, child_index);   }
+"""
+common_js += """
+SecretKey.prototype['derive_child_eip2333'] = SecretKey.prototype.derive_child_eip2333 = /** @this{Object} */
+function(sk, child_index)
+{   if (!(sk instanceof SecretKey))
+        throw new Error(unsupported(sk));
+    _SecretKey_derive_child_eip2333_2(this.ptr, sk.ptr, child_index);
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE SecretKey_from_bendian_1(SecretKey* self, const byte* sk)
+{   self->from_bendian(sk);   }
+"""
+common_js += """
+SecretKey.prototype['from_bendian'] = SecretKey.prototype.from_bendian = /** @this{Object} */
+function(sk)
+{   if (!(sk instanceof Uint8Array) || sk.length != 32)
+        throw new Error(unsupported(sk));
+    ensureCache.prepare();
+    sk = ensureInt8(sk);
+    _SecretKey_from_bendian_1(this.ptr, sk);
+    HEAP8.fill(0, sk, sk + 32);
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE SecretKey_from_lendian_1(SecretKey* self, const byte* sk)
+{   self->from_lendian(sk);   }
+"""
+common_js += """
+SecretKey.prototype['from_lendian'] = SecretKey.prototype.from_lendian = /** @this{Object} */
+function(sk)
+{   if (!(sk instanceof Uint8Array) || sk.length != 32)
+        throw new Error(unsupported(sk));
+    ensureCache.prepare();
+    sk = ensureInt8(sk);
+    _SecretKey_from_lendian_1(this.ptr, sk);
+    HEAP8.fill(0, sk, sk + 32);
+};;
+"""
+common_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE SecretKey_to_bendian_0(const SecretKey* self)
+{   byte out[32];
+    self->to_bendian(out);
+    return out;
 }
+"""
+common_js += """
+SecretKey.prototype['to_bendian'] = SecretKey.prototype.to_bendian = /** @this{Object} */
+function()
+{   var out = _SecretKey_to_bendian_0(this.ptr);
+    var ret = new Uint8Array(HEAPU8.subarray(out, out + 32));
+    HEAP8.fill(0, out, out + 32);
+    return ret;
+};;
+"""
+common_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE SecretKey_to_lendian_0(const SecretKey* self)
+{   byte out[32];
+    self->to_lendian(out);
+    return out;
+}
+"""
+common_js += """
+SecretKey.prototype['to_lendian'] = SecretKey.prototype.to_lendian = /** @this{Object} */
+function()
+{   var out = _SecretKey_to_lendian_0(this.ptr);
+    var ret = new Uint8Array(HEAPU8.subarray(out, out + 32));
+    HEAP8.fill(0, out, out + 32);
+    return ret;
+};;
+"""
+
+# ###### Scalar
+common_cpp += """
+Scalar* EMSCRIPTEN_KEEPALIVE Scalar_0()
+{   return new Scalar();   }
+Scalar* EMSCRIPTEN_KEEPALIVE Scalar_2(const byte* scalar, size_t nbits)
+{   return new Scalar(scalar, nbits);   }
+Scalar* EMSCRIPTEN_KEEPALIVE Scalar_3(const byte* msg, size_t msg_len, const char* DST)
+{   return new Scalar(msg, msg_len, DST ? DST : "");   }
+void EMSCRIPTEN_KEEPALIVE Scalar__destroy__0(Scalar* self)
+{   delete self;   }
+"""
+common_js += """
+/** @this{Object} */
+function Scalar(scalar, DST)
+{   if (typeof scalar === 'undefined' || scalar === null) {
+        this.ptr = _Scalar_0();
+    } else {
+        ensureCache.prepare();
+        const [ _scalar, len] = ensureAny(scalar);
+        if (typeof DST === 'string' || DST === null) {
+            DST = ensureString(DST);
+            this.ptr = _Scalar_3(_scalar, len, DST);
+        } else {
+            this.ptr = _Scalar_2(_scalar, len*8);
+        }
+    }
+    getCache(Scalar)[this.ptr] = this;
+}
+Scalar.prototype = Object.create(WrapperObject.prototype);
+Scalar.prototype.constructor = Scalar;
+Scalar.prototype.__class__ = Scalar;
+Scalar.__cache__ = {};
+Module['Scalar'] = Scalar;
+Scalar.prototype['__destroy__'] = Scalar.prototype.__destroy__ = /** @this{Object} */
+function()
+{   _Scalar__destroy__0(this.ptr); this.ptr = 0;  };;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Scalar_hash_to_3(Scalar* self, const byte* msg, size_t msg_len, const char* DST)
+{   (void)self->hash_to(msg, msg_len, DST ? DST : "");   }
+"""
+common_js += """
+Scalar.prototype['hash_to'] = Scalar.prototype.hash_to = /** @this{Object} */
+function(msg, DST)
+{   ensureCache.prepare();
+    const [ _msg, msg_len] = ensureAny(msg);
+    DST = ensureString(DST);
+    _Scalar_hash_to_3(this.ptr, _msg, msg_len, DST);
+    return this;
+};;
+"""
+common_cpp += """
+Scalar* EMSCRIPTEN_KEEPALIVE Scalar_dup_0(const Scalar* self)
+{   return new Scalar(self->dup());   }
+"""
+common_js += """
+Scalar.prototype['dup'] = Scalar.prototype.dup = /** @this{Object} */
+function()
+{   return wrapPointer(_Scalar_dup_0(this.ptr), Scalar);   };;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Scalar_from_bendian_2(Scalar* self, const byte* msg, size_t msg_len)
+{   (void)self->from_bendian(msg, msg_len);   }
+"""
+common_js += """
+Scalar.prototype['from_bendian'] = Scalar.prototype.from_bendian = /** @this{Object} */
+function(msg)
+{   ensureCache.prepare();
+    const [ _msg, msg_len] = ensureAny(msg);
+    _Scalar_from_bendian_2(this.ptr, _msg, msg_len);
+    return this;
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Scalar_from_lendian_2(Scalar* self, const byte* msg, size_t msg_len)
+{   (void)self->from_lendian(msg, msg_len);   }
+"""
+common_js += """
+Scalar.prototype['from_lendian'] = Scalar.prototype.from_lendian = /** @this{Object} */
+function(msg)
+{   ensureCache.prepare();
+    const [ _msg, msg_len] = ensureAny(msg);
+    _Scalar_from_lendian_2(this.ptr, _msg, msg_len);
+    return this;
+};;
+"""
+common_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE Scalar_to_bendian_0(const Scalar* self)
+{   byte out[32];
+    self->to_bendian(out);
+    return out;
+}
+"""
+common_js += """
+Scalar.prototype['to_bendian'] = Scalar.prototype.to_bendian = /** @this{Object} */
+function()
+{   var out = _Scalar_to_bendian_0(this.ptr);
+    return new Uint8Array(HEAPU8.subarray(out, out + 32));
+};;
+"""
+common_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE Scalar_to_lendian_0(const Scalar* self)
+{   byte out[32];
+    self->to_lendian(out);
+    return out;
+}
+"""
+common_js += """
+Scalar.prototype['to_lendian'] = Scalar.prototype.to_lendian = /** @this{Object} */
+function()
+{   var out = _Scalar_to_lendian_0(this.ptr);
+    return new Uint8Array(HEAPU8.subarray(out, out + 32));
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Scalar_add_1(Scalar* self, const Scalar* a)
+{   try                         { (void)self->add(*a); }
+    catch (const BLST_ERROR& e) { blst_exception(e);   }
+}
+"""
+common_js += """
+Scalar.prototype['add'] = Scalar.prototype.add = /** @this{Object} */
+function(a)
+{   if (!(a instanceof Scalar || a instanceof SecretKey))
+        throw new Error(unsupported(a));
+    _Scalar_add_1(this.ptr, a.ptr);
+    return this;
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Scalar_sub_1(Scalar* self, const Scalar* a)
+{   try                         { (void)self->sub(*a); }
+    catch (const BLST_ERROR& e) { blst_exception(e);   }
+}
+"""
+common_js += """
+Scalar.prototype['sub'] = Scalar.prototype.sub = /** @this{Object} */
+function(a)
+{   if (!(a instanceof Scalar))
+        throw new Error(unsupported(a));
+    _Scalar_sub_1(this.ptr, a.ptr);
+    return this;
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Scalar_mul_1(Scalar* self, const Scalar* a)
+{   try                         { (void)self->mul(*a); }
+    catch (const BLST_ERROR& e) { blst_exception(e);   }
+}
+"""
+common_js += """
+Scalar.prototype['mul'] = Scalar.prototype.mul = /** @this{Object} */
+function(a)
+{   if (!(a instanceof Scalar))
+        throw new Error(unsupported(a));
+    _Scalar_mul_1(this.ptr, a.ptr);
+    return this;
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Scalar_inverse_0(Scalar* self)
+{   (void)self->inverse();   }
+"""
+common_js += """
+Scalar.prototype['inverse'] = Scalar.prototype.inverse = /** @this{Object} */
+function()
+{   _Scalar_inverse_0(this.ptr); return this;   };;
+"""
+
+# ###### PT
+common_cpp += """
+PT* EMSCRIPTEN_KEEPALIVE PT_pq_affine_2(const P1_Affine* p, const P2_Affine* q)
+{   return new PT(*p, *q);   }
+PT* EMSCRIPTEN_KEEPALIVE PT_pq_2(const P1* p, const P2* q)
+{   return new PT(*p, *q);   }
+void EMSCRIPTEN_KEEPALIVE PT__destroy__0(PT* self)
+{   delete self;   }
+"""
+common_js += """
+/** @this{Object} */
+function PT(p, q)
+{   if (typeof q === 'undefined' || q === null) {
+        if (p instanceof P1_Affine)
+            this.ptr = _PT_pq_affine_2(p.ptr, 0);
+        else if (p instanceof P2_Affine)
+            this.ptr = _PT_pq_affine_2(0, p.ptr);
+        else
+            throw new Error(unsupported(p));
+    } else if (p instanceof P1_Affine && q instanceof P2_Affine) {
+        this.ptr = _PT_pq_affine_2(p.ptr, q.ptr);
+    } else if (p instanceof P2_Affine && q instanceof P1_Affine) {
+        this.ptr = _PT_pq_affine_2(q.ptr, p.ptr);
+    } else if (p instanceof P1 && q instanceof P2) {
+        this.ptr = _PT_pq_2(p.ptr, q.ptr);
+    } else if (p instanceof P2 && q instanceof P1) {
+        this.ptr = _PT_pq_2(q.ptr, p.ptr);
+    } else {
+        throw new Error(unsupported(p, q));
+    }
+    getCache(PT)[this.ptr] = this;
+}
+PT.prototype = Object.create(WrapperObject.prototype);
+PT.prototype.constructor = PT;
+PT.prototype.__class__ = PT;
+PT.__cache__ = {};
+Module['PT'] = PT;
+PT.prototype['__destroy__'] = PT.prototype.__destroy__ = /** @this{Object} */
+function()
+{   _PT__destroy__0(this.ptr); this.ptr = 0;  };;
+"""
+common_cpp += """
+PT* EMSCRIPTEN_KEEPALIVE PT_dup_0(const PT* self)
+{   return new PT(self->dup());   }
+"""
+common_js += """
+PT.prototype['dup'] = PT.prototype.dup = /** @this{Object} */
+function()
+{   return wrapPointer(_PT_dup_0(this.ptr), PT);   };;
+"""
+common_cpp += """
+bool EMSCRIPTEN_KEEPALIVE PT_is_one_0(const PT* self)
+{   return self->is_one();   }
+"""
+common_js += """
+PT.prototype['is_one'] = PT.prototype.is_one = /** @this{Object} */
+function()
+{   return !!(_PT_is_one_0(this.ptr));   };;
+"""
+common_cpp += """
+bool EMSCRIPTEN_KEEPALIVE PT_is_equal_1(const PT* self, const PT* p)
+{   return self->is_equal(*p);   }
+"""
+common_js += """
+PT.prototype['is_equal'] = PT.prototype.is_equal = /** @this{Object} */
+function(p)
+{   if (p instanceof PT)
+        return !!(_PT_is_equal_1(this.ptr, p.ptr));
+    throw new Error(unsupported(p));
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE PT_sqr_0(PT* self)
+{   (void)self->sqr();   }
+"""
+common_js += """
+PT.prototype['sqr'] = PT.prototype.sqr = /** @this{Object} */
+function()
+{   _PT_sqr_0(this.ptr); return this;   };;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE PT_mul_1(PT* self, const PT* p)
+{   (void)self->mul(*p);   }
+"""
+common_js += """
+PT.prototype['mul'] = PT.prototype.mul = /** @this{Object} */
+function(p)
+{   if (p instanceof PT)
+        _PT_mul_1(this.ptr, p.ptr);
+    else
+        throw new Error(unsupported(p));
+    return this;
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE PT_final_exp_0(PT* self)
+{   (void)self->final_exp();   }
+"""
+common_js += """
+PT.prototype['final_exp'] = PT.prototype.final_exp = /** @this{Object} */
+function()
+{   _PT_final_exp_0(this.ptr); return this;   };;
+"""
+common_cpp += """
+bool EMSCRIPTEN_KEEPALIVE PT_in_group_0(const PT* self)
+{   return self->in_group();   }
+"""
+common_js += """
+PT.prototype['in_group'] = PT.prototype.in_group = /** @this{Object} */
+function()
+{   return !!(_PT_in_group_0(this.ptr));   };;
+"""
+common_cpp += """
+byte* EMSCRIPTEN_KEEPALIVE PT_to_bendian_0(const PT* self)
+{   byte out[48*12];
+    self->to_bendian(out);
+    return out;
+}
+"""
+common_js += """
+PT.prototype['to_bendian'] = PT.prototype.to_bendian = /** @this{Object} */
+function()
+{   var out = _PT_to_bendian_0(this.ptr);
+    return new Uint8Array(HEAPU8.subarray(out, out + 48*12));
+};;
+"""
+common_cpp += """
+bool EMSCRIPTEN_KEEPALIVE PT_finalverify_2(const PT* gt1, const PT* gt2)
+{   return PT::finalverify(*gt1, *gt1);   }
+"""
+common_js += """
+PT['finalverify'] = PT.finalverify =
+function(gt1, gt2)
+{   if (gt1 instanceof PT && gt2 instanceof PT)
+        return !!(_PT_finalverify_2(gt1.ptr, gt2.ptr));
+    throw new Error(unsupported(gt1, gt2));
+};;
+"""
+common_cpp += """
+PT* EMSCRIPTEN_KEEPALIVE PT_one_0()
+{   return new PT(PT::one());   }
+"""
+common_js += """
+PT['one'] = PT.one =
+function()
+{   return wrapPointer(_PT_one_0(), PT);   };;
 """
 
 # ###### Pairing
@@ -549,8 +969,7 @@ void EMSCRIPTEN_KEEPALIVE Pairing__destroy__0(Pairing* self)
 common_js += """
 /** @this{Object} */
 function Pairing(hash_or_encode, DST)
-{
-    ensureCache.prepare();
+{   ensureCache.prepare();
     DST = ensureString(DST);
     this.ptr = _Pairing_2(!!hash_or_encode, DST);
     getCache(SecretKey)[this.ptr] = this;
@@ -577,10 +996,9 @@ int EMSCRIPTEN_KEEPALIVE Pairing_aggregate_pk_in_g2_6(Pairing* self,
 {   return self->aggregate(pk, sig, msg, msg_len, aug, aug_len);   }
 """
 common_js += """
-Pairing.prototype['aggregate'] = Pairing.aggregate = /** @this{Object} */
+Pairing.prototype['aggregate'] = Pairing.prototype.aggregate = /** @this{Object} */
 function(pk, sig, msg, aug)
-{
-    ensureCache.prepare();
+{   ensureCache.prepare();
     const [_msg, msg_len] = ensureAny(msg);
     const [_aug, aug_len] = ensureAny(aug);
     if (pk instanceof P1_Affine && sig instanceof P2_Affine)
@@ -588,27 +1006,110 @@ function(pk, sig, msg, aug)
     else if (pk instanceof P2_Affine && sig instanceof P1_Affine)
         return _Pairing_aggregate_pk_in_g2_6(this.ptr, pk.ptr, sig.ptr, _msg, msg_len, _aug, aug_len);
     else
-        throw new Error(`unsupported types ${pk.constructor.name} and ${sig.constructor.name} or combination thereof`);
+        throw new Error(unsupported(pk, sig));
     return -1;
-}
+};;
+"""
+common_cpp += """
+int EMSCRIPTEN_KEEPALIVE Pairing_mul_n_aggregate_pk_in_g1_8(Pairing* self,
+                                const P1_Affine* pk, const P2_Affine* sig,
+                                const byte* scalar, size_t nbits,
+                                const byte* msg, size_t msg_len,
+                                const byte* aug, size_t aug_len)
+{   return self->mul_n_aggregate(pk, sig, scalar, nbits, msg, msg_len, aug, aug_len);   }
+int EMSCRIPTEN_KEEPALIVE Pairing_mul_n_aggregate_pk_in_g2_8(Pairing* self,
+                                const P2_Affine* pk, const P1_Affine* sig,
+                                const byte* scalar, size_t nbits,
+                                const byte* msg, size_t msg_len,
+                                const byte* aug, size_t aug_len)
+{   return self->mul_n_aggregate(pk, sig, scalar, nbits, msg, msg_len, aug, aug_len);   }
+"""
+common_js += """
+Pairing.prototype['mul_n_aggregate'] = Pairing.prototype.mul_n_aggregate = /** @this{Object} */
+function(pk, sig, scalar, msg, aug)
+{   if (typeof scalar === 'undefined' || scalar === null)
+        throw new Error("missing |scalar| argument");
+    ensureCache.prepare();
+    const [_scalar, len] = ensureAny(scalar);
+    const [_msg, msg_len] = ensureAny(msg);
+    const [_aug, aug_len] = ensureAny(aug);
+    if (pk instanceof P1_Affine && sig instanceof P2_Affine)
+        return _Pairing_mul_n_aggregate_pk_in_g1_8(this.ptr, pk.ptr, sig.ptr, _scalar, len*8, _msg, msg_len, _aug, aug_len);
+    else if (pk instanceof P2_Affine && sig instanceof P1_Affine)
+        return _Pairing_mul_n_aggregate_pk_in_g2_8(this.ptr, pk.ptr, sig.ptr, _scalar, len*8, _msg, msg_len, _aug, aug_len);
+    else
+        throw new Error(unsupported(pk, sig));
+    return -1;
+};;
 """
 common_cpp += """
 void EMSCRIPTEN_KEEPALIVE Pairing_commit_0(Pairing* self)
 {   self->commit();   }
 """
 common_js += """
-Pairing.prototype['commit'] = Pairing.commit = /** @this{Object} */
+Pairing.prototype['commit'] = Pairing.prototype.commit = /** @this{Object} */
 function()
-{   _Pairing_commit_0(this.ptr);    }
+{   _Pairing_commit_0(this.ptr);   };;
 """
 common_cpp += """
-bool EMSCRIPTEN_KEEPALIVE Pairing_finalverify_0(const Pairing* self)
-{   return self->finalverify();   }
+size_t EMSCRIPTEN_KEEPALIVE Pairing_sizeof_0()
+{   return blst_pairing_sizeof();   }
 """
 common_js += """
-Pairing.prototype['finalverify'] = Pairing.finalverify = /** @this{Object} */
+Pairing.prototype['asArrayBuffer'] = Pairing.prototype.asArrayBuffer = /** @this{Object} */
 function()
-{   return !!(_Pairing_finalverify_0(this.ptr));    }
+{   return HEAP8.buffer.slice(this.ptr, this.ptr + _Pairing_sizeof_0());   };;
+"""
+common_cpp += """
+int EMSCRIPTEN_KEEPALIVE Pairing_merge_1(Pairing* self, const Pairing* ctx)
+{   return self->merge(ctx);   }
+"""
+common_js += """
+Pairing.prototype['merge'] = Pairing.prototype.merge = /** @this{Object} */
+function(ctx)
+{   if (ctx instanceof Pairing)
+        return _Pairing_merge_1(this.ptr, ctx.ptr);
+    else if (ctx instanceof ArrayBuffer && ctx.byteLength == _Pairing_sizeof_0())
+        return _Pairing_merge_1(this.ptr, ensureAny(ctx)[0]);
+    throw new Error(unsupported(ctx));
+};;
+"""
+common_cpp += """
+bool EMSCRIPTEN_KEEPALIVE Pairing_finalverify_1(const Pairing* self, const PT* sig)
+{   return self->finalverify(sig);   }
+"""
+common_js += """
+Pairing.prototype['finalverify'] = Pairing.prototype.finalverify = /** @this{Object} */
+function(sig)
+{   if (typeof sig === 'undefined' || sig === null)
+        return !!(_Pairing_finalverify_1(this.ptr, 0));
+    else if (sig instanceof PT)
+        return !!(_Pairing_finalverify_1(this.ptr, sig.ptr));
+    else
+        throw new Error(unsupported(sig));
+};;
+"""
+common_cpp += """
+void EMSCRIPTEN_KEEPALIVE Pairing_raw_aggregate_2(Pairing* self, const P2_Affine* q, const P1_Affine* p)
+{   self->raw_aggregate(q, p);   }
+"""
+common_js += """
+Pairing.prototype['raw_aggregate'] = Pairing.prototype.raw_aggregate = /** @this{Object} */
+function(q, p)
+{   if (q instanceof P2_Affine && p instanceof P1_Affine)
+        _Pairing_raw_aggregate_2(this.ptr, q.ptr, p.ptr);
+    else
+        throw new Error(unsupported(q, p));
+};;
+"""
+common_cpp += """
+PT* EMSCRIPTEN_KEEPALIVE Pairing_as_fp12_0(Pairing* self)
+{   return new PT(self->as_fp12());   }
+"""
+common_js += """
+Pairing.prototype['as_fp12'] = Pairing.prototype.as_fp12 = /** @this{Object} */
+function()
+{   return wrapPointer(_Pairing_as_fp12_0(this.ptr), PT);   };;
 """
 
 
@@ -625,7 +1126,7 @@ def xchg_1vs2(matchobj):
         return matchobj.group(1) + '1'
 
 
-fd = open("blst_embind.cpp", "w")
+fd = open("blst_bind.cpp", "w")
 print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
 print("// DO NOT EDIT THIS FILE!!!",                         file=fd)
 print("// The file is auto-generated by " + there[-1],       file=fd)
@@ -636,7 +1137,7 @@ print(re.sub(r'((?<!f)[pgPG\*])([12])', xchg_1vs2, p1_cpp), file=fd)
 print("}", file=fd)  # close extern "C" {
 fd.close()
 
-fd = open("blst_embind.js", "w")
+fd = open("blst_bind.js", "w")
 print("//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", file=fd)
 print("// DO NOT EDIT THIS FILE!!!",                         file=fd)
 print("// The file is auto-generated by " + there[-1],       file=fd)
@@ -647,10 +1148,10 @@ print(re.sub(r'((?<!f)[pgPG\*])([12])', xchg_1vs2, p1_js), file=fd)
 fd.close()
 
 subprocess.check_call([os.path.dirname(emcc) + os.path.normpath("/tools/webidl_binder"),
-                       os.devnull, "embind"])
+                       os.devnull, "null_bind"])
 subprocess.check_call(["emcc", "-I..", "-fexceptions", "-include", "stddef.h",
-                       "embind.cpp", "--post-js", "embind.js",
-                       "blst_embind.cpp", "--post-js", "blst_embind.js",
-                       "../../src/server.c", "-lembind",
+                       "null_bind.cpp", "--post-js", "null_bind.js",
+                       "blst_bind.cpp", "--post-js", "blst_bind.js",
+                       os.path.normpath("../../src/server.c"),
                        "-o", os.path.normpath(here + "/blst.js")] +
-                      sys.argv[1:])  # pass through flags, e.g. -Os
+                      sys.argv[1:])  # pass through flags, e.g. -O2 --closure 1
