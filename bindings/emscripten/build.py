@@ -385,7 +385,9 @@ function(p)
 """
 p1_cpp += """
 void EMSCRIPTEN_KEEPALIVE P1_aggregate_1(P1* self, const P1_Affine* p)
-{   return self->aggregate(*p);   }
+{   try                         { self->aggregate(*p); }
+    catch (const BLST_ERROR& e) { blst_exception(e);   }
+}
 """
 p1_js += """
 P1.prototype['aggregate'] = P1.prototype.aggregate = /** @this{Object} */
@@ -813,6 +815,10 @@ function()
 
 # ###### PT
 common_cpp += """
+PT* EMSCRIPTEN_KEEPALIVE PT_p_affine_1(const P1_Affine* p)
+{   return new PT(*p);   }
+PT* EMSCRIPTEN_KEEPALIVE PT_q_affine_1(const P2_Affine* q)
+{   return new PT(*q);   }
 PT* EMSCRIPTEN_KEEPALIVE PT_pq_affine_2(const P1_Affine* p, const P2_Affine* q)
 {   return new PT(*p, *q);   }
 PT* EMSCRIPTEN_KEEPALIVE PT_pq_2(const P1* p, const P2* q)
@@ -825,9 +831,9 @@ common_js += """
 function PT(p, q)
 {   if (typeof q === 'undefined' || q === null) {
         if (p instanceof P1_Affine)
-            this.ptr = _PT_pq_affine_2(p.ptr, 0);
+            this.ptr = _PT_p_affine_1(p.ptr);
         else if (p instanceof P2_Affine)
-            this.ptr = _PT_pq_affine_2(0, p.ptr);
+            this.ptr = _PT_q_affine_1(p.ptr);
         else
             throw new Error(unsupported(p));
     } else if (p instanceof P1_Affine && q instanceof P2_Affine) {
@@ -939,7 +945,7 @@ function()
 """
 common_cpp += """
 bool EMSCRIPTEN_KEEPALIVE PT_finalverify_2(const PT* gt1, const PT* gt2)
-{   return PT::finalverify(*gt1, *gt1);   }
+{   return PT::finalverify(*gt1, *gt2);   }
 """
 common_js += """
 PT['finalverify'] = PT.finalverify =
