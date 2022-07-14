@@ -55,8 +55,6 @@ function ensureAny(value)
             return [ensureString(value), lengthBytesUTF8(value)];
         case ArrayBuffer:
             return [ensureInt8(new Uint8Array(value)), value.byteLength];
-        case Buffer: case Uint8Array:
-            return [ensureInt8(value), value.length];
         case BigInt:
             if (value < 0)
                 throw new Error("expecting unsigned BigInt value");
@@ -66,6 +64,8 @@ function ensureAny(value)
                 value >>= 8n;
             }
             return [ensureInt8(temp), temp.length];
+        case Uint8Array: case Buffer:
+            return [ensureInt8(value), value.length];
         default:
             throw new Error(unsupported(value));
     }
