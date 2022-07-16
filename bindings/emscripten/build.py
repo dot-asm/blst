@@ -1119,7 +1119,7 @@ function()
 """
 
 
-here = os.getcwd()
+blst_js = os.path.join(os.getcwd(), "blst.js") # output file
 there = re.split(r'[/\\](?=[^/\\]*$)', sys.argv[0])
 if len(there) > 1:
     os.chdir(there[0])
@@ -1153,11 +1153,36 @@ print(p1_js, file=fd)
 print(re.sub(r'((?<!f)[pgPG\*])([12])', xchg_1vs2, p1_js), file=fd)
 fd.close()
 
-subprocess.check_call([os.path.dirname(emcc) + os.path.normpath("/tools/webidl_binder"),
+subprocess.check_call([os.path.join(os.path.dirname(emcc), "tools", "webidl_binder"),
                        os.devnull, "null_bind"])
 subprocess.check_call(["emcc", "-I..", "-fexceptions", "-include", "stddef.h",
                        "null_bind.cpp", "--post-js", "null_bind.js",
                        "blst_bind.cpp", "--post-js", "blst_bind.js",
                        os.path.normpath("../../src/server.c"),
-                       "-o", os.path.normpath(here + "/blst.js")] +
+                       "-o", blst_js] +
                       sys.argv[1:])  # pass through flags, e.g. -O2 --closure 1
+
+for opt in sys.argv[1:]:
+    if opt.find("EXPORT_NAME=") >= 0:
+        sys.exit(0)
+
+# Rename 'Module' to 'blst' for smoother use in browser. This is done by
+# finding the very 1st variable declaration, taking its name and replacing
+# its occurrences with 'blst' through the whole script. [Yes, there is
+# -sEXPORT_NAME=name, but it doesn't seem to work quite the way I expected.]
+
+with open(blst_js, "r") as fd:
+    contents = fd.readlines()
+
+replace = None
+for i, line in enumerate(contents):
+    if replace is None:
+        match = re.search(r'\bvar\s+([A-Z_a-z][0-9A-Z_a-z]*)\b', line)
+        if match:
+            replace = re.compile(r'\b(?<!\$){}\b'.format(match.group(1)))
+            contents[i] = replace.sub('blst', line)
+    else:
+        contents[i] = replace.sub('blst', line)
+
+with open(blst_js, "w") as fd:
+    fd.writelines(contents)
