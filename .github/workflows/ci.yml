@@ -157,6 +157,6 @@ jobs:
         image: emscripten/emsdk
         options: --volume ${{ github.workspace }}:/blst --network=none
         run: |
-          git clone -q /blst /tmp
+          git clone -q /blst /tmp/blst
           /tmp/blst/bindings/emscripten/build.py -O2
           env NODE_PATH=.: node /blst/bindings/emscripten/runnable.js
