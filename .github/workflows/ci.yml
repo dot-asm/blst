@@ -149,3 +149,14 @@ jobs:
               )
            fi
         fi
+
+    - name: Emscripten
+      uses: addnab/docker-run-action@v3
+      with:
+        registry: https://index.docker.io/v1/
+        image: emscripten/emsdk
+        options: --volume ${{ github.workspace }}:/blst --network=none
+        run: |
+          git clone -q /blst /tmp
+          /tmp/blst/bindings/emscripten/build.py -O2
+          env NODE_PATH=.: node /blst/bindings/emscripten/runnable.js
