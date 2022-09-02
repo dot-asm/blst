@@ -9,10 +9,9 @@ on:
       - master
   #schedule:
   #  - cron: '0 23+ * * 4'
-  paths:
-    - 'src'
-    - 'bindings/c#'
-    - '.github/workflows/codeql-analysis.yml'
+  #paths:
+  #  - 'src'
+  #  - 'bindings/c#'
 
 jobs:
   analyze:
