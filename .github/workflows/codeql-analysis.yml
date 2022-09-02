@@ -10,14 +10,14 @@ on:
   #schedule:
   #  - cron: '0 23+ * * 4'
 
-paths:
-  - 'src'
-  - 'bindings/c#'
-
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
+
+    paths:
+      - 'src'
+      - 'bindings/c#'
 
     strategy:
       fail-fast: false
