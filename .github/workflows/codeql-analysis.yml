@@ -4,14 +4,17 @@ on:
   push:
     branches:
       - '**'
+    paths:
+      - 'src'
+      - 'bindings/c#'
   pull_request:
     branches:
       - master
+    paths:
+      - 'src'
+      - 'bindings/c#'
   #schedule:
   #  - cron: '0 23+ * * 4'
-  paths:
-    - 'src'
-    - 'bindings/c#'
 
 jobs:
   analyze:
