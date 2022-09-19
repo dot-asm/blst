@@ -44,9 +44,7 @@ jobs:
 
     - if: matrix.language == 'cpp'
       name: Custom build
-      run: |
-        sudo apt-get install libc6-dev:i386
-        ./build.sh -m32
+      run: ./build.sh -m32 -D__wasm__
 
     - if: matrix.language != 'cpp'
       name: Autobuild
