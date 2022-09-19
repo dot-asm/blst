@@ -42,7 +42,14 @@ jobs:
         languages: ${{ matrix.language }}
         queries: security-extended
 
-    - name: Autobuild
+    - if: matrix.language == 'cpp'
+      name: Custom build
+      run: |
+        sudo apt-get install libc6-dev:i386
+        ./build.sh -m32
+
+    - if: matrix.language != 'cpp'
+      name: Autobuild
       uses: github/codeql-action/autobuild@v2
 
     - name: Perform CodeQL Analysis
