@@ -133,6 +133,7 @@ void add_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
 void sub_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
 void mul_by_8_mod_384(vec384 ret, const vec384 a, const vec384 p);
 void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p);
+void mul_by_5_mod_384(vec384 ret, const vec384 a, const vec384 p);
 void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
 void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p);
 void rshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p);
@@ -172,6 +173,8 @@ void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
                      const vec384 p);
 void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
                      const vec384 p);
+void mul_by_5_mod_384x384(vec768 ret, const vec768 a, const vec384 p);
+void neg_mod_384x384(vec768 ret, const vec768 a, const vec384 p);
 
 /*
  * C subroutines
