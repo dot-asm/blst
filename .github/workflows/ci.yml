@@ -162,4 +162,11 @@ jobs:
         run: git clone -q /blst /tmp/blst && /tmp/blst/bindings/emscripten/run.me -O2
 
     - name: C#
-      run: if [ -x bindings/c#/run.me ]; then bindings/c#/run.me; fi
+      run: |
+        if [ -x bindings/c#/run.me ]; then
+            bindings/c#/run.me;
+            if which dotnet > /dev/null 2>&1; then
+                cd bindings/c#
+                env LD_LIBRARY_PATH=`pwd` dotnet run -c Release
+            fi
+        fi
