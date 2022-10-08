@@ -563,6 +563,70 @@ _mul_by_3_mod_384:
 .cfi_endproc	
 
 
+.globl	_mul_by_5_mod_384
+.private_extern	_mul_by_5_mod_384
+
+.p2align	5
+_mul_by_5_mod_384:
+.cfi_startproc
+	.byte	0xf3,0x0f,0x1e,0xfa
+
+
+	pushq	%rbp
+.cfi_adjust_cfa_offset	8
+.cfi_offset	%rbp,-16
+	pushq	%rbx
+.cfi_adjust_cfa_offset	8
+.cfi_offset	%rbx,-24
+	pushq	%r12
+.cfi_adjust_cfa_offset	8
+.cfi_offset	%r12,-32
+	pushq	%r13
+.cfi_adjust_cfa_offset	8
+.cfi_offset	%r13,-40
+	pushq	%r14
+.cfi_adjust_cfa_offset	8
+.cfi_offset	%r14,-48
+	pushq	%r15
+.cfi_adjust_cfa_offset	8
+.cfi_offset	%r15,-56
+	pushq	%rsi
+.cfi_adjust_cfa_offset	8
+
+
+	movq	0(%rsi),%r8
+	movq	8(%rsi),%r9
+	movq	16(%rsi),%r10
+	movq	24(%rsi),%r11
+	movq	32(%rsi),%r12
+	movq	40(%rsi),%r13
+	movq	%rdx,%rcx
+
+	call	__lshift_mod_384
+	call	__lshift_mod_384
+
+	movq	(%rsp),%rdx
+	call	__add_mod_384_a_is_loaded
+
+	movq	8(%rsp),%r15
+.cfi_restore	%r15
+	movq	16(%rsp),%r14
+.cfi_restore	%r14
+	movq	24(%rsp),%r13
+.cfi_restore	%r13
+	movq	32(%rsp),%r12
+.cfi_restore	%r12
+	movq	40(%rsp),%rbx
+.cfi_restore	%rbx
+	movq	48(%rsp),%rbp
+.cfi_restore	%rbp
+	leaq	56(%rsp),%rsp
+.cfi_adjust_cfa_offset	-56
+
+	.byte	0xf3,0xc3
+.cfi_endproc	
+
+
 .globl	_mul_by_8_mod_384
 .private_extern	_mul_by_8_mod_384
 

@@ -585,6 +585,74 @@ mul_by_3_mod_384:
 
 .LSEH_end_mul_by_3_mod_384:
 
+.globl	mul_by_5_mod_384
+
+.def	mul_by_5_mod_384;	.scl 2;	.type 32;	.endef
+.p2align	5
+mul_by_5_mod_384:
+	.byte	0xf3,0x0f,0x1e,0xfa
+	movq	%rdi,8(%rsp)
+	movq	%rsi,16(%rsp)
+	movq	%rsp,%r11
+.LSEH_begin_mul_by_5_mod_384:
+	movq	%rcx,%rdi
+	movq	%rdx,%rsi
+	movq	%r8,%rdx
+
+
+	pushq	%rbp
+
+	pushq	%rbx
+
+	pushq	%r12
+
+	pushq	%r13
+
+	pushq	%r14
+
+	pushq	%r15
+
+	pushq	%rsi
+
+.LSEH_body_mul_by_5_mod_384:
+
+
+	movq	0(%rsi),%r8
+	movq	8(%rsi),%r9
+	movq	16(%rsi),%r10
+	movq	24(%rsi),%r11
+	movq	32(%rsi),%r12
+	movq	40(%rsi),%r13
+	movq	%rdx,%rcx
+
+	call	__lshift_mod_384
+	call	__lshift_mod_384
+
+	movq	(%rsp),%rdx
+	call	__add_mod_384_a_is_loaded
+
+	movq	8(%rsp),%r15
+
+	movq	16(%rsp),%r14
+
+	movq	24(%rsp),%r13
+
+	movq	32(%rsp),%r12
+
+	movq	40(%rsp),%rbx
+
+	movq	48(%rsp),%rbp
+
+	leaq	56(%rsp),%rsp
+
+.LSEH_epilogue_mul_by_5_mod_384:
+	mov	8(%rsp),%rdi
+	mov	16(%rsp),%rsi
+
+	.byte	0xf3,0xc3
+
+.LSEH_end_mul_by_5_mod_384:
+
 .globl	mul_by_8_mod_384
 
 .def	mul_by_8_mod_384;	.scl 2;	.type 32;	.endef
@@ -2020,6 +2088,18 @@ vec_is_equal_16x:
 .rva	.LSEH_end_mul_by_3_mod_384
 .rva	.LSEH_info_mul_by_3_mod_384_epilogue
 
+.rva	.LSEH_begin_mul_by_5_mod_384
+.rva	.LSEH_body_mul_by_5_mod_384
+.rva	.LSEH_info_mul_by_5_mod_384_prologue
+
+.rva	.LSEH_body_mul_by_5_mod_384
+.rva	.LSEH_epilogue_mul_by_5_mod_384
+.rva	.LSEH_info_mul_by_5_mod_384_body
+
+.rva	.LSEH_epilogue_mul_by_5_mod_384
+.rva	.LSEH_end_mul_by_5_mod_384
+.rva	.LSEH_info_mul_by_5_mod_384_epilogue
+
 .rva	.LSEH_begin_mul_by_8_mod_384
 .rva	.LSEH_body_mul_by_8_mod_384
 .rva	.LSEH_info_mul_by_8_mod_384_prologue
@@ -2269,6 +2349,30 @@ vec_is_equal_16x:
 .byte	0x00,0x62
 .byte	0x00,0x00
 .LSEH_info_mul_by_3_mod_384_epilogue:
+.byte	1,0,4,0
+.byte	0x00,0x74,0x01,0x00
+.byte	0x00,0x64,0x02,0x00
+.byte	0x00,0x00,0x00,0x00
+
+.LSEH_info_mul_by_5_mod_384_prologue:
+.byte	1,0,5,0x0b
+.byte	0,0x74,1,0
+.byte	0,0x64,2,0
+.byte	0,0x03
+.byte	0,0
+.LSEH_info_mul_by_5_mod_384_body:
+.byte	1,0,17,0
+.byte	0x00,0xf4,0x01,0x00
+.byte	0x00,0xe4,0x02,0x00
+.byte	0x00,0xd4,0x03,0x00
+.byte	0x00,0xc4,0x04,0x00
+.byte	0x00,0x34,0x05,0x00
+.byte	0x00,0x54,0x06,0x00
+.byte	0x00,0x74,0x08,0x00
+.byte	0x00,0x64,0x09,0x00
+.byte	0x00,0x62
+.byte	0x00,0x00
+.LSEH_info_mul_by_5_mod_384_epilogue:
 .byte	1,0,4,0
 .byte	0x00,0x74,0x01,0x00
 .byte	0x00,0x64,0x02,0x00
