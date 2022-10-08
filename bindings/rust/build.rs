@@ -96,6 +96,7 @@ fn main() {
     let c_src_dir = blst_base_dir.join("src");
     println!("cargo:rerun-if-changed={}", c_src_dir.display());
     let mut file_vec = vec![c_src_dir.join("server.c")];
+    file_vec.push(c_src_dir.join("fp12_377_tower.c"));
 
     if target_arch.eq("x86_64") || target_arch.eq("aarch64") {
         let asm_dir = blst_base_dir.join("build");
