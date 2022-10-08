@@ -255,6 +255,271 @@ sub_mod_384x384:
 .size	sub_mod_384x384,.-sub_mod_384x384
 ___
 }
+{
+my $n_ptr = $b_org;
+my @acc = (@acc,"%rax","%rbx","%rcx","%rbp");
 
+$code.=<<___;
+.type	__lshift_mod_384x384,\@abi-omnipotent
+.align	32
+__lshift_mod_384x384:
+	add	@acc[0], @acc[0]
+	adc	@acc[1], @acc[1]
+	adc	@acc[2], @acc[2]
+	adc	@acc[3], @acc[3]
+	adc	@acc[4], @acc[4]
+	 movq	@acc[0], %xmm0
+	adc	@acc[5], @acc[5]
+	 movq	@acc[1], %xmm1
+	adc	@acc[6], @acc[6]
+	 movq	@acc[2], %xmm2
+	adc	@acc[7], @acc[7]
+	 movq	@acc[3], %xmm3
+	adc	@acc[8], @acc[8]
+	 movq	@acc[4], %xmm4
+	 mov	@acc[6], @acc[0]
+	adc	@acc[9], @acc[9]
+	 movq	@acc[5], %xmm5
+	 mov	@acc[7], @acc[1]
+	adc	@acc[10], @acc[10]
+	adc	@acc[11], @acc[11]
+	 mov	@acc[8], @acc[2]
+	sbb	$r_ptr, $r_ptr
+
+	sub	8*0($n_ptr), @acc[6]
+	 mov	@acc[9], @acc[3]
+	sbb	8*1($n_ptr), @acc[7]
+	sbb	8*2($n_ptr), @acc[8]
+	 mov	@acc[10], @acc[4]
+	sbb	8*3($n_ptr), @acc[9]
+	sbb	8*4($n_ptr), @acc[10]
+	 mov	@acc[11], @acc[5]
+	sbb	8*5($n_ptr), @acc[11]
+	sbb	\$0, $r_ptr
+
+	cmovc	@acc[0], @acc[6]
+	 movq	%xmm0, @acc[0]
+	cmovc	@acc[1], @acc[7]
+	 movq	%xmm1, @acc[1]
+	cmovc	@acc[2], @acc[8]
+	 movq	%xmm2, @acc[2]
+	cmovc	@acc[3], @acc[9]
+	 movq	%xmm3, @acc[3]
+	cmovc	@acc[4], @acc[10]
+	 movq	%xmm4, @acc[4]
+	cmovc	@acc[5], @acc[11]
+	 movq	%xmm5, @acc[5]
+	ret
+.size	__lshift_mod_384x384,.-__lshift_mod_384x384
+
+.globl	mul_by_5_mod_384x384
+.hidden	mul_by_5_mod_384x384
+.type	mul_by_5_mod_384x384,\@function,3,"unwind"
+.align	32
+mul_by_5_mod_384x384:
+.cfi_startproc
+	push	%rbp
+.cfi_push	%rbp
+	push	%rbx
+.cfi_push	%rbx
+	push	%r12
+.cfi_push	%r12
+	push	%r13
+.cfi_push	%r13
+	push	%r14
+.cfi_push	%r14
+	push	%r15
+.cfi_push	%r15
+	push	$r_ptr
+.cfi_adjust_cfa_offset	8
+.cfi_end_prologue
+
+	mov	8*0($a_ptr), @acc[0]
+	mov	8*1($a_ptr), @acc[1]
+	mov	8*2($a_ptr), @acc[2]
+	mov	8*3($a_ptr), @acc[3]
+	mov	8*4($a_ptr), @acc[4]
+	mov	8*5($a_ptr), @acc[5]
+	mov	8*6($a_ptr), @acc[6]
+	mov	8*7($a_ptr), @acc[7]
+	mov	8*8($a_ptr), @acc[8]
+	mov	8*9($a_ptr), @acc[9]
+	mov	8*10($a_ptr), @acc[10]
+	mov	8*11($a_ptr), @acc[11]
+
+	call	__lshift_mod_384x384
+	call	__lshift_mod_384x384
+	mov	(%rsp), $r_ptr
+
+	add	8*0($a_ptr), @acc[0]
+	adc	8*1($a_ptr), @acc[1]
+	adc	8*2($a_ptr), @acc[2]
+	adc	8*3($a_ptr), @acc[3]
+	adc	8*4($a_ptr), @acc[4]
+	adc	8*5($a_ptr), @acc[5]
+	 mov	@acc[0], 8*0($r_ptr)
+	adc	8*6($a_ptr), @acc[6]
+	 mov	@acc[1], 8*1($r_ptr)
+	adc	8*7($a_ptr), @acc[7]
+	 mov	@acc[2], 8*2($r_ptr)
+	adc	8*8($a_ptr), @acc[8]
+	 mov	@acc[3], 8*3($r_ptr)
+	 mov	@acc[6], @acc[0]
+	adc	8*9($a_ptr), @acc[9]
+	 mov	@acc[4], 8*4($r_ptr)
+	 mov	@acc[7], @acc[1]
+	adc	8*10($a_ptr), @acc[10]
+	 mov	@acc[5], 8*5($r_ptr)
+	 mov	@acc[8], @acc[2]
+	adc	8*11($a_ptr), @acc[11]
+	sbb	$a_ptr, $a_ptr
+
+	sub	8*0($n_ptr), @acc[6]
+	 mov	@acc[9], @acc[3]
+	sbb	8*1($n_ptr), @acc[7]
+	sbb	8*2($n_ptr), @acc[8]
+	 mov	@acc[10], @acc[4]
+	sbb	8*3($n_ptr), @acc[9]
+	sbb	8*4($n_ptr), @acc[10]
+	 mov	@acc[11], @acc[5]
+	sbb	8*5($n_ptr), @acc[11]
+	sbb	\$0, $a_ptr
+
+	cmovc	@acc[0], @acc[6]
+	cmovc	@acc[1], @acc[7]
+	cmovc	@acc[2], @acc[8]
+	mov	@acc[6], 8*6($r_ptr)
+	cmovc	@acc[3], @acc[9]
+	mov	@acc[7], 8*7($r_ptr)
+	cmovc	@acc[4], @acc[10]
+	mov	@acc[8], 8*8($r_ptr)
+	cmovc	@acc[5], @acc[11]
+	mov	@acc[9], 8*9($r_ptr)
+	mov	@acc[10], 8*10($r_ptr)
+	mov	@acc[11], 8*11($r_ptr)
+
+	mov	8(%rsp),%r15
+.cfi_restore	%r15
+	mov	16(%rsp),%r14
+.cfi_restore	%r14
+	mov	24(%rsp),%r13
+.cfi_restore	%r13
+	mov	32(%rsp),%r12
+.cfi_restore	%r12
+	mov	40(%rsp),%rbx
+.cfi_restore	%rbx
+	mov	48(%rsp),%rbp
+.cfi_restore	%rbp
+	lea	56(%rsp),%rsp
+.cfi_adjust_cfa_offset	-56
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	mul_by_5_mod_384x384,.-mul_by_5_mod_384x384
+
+.globl	neg_mod_384x384
+.hidden	neg_mod_384x384
+.type	neg_mod_384x384,\@function,3,"unwind"
+.align	32
+neg_mod_384x384:
+.cfi_startproc
+	push	%rbp
+.cfi_push	%rbp
+	push	%rbx
+.cfi_push	%rbx
+	push	%r12
+.cfi_push	%r12
+	push	%r13
+.cfi_push	%r13
+	push	%r14
+.cfi_push	%r14
+	push	%r15
+.cfi_push	%r15
+	sub	\$8, %rsp
+.cfi_adjust_cfa_offset	8
+.cfi_end_prologue
+
+	mov	8*0($a_ptr), @acc[8]
+	mov	8*1($a_ptr), @acc[9]
+	mov	8*2($a_ptr), @acc[10]
+	mov	8*3($a_ptr), @acc[11]
+	or	8*4($a_ptr), @acc[8]
+	or	8*5($a_ptr), @acc[9]
+	or	8*6($a_ptr), @acc[10]
+	or	8*7($a_ptr), @acc[11]
+	 xor	@acc[0], @acc[0]
+	or	8*8($a_ptr), @acc[8]
+	 xor	@acc[1], @acc[1]
+	or	8*9($a_ptr), @acc[9]
+	 xor	@acc[2], @acc[2]
+	or	8*10($a_ptr), @acc[10]
+	 xor	@acc[3], @acc[3]
+	or	8*11($a_ptr), @acc[11]
+	 xor	@acc[4], @acc[4]
+	or	@acc[8], @acc[9]
+	 xor	@acc[5], @acc[5]
+	or	@acc[10], @acc[11]
+         xor	@acc[6], @acc[6]
+	mov	\$-1, @acc[8]
+	or	@acc[9], @acc[11]
+	cmovnz	@acc[8], @acc[11]
+	cmovnz	@acc[8], @acc[6]
+
+	mov	@acc[11], @acc[7]
+	mov	@acc[11], @acc[8]
+	mov	@acc[11], @acc[9]
+	mov	@acc[11], @acc[10]
+	and	8*0($n_ptr), @acc[6]
+	and	8*1($n_ptr), @acc[7]
+	and	8*2($n_ptr), @acc[8]
+	and	8*3($n_ptr), @acc[9]
+	and	8*4($n_ptr), @acc[10]
+	and	8*5($n_ptr), @acc[11]
+
+	sub	8*0($a_ptr), @acc[0]
+	sbb	8*1($a_ptr), @acc[1]
+	sbb	8*2($a_ptr), @acc[2]
+	sbb	8*3($a_ptr), @acc[3]
+	sbb	8*4($a_ptr), @acc[4]
+	sbb	8*5($a_ptr), @acc[5]
+	 mov	@acc[0], 8*0($r_ptr)
+	sbb	8*6($a_ptr), @acc[6]
+	 mov	@acc[1], 8*1($r_ptr)
+	sbb	8*7($a_ptr), @acc[7]
+	 mov	@acc[2], 8*2($r_ptr)
+	sbb	8*8($a_ptr), @acc[8]
+	 mov	@acc[3], 8*3($r_ptr)
+	sbb	8*9($a_ptr), @acc[9]
+	 mov	@acc[4], 8*4($r_ptr)
+	sbb	8*10($a_ptr), @acc[10]
+	 mov	@acc[5], 8*5($r_ptr)
+	sbb	8*11($a_ptr), @acc[11]
+	mov	@acc[6], 8*6($r_ptr)
+	mov	@acc[7], 8*7($r_ptr)
+	mov	@acc[8], 8*8($r_ptr)
+	mov	@acc[9], 8*9($r_ptr)
+	mov	@acc[10], 8*10($r_ptr)
+	mov	@acc[11], 8*11($r_ptr)
+
+	mov	8(%rsp),%r15
+.cfi_restore	%r15
+	mov	16(%rsp),%r14
+.cfi_restore	%r14
+	mov	24(%rsp),%r13
+.cfi_restore	%r13
+	mov	32(%rsp),%r12
+.cfi_restore	%r12
+	mov	40(%rsp),%rbx
+.cfi_restore	%rbx
+	mov	48(%rsp),%rbp
+.cfi_restore	%rbp
+	lea	56(%rsp),%rsp
+.cfi_adjust_cfa_offset	-56
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	neg_mod_384x384,.-neg_mod_384x384
+___
+}
 print $code;
 close STDOUT;

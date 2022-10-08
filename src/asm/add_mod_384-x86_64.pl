@@ -526,6 +526,61 @@ mul_by_3_mod_384:
 .cfi_endproc
 .size	mul_by_3_mod_384,.-mul_by_3_mod_384
 
+.globl	mul_by_5_mod_384
+.hidden	mul_by_5_mod_384
+.type	mul_by_5_mod_384,\@function,3,"unwind"
+.align	32
+mul_by_5_mod_384:
+.cfi_startproc
+	push	%rbp
+.cfi_push	%rbp
+	push	%rbx
+.cfi_push	%rbx
+	push	%r12
+.cfi_push	%r12
+	push	%r13
+.cfi_push	%r13
+	push	%r14
+.cfi_push	%r14
+	push	%r15
+.cfi_push	%r15
+	push	$a_ptr
+.cfi_adjust_cfa_offset	8
+.cfi_end_prologue
+
+	mov	8*0($a_ptr), @acc[0]
+	mov	8*1($a_ptr), @acc[1]
+	mov	8*2($a_ptr), @acc[2]
+	mov	8*3($a_ptr), @acc[3]
+	mov	8*4($a_ptr), @acc[4]
+	mov	8*5($a_ptr), @acc[5]
+	mov	$b_org, $n_ptr
+
+	call	__lshift_mod_384
+	call	__lshift_mod_384
+
+	mov	(%rsp), $b_org
+	call	__add_mod_384_a_is_loaded
+
+	mov	8(%rsp),%r15
+.cfi_restore	%r15
+	mov	16(%rsp),%r14
+.cfi_restore	%r14
+	mov	24(%rsp),%r13
+.cfi_restore	%r13
+	mov	32(%rsp),%r12
+.cfi_restore	%r12
+	mov	40(%rsp),%rbx
+.cfi_restore	%rbx
+	mov	48(%rsp),%rbp
+.cfi_restore	%rbp
+	lea	56(%rsp),%rsp
+.cfi_adjust_cfa_offset	-56
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	mul_by_5_mod_384,.-mul_by_5_mod_384
+
 .globl	mul_by_8_mod_384
 .hidden	mul_by_8_mod_384
 .type	mul_by_8_mod_384,\@function,3,"unwind"
