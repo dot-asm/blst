@@ -36,7 +36,6 @@ fn main() {
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
     let target_no_std = target_os.eq("none")
-        || target_os.eq("unknown")
         || target_os.eq("uefi")
         || env::var("BLST_TEST_NO_STD").is_ok();
 
