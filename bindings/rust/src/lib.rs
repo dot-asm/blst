@@ -55,6 +55,11 @@ mod mt {
         where
             F: FnOnce() + Send + 'scope,
         {
+            #[cfg(target_env = "sgx")]
+            if self.max_count() == 1 {
+                job();
+                return;
+            }
             // Bypass 'lifetime limitations by brute force. It works,
             // because we explicitly join the threads...
             self.execute(unsafe {
