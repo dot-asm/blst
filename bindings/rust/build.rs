@@ -34,6 +34,7 @@ fn main() {
 
     // account for cross-compilation [by examining environment variables]
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
+    let target_env =  env::var("CARGO_CFG_TARGET_ENV").unwrap();
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
     let target_no_std = target_os.eq("none")
         || target_os.eq("uefi")
@@ -158,6 +159,9 @@ fn main() {
                         );
                         cc.define("__ADX__", None);
                     }
+                } else if target_env.eq("sgx") {
+                    println!("Enabling ADX for Intel SGX target");
+                    cc.define("__ADX__", None);
                 } else {
                     #[cfg(target_arch = "x86_64")]
                     if std::is_x86_feature_detected!("adx") {
@@ -173,7 +177,7 @@ fn main() {
             "Cannot compile with both `portable` and `force-adx` features"
         ),
     }
-    if env::var("CARGO_CFG_TARGET_ENV").unwrap().eq("msvc") {
+    if target_env.eq("msvc") {
         cc.flag("-Zl");
     }
     cc.flag_if_supported("-mno-avx") // avoid costly transitions
@@ -181,10 +185,13 @@ fn main() {
         .flag_if_supported("-Wno-unused-function")
         .flag_if_supported("-Wno-unused-command-line-argument");
     if target_arch.eq("wasm32") || target_no_std {
-        if env::var("CARGO_CFG_TARGET_ENV").unwrap().ne("msvc") {
+        if target_env.ne("msvc") {
             cc.flag("-ffreestanding");
         }
         cc.define("SCRATCH_LIMIT", "(45 * 1024)");
+    }
+    if target_env.eq("sgx") {
+        cc.define("__BLST_NO_CPUID__", None);
     }
     if !cfg!(debug_assertions) {
         cc.opt_level(2);
