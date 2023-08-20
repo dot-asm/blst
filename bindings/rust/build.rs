@@ -34,9 +34,11 @@ fn main() {
 
     // account for cross-compilation [by examining environment variables]
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
-    let target_env =  env::var("CARGO_CFG_TARGET_ENV").unwrap();
+    let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap();
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+
     let target_no_std = target_os.eq("none")
+        || (target_os.eq("unknown") && target_arch.eq("wasm32"))
         || target_os.eq("uefi")
         || env::var("BLST_TEST_NO_STD").is_ok();
 
@@ -87,6 +89,26 @@ fn main() {
             .output()
         {
             Ok(_) => env::set_var("CC", "clang"),
+            Err(_) => { /* no clang in sight, just ignore the error */ }
+        }
+    }
+
+    if target_env.eq("sgx") && !env::var("CC").is_ok() {
+        match std::process::Command::new("clang")
+            .arg("--version")
+            .output()
+        {
+            Ok(out) => {
+                let version = String::from_utf8(out.stdout)
+                    .unwrap_or("unintelligible".to_string());
+                if let Some(x) = version.find("clang version ") {
+                    let x = x + 14;
+                    let y = version[x..].find(".").unwrap_or(0);
+                    if version[x..x + y].parse::<i32>().unwrap_or(0) >= 11 {
+                        env::set_var("CC", "clang");
+                    }
+                }
+            }
             Err(_) => { /* no clang in sight, just ignore the error */ }
         }
     }
@@ -191,6 +213,7 @@ fn main() {
         cc.define("SCRATCH_LIMIT", "(45 * 1024)");
     }
     if target_env.eq("sgx") {
+        cc.flag_if_supported("-mlvi-hardening");
         cc.define("__BLST_NO_CPUID__", None);
     }
     if !cfg!(debug_assertions) {
