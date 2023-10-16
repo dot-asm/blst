@@ -136,13 +136,16 @@ jobs:
       with:
         path: bindings/rust/blst-arm-test.exe
 
+    - name: find
+      run: pwd && find .
+
     - name: wine-arm64
       uses: addnab/docker-run-action@v3
       with:
         registry: https://index.docker.io/v1/
         image: linaro/wine-arm64
         options: --network=none
-        run: wine-arm64 cmd /c "dir/s"
+        run: wine-arm64 cmd /c "cd"
 
   misc-ubuntu-latest:
     runs-on: ubuntu-latest
