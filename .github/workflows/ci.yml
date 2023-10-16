@@ -100,7 +100,7 @@ jobs:
             echo 'cc = { git = "https://github.com/rust-lang/cc-rs" }' >> .cargo/config.toml
             cargo test --release --target=aarch64-pc-windows-msvc --no-run
             find target/aarch64-pc-windows-msvc -name blst-\*.exe -exec cp {} blst-arm-test.exe \;
-            cargo clean -p blst --release --target=target=aarch64-pc-windows-msvc
+            cargo clean -p blst --release --target=aarch64-pc-windows-msvc
         fi
         cargo clean -p blst
         cargo clean -p blst --release
