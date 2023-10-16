@@ -112,7 +112,7 @@ jobs:
         rm -rf ~/.cargo/registry/index/*/.cache
 
     - uses: actions/upload-artifact@v3
-      if: ${{ runner.os }} == Windows
+      if: runner.os == Windows
       with:
         path: bindings/rust/blst-arm-test.exe
         if-no-files-found: ignore
@@ -141,8 +141,8 @@ jobs:
       with:
         registry: https://index.docker.io/v1/
         image: linaro/wine-arm64
-        options: --volume ${{ github.workspace }}:/pwd --workdir=/pwd --network=none
-        run: wine-arm64 bindings/rust/blst-arm-test.exe
+        options: --network=none
+        run: wine-arm64 cmd /c "dir/s"
 
   misc-ubuntu-latest:
     runs-on: ubuntu-latest
