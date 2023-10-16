@@ -134,7 +134,7 @@ jobs:
     steps:
     - uses: actions/download-artifact@v3
       with:
-        path: bindings/rust/blst-arm-test.exe
+        name: blst-arm-test.exe
 
     - name: find
       run: pwd && find .
@@ -144,8 +144,8 @@ jobs:
       with:
         registry: https://index.docker.io/v1/
         image: linaro/wine-arm64
-        options: --network=none
-        run: wine-arm64 cmd /c "cd"
+        options: --volume ${{ github.workspace }}:/blst --network=none
+        run: wine-arm64 cmd /c "dir/s blst"
 
   misc-ubuntu-latest:
     runs-on: ubuntu-latest
