@@ -114,6 +114,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       if: ${{ runner.os }} == Windows
       with:
+        name: blst-arm-test.exe
         path: bindings/rust/blst-arm-test.exe
         if-no-files-found: ignore
 
