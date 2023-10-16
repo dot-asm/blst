@@ -111,13 +111,6 @@ jobs:
         rm -rf ~/.cargo/registry/src
         rm -rf ~/.cargo/registry/index/*/.cache
 
-    - uses: actions/upload-artifact@v3
-      if: ${{ runner.os }} == Windows
-      with:
-        name: blst-arm-test.exe
-        path: bindings/rust/blst-arm-test.exe
-        if-no-files-found: ignore
-
     - name: Go
       shell: bash
       run: |
@@ -128,17 +121,21 @@ jobs:
         cd bindings/go
         go test -test.v
 
-  test-arm-windows:
+    - uses: actions/upload-artifact@v3
+      if: ${{ runner.os == Windows }}
+      with:
+        name: blst-arm-test.exe
+        path: bindings/rust/blst-arm-test.exe
+        if-no-files-found: ignore
+
+  cargo-test-windows-on-arm:
     runs-on: ubuntu-latest
-    needs: "rust-n-go"
+    needs: rust-n-go
 
     steps:
     - uses: actions/download-artifact@v3
       with:
         name: blst-arm-test.exe
-
-    - name: find
-      run: pwd && find .
 
     - name: wine-arm64
       uses: addnab/docker-run-action@v3
