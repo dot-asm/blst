@@ -664,7 +664,7 @@ func coreAggregateVerifyPkInG1(sigFn sigGetterP2, sigGroupcheck bool,
 					// main thread has completed its miller loop before
 					// proceeding.
 					mutex.Lock()
-					mutex.Unlock()
+					mutex.Unlock() // nolint:staticcheck
 				}
 
 				// Pull Public Key and augmentation blob
@@ -1284,7 +1284,7 @@ func coreAggregateVerifyPkInG2(sigFn sigGetterP1, sigGroupcheck bool,
 					// main thread has completed its miller loop before
 					// proceeding.
 					mutex.Lock()
-					mutex.Unlock()
+					mutex.Unlock() // nolint:staticcheck
 				}
 
 				// Pull Public Key and augmentation blob
@@ -2231,7 +2231,7 @@ func P1AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P1 {
 			p_scalars = &scalars[0]
 		case []Scalar:
 			if nbits > 248 {
-				scalarsBySlice[0] = (*C.byte)(&val[0].b[0])
+				scalarsBySlice[0] = &val[0].b[0]
 				p_scalars = &scalarsBySlice[0]
 			} else {
 				p_scalars = &scalars[0]
@@ -2331,7 +2331,7 @@ func P1AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P1 {
 					p_scalars = &scalars[x]
 				case []Scalar:
 					if nbits > 248 {
-						scalarsBySlice[0] = (*C.byte)(&val[x].b[0])
+						scalarsBySlice[0] = &val[x].b[0]
 						p_scalars = &scalarsBySlice[0]
 					} else {
 						p_scalars = &scalars[x]
@@ -2939,7 +2939,7 @@ func P2AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P2 {
 			p_scalars = &scalars[0]
 		case []Scalar:
 			if nbits > 248 {
-				scalarsBySlice[0] = (*C.byte)(&val[0].b[0])
+				scalarsBySlice[0] = &val[0].b[0]
 				p_scalars = &scalarsBySlice[0]
 			} else {
 				p_scalars = &scalars[0]
@@ -3039,7 +3039,7 @@ func P2AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P2 {
 					p_scalars = &scalars[x]
 				case []Scalar:
 					if nbits > 248 {
-						scalarsBySlice[0] = (*C.byte)(&val[x].b[0])
+						scalarsBySlice[0] = &val[x].b[0]
 						p_scalars = &scalarsBySlice[0]
 					} else {
 						p_scalars = &scalars[x]
@@ -3299,7 +3299,7 @@ func PrintBytes(val []byte, name string) {
 
 func (s *Scalar) Print(name string) {
 	arr := s.ToBEndian()
-	PrintBytes(arr[:], name)
+	PrintBytes(arr, name)
 }
 
 func (p *P1Affine) Print(name string) {
