@@ -97,6 +97,7 @@ jobs:
         elif [ `uname -s` = "Darwin" ]; then
             echo '--- build aarch64-apple-darwin'
             echo
+            rustup target add aarch64-apple-darwin
             cargo test --release --target=aarch64-apple-darwin --no-run
             cargo clean -p blst --release --target=aarch64-apple-darwin
         elif [ $OSTYPE = "msys" ]; then
