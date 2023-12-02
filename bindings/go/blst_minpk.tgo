@@ -470,7 +470,7 @@ func (agg *P2Aggregate) Aggregate(elmts []*P2Affine,
         return true
     }
     getter := func(i uint32, _ *P2Affine) *P2Affine { return elmts[i] }
-    return agg.aggregate(getter, groupcheck, len(elmts))
+    return agg.coreAggregate(getter, groupcheck, len(elmts))
 }
 
 // Aggregate compressed elements
@@ -486,7 +486,7 @@ func (agg *P2Aggregate) AggregateCompressed(elmts [][]byte,
         }
         return p
     }
-    return agg.aggregate(getter, groupcheck, len(elmts))
+    return agg.coreAggregate(getter, groupcheck, len(elmts))
 }
 
 func (agg *P2Aggregate) AddAggregate(other *P2Aggregate) {
@@ -519,7 +519,7 @@ func (agg *P2Aggregate) ToAffine() *P2Affine {
     return agg.v.ToAffine()
 }
 
-func (agg *P2Aggregate) aggregate(getter aggGetterP2, groupcheck bool,
+func (agg *P2Aggregate) coreAggregate(getter aggGetterP2, groupcheck bool,
         n int) bool {
 
     if n == 0 {
