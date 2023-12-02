@@ -215,7 +215,7 @@ func coreAggregateVerifyPkInG1(sigFn sigGetterP2, sigGroupcheck bool,
                     // main thread has completed its miller loop before
                     // proceeding.
                     mutex.Lock()
-                    mutex.Unlock() // nolint:staticcheck
+                    mutex.Unlock() //nolint:staticcheck
                 }
 
                 // Pull Public Key and augmentation blob
