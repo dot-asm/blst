@@ -492,16 +492,16 @@ func generateBatchTestDataMinPk(size int) (msgs []Message,
     if !agProj.AggregateCompressed(sigs, true) {
         fmt.Println("AggregateCompressed unexpectedly returned nil")
         err = true
-        return
+        return //nolint:revive
     }
     agAff := agProj.ToAffine()
     if agAff == nil {
         fmt.Println("ToAffine unexpectedly returned nil")
         err = true
-        return
+        return //nolint:revive
     }
     agsig = agAff.Compress()
-    return
+    return //nolint:revive
 }
 
 func generateBatchTestDataUncompressedMinPk(size int) (sks []*SecretKey,
@@ -520,10 +520,10 @@ func generateBatchTestDataUncompressedMinPk(size int) (sks []*SecretKey,
     if !agProj.Aggregate(sigs, true) {
         fmt.Println("Aggregate unexpectedly returned nil")
         err = true
-        return
+        return //nolint:revive
     }
     agsig = agProj.ToAffine()
-    return
+    return //nolint:revive
 }
 
 func BenchmarkBatchUncompressMinPk(b *testing.B) {
