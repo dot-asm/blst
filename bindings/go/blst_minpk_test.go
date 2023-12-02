@@ -505,8 +505,8 @@ func generateBatchTestDataMinPk(size int) (msgs []Message,
 }
 
 func generateBatchTestDataUncompressedMinPk(size int) (sks []*SecretKey,
-    msgs []Message, sigs []*SignatureMinPk, pubks []*PublicKeyMinPk,
-    agsig *SignatureMinPk, err bool) {
+    msgs []Message, sigs []*SignatureMinPk, //nolint:unparam
+    pubks []*PublicKeyMinPk, agsig *SignatureMinPk, err bool) {
     err = false
     for i := 0; i < size; i++ {
         msg := Message(fmt.Sprintf("blst is a blast!! %d", i))
