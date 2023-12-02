@@ -13,7 +13,7 @@ import (
     "testing"
 )
 
-// Min PK
+// Min PK.
 type PublicKeyMinPk = P1Affine
 type SignatureMinPk = P2Affine
 type AggregateSignatureMinPk = P2Aggregate
