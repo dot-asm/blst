@@ -110,6 +110,13 @@ jobs:
                 cargo clean -p blst --release --target=aarch64-apple-darwin
             fi
         elif [ $OSTYPE = "msys" ]; then
+            if which clang-cl > /dev/null 2>&1; then
+                echo '-- test i686-pc-windows-msvc'
+                echo
+                rustup target add i686-pc-windows-msvc
+                cargo test --release --target=i686-pc-windows-msvc
+                cargo clean -p blst --release --target=i686-pc-windows-msvc
+            fi
             echo '-- test x86_64-pc-windows-gnu'
             echo
             rustup target add x86_64-pc-windows-gnu
