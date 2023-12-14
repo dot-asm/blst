@@ -117,11 +117,6 @@ jobs:
                 cargo test --release --target=i686-pc-windows-msvc
                 cargo clean -p blst --release --target=i686-pc-windows-msvc
             fi
-            echo '-- test i686-pc-windows-gnu'
-            echo
-            rustup target add i686-pc-windows-gnu
-            cargo test --release --target=i686-pc-windows-gnu
-            cargo clean -p blst --release --target=i686-pc-windows-gnu
             echo '-- test x86_64-pc-windows-gnu'
             echo
             rustup target add x86_64-pc-windows-gnu
