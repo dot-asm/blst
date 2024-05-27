@@ -60,15 +60,26 @@ macro_rules! pippenger_mult_impl {
             }
 
             pub fn mult(&self, scalars: &[u8], nbits: usize) -> $point {
-                let npoints = self.points.len();
+                self.as_slice().mult(scalars, nbits)
+            }
+
+            pub fn add(&self) -> $point {
+                self.as_slice().add()
+            }
+        }
+
+        impl MultiScalar for [$point_affine] {
+            type Output = $point;
+
+            fn mult(&self, scalars: &[u8], nbits: usize) -> $point {
+                let npoints = self.len();
                 let nbytes = (nbits + 7) / 8;
 
                 if scalars.len() < nbytes * npoints {
                     panic!("scalars length mismatch");
                 }
 
-                let p: [*const $point_affine; 2] =
-                    [&self.points[0], ptr::null()];
+                let p: [*const $point_affine; 2] = [&self[0], ptr::null()];
                 let s: [*const u8; 2] = [&scalars[0], ptr::null()];
 
                 let mut ret = <$point>::default();
@@ -89,10 +100,10 @@ macro_rules! pippenger_mult_impl {
                 ret
             }
 
-            pub fn add(&self) -> $point {
-                let npoints = self.points.len();
+            fn add(&self) -> $point {
+                let npoints = self.len();
 
-                let p: [*const _; 2] = [&self.points[0], ptr::null()];
+                let p: [*const _; 2] = [&self[0], ptr::null()];
                 let mut ret = <$point>::default();
                 unsafe { $add(&mut ret, &p[0], npoints) };
 
