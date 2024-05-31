@@ -40,12 +40,12 @@ no-threads = []
 serde-secret = ["serde"]
 
 [build-dependencies]
-cc = "1.0"
+cc = "=1.0.79"
 [target.'cfg(target_env = "msvc")'.build-dependencies]
 glob = "0.3"
 
 [dependencies]
-zeroize = { version = "^1.1", features = ["zeroize_derive"] }
+zeroize = { version = "=1.6.0", features = ["zeroize_derive"] }
 serde = { version = "1.0.152", optional = true }
 
 [target.'cfg(not(any(target_arch="wasm32", target_os="none", target_os="unknown", target_os="uefi")))'.dependencies]
@@ -54,13 +54,18 @@ threadpool = "^1.8.1"
 [dev-dependencies]
 rand = "0.8"
 rand_chacha = "0.3"
-rmp-serde = "1.1.1"
+rmp-serde = "=1.1.2"
 # Uncomment if you want to execute the test suite with Rust 1.56 through 1.64.
-#csv = "=1.1.6"
-#byteorder = "=1.4.3"
-#regex = "=1.7.3"
-#rayon = "=1.6.1"
-#rayon-core = "=1.10.1"
+csv = "=1.1.6"
+byteorder = "=1.4.3"
+regex = "=1.7.3"
+rayon = "=1.6.1"
+rayon-core = "=1.10.1"
+crossbeam-deque = "=0.8.3"
+crossbeam-epoch = "=0.9.15"
+crossbeam-utils = "=0.8.16"
+plotters-backend = "=0.3.5"
+rmp = "=0.8.12"
 
 [target.'cfg(any(unix, windows))'.dev-dependencies]
 criterion = "0.3"
