@@ -82,16 +82,18 @@ jobs:
                 cargo test --release --target=wasm32-wasip1
             cargo clean -p blst --release --target=wasm32-wasip1
             echo
-            echo '--- test -mlvi-hardening'
-            echo
-            env CC=clang CFLAGS="-mlvi-hardening -D__SGX_LVI_HARDENING__" \
-                cargo test --release
-            echo '--- build x86_64-fortanix-unknown-sgx'
-            echo
-            rustup target add x86_64-fortanix-unknown-sgx
-            cargo test --no-run --release --target=x86_64-fortanix-unknown-sgx
-            cargo clean -p blst --release --target=x86_64-fortanix-unknown-sgx
-            echo
+            if [ `uname -p` = "x86_64" ]; then
+                echo '--- test -mlvi-hardening'
+                echo
+                env CC=clang CFLAGS="-mlvi-hardening -D__SGX_LVI_HARDENING__" \
+                    cargo test --release
+                echo '--- build x86_64-fortanix-unknown-sgx'
+                echo
+                rustup target add x86_64-fortanix-unknown-sgx
+                cargo test --no-run --release --target=x86_64-fortanix-unknown-sgx
+                cargo clean -p blst --release --target=x86_64-fortanix-unknown-sgx
+                echo
+            fi
             echo '--- dry-run publish'
             echo
             ./publish.sh --dry-run
@@ -201,6 +203,7 @@ jobs:
     - name: wine-arm64
       shell: bash
       run: |
+         sudo apt-get update
          sudo apt-get install -y wine
          wine blst-arm-test.exe
 
