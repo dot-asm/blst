@@ -191,22 +191,6 @@ jobs:
         options: --volume ${{ github.workspace }}:/blst --network=none
         run: wine-arm64 cmd /c "cd \ && \blst\blst-arm-test.exe"
 
-  cargo-test-windows-on-arm-2:
-    runs-on: ubuntu-24.04-arm
-    needs: rust-n-go
-
-    steps:
-    - uses: actions/download-artifact@v4
-      with:
-        name: blst-arm-test.exe
-
-    - name: wine-arm64
-      shell: bash
-      run: |
-         sudo apt-get update
-         sudo apt-get install -y wine
-         wine blst-arm-test.exe
-
   misc-ubuntu-latest:
     runs-on: ubuntu-latest
 
