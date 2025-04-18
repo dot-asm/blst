@@ -175,7 +175,7 @@ jobs:
         if-no-files-found: ignore
 
   cargo-test-windows-on-arm:
-    runs-on: ubuntu-latest
+    runs-on: windows-11-arm
     needs: rust-n-go
 
     steps:
@@ -183,13 +183,19 @@ jobs:
       with:
         name: blst-arm-test.exe
 
-    - name: wine-arm64
-      uses: addnab/docker-run-action@v3
-      with:
-        registry: https://index.docker.io/v1/
-        image: linaro/wine-arm64
-        options: --volume ${{ github.workspace }}:/blst --network=none
-        run: wine-arm64 cmd /c "cd \ && \blst\blst-arm-test.exe"
+    - name: Environment
+      shell: bash
+      run: |
+        which cargo && cargo version || true
+        which go && go version || true
+        which gcc && gcc --version || true
+        which clang && clang --version || true
+        uname -a && echo ---
+        env | sort
+
+    - name: Test
+      shell: bash
+      run: ./blst-arm-test.exe
 
   misc-ubuntu-latest:
     runs-on: ubuntu-latest
