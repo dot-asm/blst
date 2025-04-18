@@ -43,6 +43,8 @@ jobs:
         env | sort
         echo ---
         set
+        echo ---
+        go env
 
     - name: Install Rust
       if: ${{ runner.os == 'Windows' }} && ${{ runner.arch == 'ARM64' }}
@@ -166,13 +168,11 @@ jobs:
         rm -rf ~/.cargo/registry/index/*/.cache
 
     - name: Go
+      if: ${{ runner.os != 'Windows' }} || ${{ runner.arch != 'ARM64' }}
       shell: bash
       run: |
         go version 2>/dev/null || exit 0
-        if [ $OSTYPE = "msys" -a $RUNNER_ARCH = "ARM64" ]; then
-            export CC=clang
-            export CGO_CFLAGS="-O --target=aarch64-pc-windows-msvc"
-        elif ! (grep -q -e '^flags.*\badx\b' /proc/cpuinfo) 2>/dev/null; then
+        if ! (grep -q -e '^flags.*\badx\b' /proc/cpuinfo) 2>/dev/null; then
             export CGO_CFLAGS="-O -D__BLST_PORTABLE__"
         fi
         cd bindings/go
