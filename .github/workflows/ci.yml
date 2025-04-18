@@ -44,7 +44,7 @@ jobs:
         echo ---
         set
         echo ---
-        go env
+        go env || true
 
     - name: Install Rust
       if: ${{ runner.os == 'Windows' }} && ${{ runner.arch == 'ARM64' }}
