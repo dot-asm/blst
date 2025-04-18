@@ -134,7 +134,7 @@ jobs:
                 cargo test --no-run --release --target=aarch64-apple-ios
             cargo clean -p blst --release --target=aarch64-apple-ios
             echo
-        elif [ $OSTYPE = "msys" ]; then
+        elif [ $OSTYPE = "msys" -a $RUNNER_ARCH = "X64" ]; then
             if which clang-cl > /dev/null 2>&1; then
                 echo '-- test i686-pc-windows-msvc'
                 echo
@@ -149,17 +149,13 @@ jobs:
             cargo test --release --target=x86_64-pc-windows-gnu
             cargo clean -p blst --release --target=x86_64-pc-windows-gnu
             echo
-            echo '-- build aarch64-pc-windows-msvc'
-            echo
-            rustup target add aarch64-pc-windows-msvc
-            cargo test --no-run --release --target=aarch64-pc-windows-msvc
-            find target/aarch64-pc-windows-msvc -name blst-\*.exe -exec cp {} blst-arm-test.exe \; -quit
-            cargo clean -p blst --release --target=aarch64-pc-windows-msvc
-            echo
         fi
         echo
         echo '--- cargo clippy'
         echo
+        if ! which cargo-clippy > /dev/null 2>&1; then
+            rustup component add clippy
+        fi
         echo 'msrv = "1.56"' > .clippy.toml
         cargo clippy --release
         cargo clean -p blst
@@ -180,48 +176,6 @@ jobs:
         fi
         cd bindings/go
         go test -test.v
-
-    - uses: actions/upload-artifact@v4
-      if: ${{ runner.os == 'Windows' }}
-      with:
-        name: blst-arm-test.exe
-        path: bindings/rust/blst-arm-test.exe
-        if-no-files-found: ignore
-
-  cargo-test-windows-on-arm:
-    runs-on: windows-11-arm
-
-    steps:
-    - uses: actions/download-artifact@v4
-      with:
-        name: blst-arm-test.exe
-
-    - name: Environment
-      shell: bash
-      run: |
-        which cargo && cargo version || true
-        which go && go version || true
-        which gcc && gcc --version || true
-        which clang && clang --version || true
-        uname -a && echo ---
-        env | sort
-        echo ---
-        set
-
-    - name: Rust
-      shell: bash
-      run: |
-        if ! which cargo > /dev/null 2>&1; then
-            curl -sSf -o rustup-init.exe https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe
-            ./rustup-init.exe --profile minimal --no-modify-path -y
-            export PATH=$HOME/.cargo/bin:$PATH
-            which cargo
-            cargo version
-        fi
-
-    - name: Test
-      shell: bash
-      run: ./blst-arm-test.exe
 
   misc-ubuntu-latest:
     runs-on: ubuntu-latest
