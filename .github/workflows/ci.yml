@@ -56,6 +56,9 @@ jobs:
     - name: Rust
       shell: bash
       run: |
+        if ! which cargo > /dev/null 2>&1; then
+            export PATH=$HOME/.cargo/bin:$PATH
+        fi
         rustc --version --verbose
         export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
         cd bindings/rust
