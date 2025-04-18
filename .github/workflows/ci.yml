@@ -41,8 +41,6 @@ jobs:
         lscpu 2>/dev/null && echo --- || true
         sysctl hw 2>/dev/null && echo --- || true
         env | sort
-        echo ---
-        set
 
     - name: Install Rust
       if: ${{ runner.os == 'Windows' && runner.arch == 'ARM64' }}
@@ -134,7 +132,7 @@ jobs:
                 cargo test --no-run --release --target=aarch64-apple-ios
             cargo clean -p blst --release --target=aarch64-apple-ios
             echo
-        elif [ $OSTYPE = "msys" -a $RUNNER_ARCH = "X64" ]; then
+        elif [ $RUNNER_OS = "Windows" -a $RUNNER_ARCH = "X64" ]; then
             if which clang-cl > /dev/null 2>&1; then
                 echo '-- test i686-pc-windows-msvc'
                 echo
