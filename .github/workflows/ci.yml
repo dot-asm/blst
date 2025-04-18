@@ -150,7 +150,7 @@ jobs:
             cargo clean -p blst --release --target=x86_64-pc-windows-gnu
             echo
         fi
-        if ! which cargo-clippy > /dev/null 2>&1; then
+        if which cargo-clippy > /dev/null 2>&1; then
             echo '--- cargo clippy'
             echo
             echo 'msrv = "1.56"' > .clippy.toml
