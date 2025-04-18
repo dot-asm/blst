@@ -45,8 +45,8 @@ jobs:
         set
 
     - name: Install Rust
-    - shell: bash
       if: ${{ runner.os == 'Windows' }} && ${{ runner.arch == "ARM64" }}
+      shell: bash
       run: |
         if ! which cargo > /dev/null 2>&1; then
             curl -sSf -o rustup-init.exe https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe
