@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-latest ]
 
     steps:
     - uses: actions/checkout@v4
@@ -44,9 +44,21 @@ jobs:
         echo ---
         set
 
+    - name: Install Rust
+    - shell: bash
+      if: ${{ runner.os == 'Windows' }} && ${{ runner.arch == "ARM64" }}
+      run: |
+        if ! which cargo > /dev/null 2>&1; then
+            curl -sSf -o rustup-init.exe https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe
+            ./rustup-init.exe --profile minimal --no-modify-path -y
+        fi
+
     - name: Rust
       shell: bash
       run: |
+        if ! which cargo > /dev/null 2>&1; then
+            export PATH=$HOME/.cargo/bin:$PATH
+        fi
         rustc --version --verbose
         export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
         cd bindings/rust
@@ -178,7 +190,6 @@ jobs:
 
   cargo-test-windows-on-arm:
     runs-on: windows-11-arm
-    needs: rust-n-go
 
     steps:
     - uses: actions/download-artifact@v4
