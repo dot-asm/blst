@@ -41,6 +41,8 @@ jobs:
         lscpu 2>/dev/null && echo --- || true
         sysctl hw 2>/dev/null && echo --- || true
         env | sort
+        echo ---
+        set
 
     - name: Rust
       shell: bash
@@ -192,6 +194,19 @@ jobs:
         which clang && clang --version || true
         uname -a && echo ---
         env | sort
+        echo ---
+        set
+
+    - name: Rust
+      shell: bash
+      run: |
+        if ! which cargo > /dev/null 2>&1; then
+            curl -sSf -o rustup-init.exe https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe
+            ./rustup-init.exe --profile minimal --no-modify-path -y
+            export PATH=$HOME/.cargo/bin:$PATH
+            which cargo
+            cargo version
+        fi
 
     - name: Test
       shell: bash
