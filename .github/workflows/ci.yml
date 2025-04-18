@@ -50,15 +50,12 @@ jobs:
       run: |
         if ! which cargo > /dev/null 2>&1; then
             curl -sSf -o rustup-init.exe https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe
-            ./rustup-init.exe --profile minimal --no-modify-path -y -c clippy
+            ./rustup-init.exe --profile minimal --component clippy -y
         fi
 
     - name: Rust
       shell: bash
       run: |
-        if ! which cargo > /dev/null 2>&1; then
-            export PATH=$HOME/.cargo/bin:$PATH
-        fi
         rustc --version --verbose
         export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
         cd bindings/rust
