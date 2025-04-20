@@ -81,11 +81,11 @@ jobs:
         echo 'export RUST_MIN_STACK=$(($1 * 1024)); shift'  >> ulimit-s
         echo 'exec "$@"'                                    >> ulimit-s
         triplet=`rustc -vV | awk '/host:/ {print $2}' | tr 'a-z-' 'A-Z_'`
-        stack_size=`[ $OSTYPE = "msys" ] && echo 65 || echo 56`
+        stack_size=`[ $RUNNER_OS = "Windows" ] && echo 65 || echo 56`
         env BLST_TEST_NO_STD= \
             CARGO_TARGET_${triplet}_RUNNER="bash ulimit-s $stack_size" \
             cargo test --release
-        if [ `uname -s` = "Linux" ]; then
+        if [ $RUNNER_OS = "Linux" ]; then
             echo '--- test wasm32-wasip1'
             echo
             rustup target add wasm32-wasip1
@@ -109,8 +109,8 @@ jobs:
             echo '--- dry-run publish'
             echo
             ./publish.sh --dry-run
-        elif [ `uname -s` = "Darwin" ]; then
-            if [ $HOSTTYPE = "arm64" ]; then
+        elif [ $RUNNER_OS = "macOS" ]; then
+            if [ $RUNNER_ARCH = "ARM64" ]; then
                 echo '--- test x86_64-apple-darwin'
                 echo
                 rustup target add x86_64-apple-darwin
