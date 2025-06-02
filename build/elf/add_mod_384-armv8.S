@@ -35,6 +35,8 @@ add_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	add_mod_384,.-add_mod_384
 
 .type	__add_mod_384,%function
@@ -72,6 +74,8 @@ __add_mod_384_ab_are_loaded:
 	csel	x15,x15,x22,lo
 
 	ret
+	dsb	sy
+	isb
 .size	__add_mod_384,.-__add_mod_384
 
 .globl	add_mod_384x
@@ -109,6 +113,8 @@ add_mod_384x:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	add_mod_384x,.-add_mod_384x
 
 .globl	rshift_mod_384
@@ -145,6 +151,8 @@ rshift_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	rshift_mod_384,.-rshift_mod_384
 
 .type	__rshift_mod_384,%function
@@ -171,6 +179,8 @@ __rshift_mod_384:
 	extr	x14,x15,x14,#1
 	extr	x15,x22,x15,#1
 	ret
+	dsb	sy
+	isb
 .size	__rshift_mod_384,.-__rshift_mod_384
 
 .globl	div_by_2_mod_384
@@ -204,6 +214,8 @@ div_by_2_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	div_by_2_mod_384,.-div_by_2_mod_384
 
 .globl	lshift_mod_384
@@ -240,6 +252,8 @@ lshift_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	lshift_mod_384,.-lshift_mod_384
 
 .type	__lshift_mod_384,%function
@@ -269,6 +283,8 @@ __lshift_mod_384:
 	csel	x15,x15,x22,lo
 
 	ret
+	dsb	sy
+	isb
 .size	__lshift_mod_384,.-__lshift_mod_384
 
 .globl	mul_by_3_mod_384
@@ -308,6 +324,8 @@ mul_by_3_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	mul_by_3_mod_384,.-mul_by_3_mod_384
 
 .globl	mul_by_8_mod_384
@@ -343,6 +361,8 @@ mul_by_8_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	mul_by_8_mod_384,.-mul_by_8_mod_384
 
 .globl	mul_by_3_mod_384x
@@ -397,6 +417,8 @@ mul_by_3_mod_384x:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	mul_by_3_mod_384x,.-mul_by_3_mod_384x
 
 .globl	mul_by_8_mod_384x
@@ -443,6 +465,8 @@ mul_by_8_mod_384x:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	mul_by_8_mod_384x,.-mul_by_8_mod_384x
 
 .globl	cneg_mod_384
@@ -494,6 +518,8 @@ cneg_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	cneg_mod_384,.-cneg_mod_384
 
 .globl	sub_mod_384
@@ -523,6 +549,8 @@ sub_mod_384:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	sub_mod_384,.-sub_mod_384
 
 .type	__sub_mod_384,%function
@@ -557,6 +585,8 @@ __sub_mod_384:
 	adc	x15,x15,x22
 
 	ret
+	dsb	sy
+	isb
 .size	__sub_mod_384,.-__sub_mod_384
 
 .globl	sub_mod_384x
@@ -594,6 +624,8 @@ sub_mod_384x:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	sub_mod_384x,.-sub_mod_384x
 
 .globl	mul_by_1_plus_i_mod_384x
@@ -636,6 +668,8 @@ mul_by_1_plus_i_mod_384x:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	mul_by_1_plus_i_mod_384x,.-mul_by_1_plus_i_mod_384x
 
 .globl	sgn0_pty_mod_384
@@ -674,6 +708,8 @@ sgn0_pty_mod_384:
 	orr	x0,x0,x3
 
 	ret
+	dsb	sy
+	isb
 .size	sgn0_pty_mod_384,.-sgn0_pty_mod_384
 
 .globl	sgn0_pty_mod_384x
@@ -757,6 +793,8 @@ sgn0_pty_mod_384x:
 	orr	x0,x1,x3	// pack sign and parity
 
 	ret
+	dsb	sy
+	isb
 .size	sgn0_pty_mod_384x,.-sgn0_pty_mod_384x
 .globl	vec_select_32
 .hidden	vec_select_32
@@ -772,6 +810,8 @@ vec_select_32:
 	bit	v1.16b, v4.16b, v6.16b
 	st1	{v0.2d, v1.2d}, [x0]
 	ret
+	dsb	sy
+	isb
 .size	vec_select_32,.-vec_select_32
 .globl	vec_select_48
 .hidden	vec_select_48
@@ -788,6 +828,8 @@ vec_select_48:
 	bit	v2.16b, v5.16b, v6.16b
 	st1	{v0.2d, v1.2d, v2.2d}, [x0]
 	ret
+	dsb	sy
+	isb
 .size	vec_select_48,.-vec_select_48
 .globl	vec_select_96
 .hidden	vec_select_96
@@ -810,6 +852,8 @@ vec_select_96:
 	bit	v18.16b, v21.16b, v6.16b
 	st1	{v16.2d, v17.2d, v18.2d}, [x0]
 	ret
+	dsb	sy
+	isb
 .size	vec_select_96,.-vec_select_96
 .globl	vec_select_192
 .hidden	vec_select_192
@@ -844,6 +888,8 @@ vec_select_192:
 	bit	v18.16b, v21.16b, v6.16b
 	st1	{v16.2d, v17.2d, v18.2d}, [x0]
 	ret
+	dsb	sy
+	isb
 .size	vec_select_192,.-vec_select_192
 .globl	vec_select_144
 .hidden	vec_select_144
@@ -872,6 +918,8 @@ vec_select_144:
 	bit	v2.16b, v5.16b, v6.16b
 	st1	{v0.2d, v1.2d, v2.2d}, [x0]
 	ret
+	dsb	sy
+	isb
 .size	vec_select_144,.-vec_select_144
 .globl	vec_select_288
 .hidden	vec_select_288
@@ -918,6 +966,8 @@ vec_select_288:
 	bit	v18.16b, v21.16b, v6.16b
 	st1	{v16.2d, v17.2d, v18.2d}, [x0]
 	ret
+	dsb	sy
+	isb
 .size	vec_select_288,.-vec_select_288
 .globl	vec_prefetch
 .hidden	vec_prefetch
@@ -959,6 +1009,8 @@ vec_prefetch:
 	csel	x0, x1, x0, hi
 	prfm	pldl1keep, [x0]
 	ret
+	dsb	sy
+	isb
 .size	vec_prefetch,.-vec_prefetch
 .globl	vec_is_zero_16x
 .hidden	vec_is_zero_16x
@@ -985,6 +1037,8 @@ vec_is_zero_16x:
 	cmp	x1, #0
 	csel	x0, x0, xzr, eq
 	ret
+	dsb	sy
+	isb
 .size	vec_is_zero_16x,.-vec_is_zero_16x
 .globl	vec_is_equal_16x
 .hidden	vec_is_equal_16x
@@ -1015,6 +1069,8 @@ vec_is_equal_16x:
 	cmp	x1, #0
 	csel	x0, x0, xzr, eq
 	ret
+	dsb	sy
+	isb
 .size	vec_is_equal_16x,.-vec_is_equal_16x
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

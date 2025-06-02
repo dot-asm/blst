@@ -190,6 +190,8 @@ blst_sha256_block_armv8:
 
 	ldr	x29,[sp],#2*__SIZEOF_POINTER__
 	ret
+	dsb	sy
+	isb
 .size	blst_sha256_block_armv8,.-blst_sha256_block_armv8
 .globl	blst_sha256_block_data_order
 .hidden	blst_sha256_block_data_order
@@ -1040,6 +1042,8 @@ blst_sha256_block_data_order:
 	ldr	x29,[x29]
 	add	sp,sp,#16*4+2*__SIZEOF_POINTER__
 	ret
+	dsb	sy
+	isb
 .size	blst_sha256_block_data_order,.-blst_sha256_block_data_order
 .globl	blst_sha256_emit
 .hidden	blst_sha256_emit
@@ -1068,6 +1072,8 @@ blst_sha256_emit:
 	str	w6,[x0,#16]
 	str	w7,[x0,#24]
 	ret
+	dsb	sy
+	isb
 .size	blst_sha256_emit,.-blst_sha256_emit
 
 .globl	blst_sha256_bcopy
@@ -1082,6 +1088,8 @@ blst_sha256_bcopy:
 	strb	w3,[x0],#1
 	cbnz	x2,.Loop_bcopy
 	ret
+	dsb	sy
+	isb
 .size	blst_sha256_bcopy,.-blst_sha256_bcopy
 
 .globl	blst_sha256_hcopy
@@ -1095,6 +1103,8 @@ blst_sha256_hcopy:
 	stp	x4,x5,[x0]
 	stp	x6,x7,[x0,#16]
 	ret
+	dsb	sy
+	isb
 .size	blst_sha256_hcopy,.-blst_sha256_hcopy
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

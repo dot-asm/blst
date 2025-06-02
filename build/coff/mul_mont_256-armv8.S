@@ -193,6 +193,8 @@ mul_mont_sparse_256:
 	ldp	x23,x24,[x29,#6*__SIZEOF_POINTER__]
 	ldr	x29,[sp],#8*__SIZEOF_POINTER__
 	ret
+	dsb	sy
+	isb
 
 .globl	sqr_mont_sparse_256
 
@@ -304,6 +306,8 @@ sqr_mont_sparse_256:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 .globl	from_mont_256
 
@@ -339,6 +343,8 @@ from_mont_256:
 	ldr	x29,[sp],#2*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	redc_mont_256
@@ -385,6 +391,8 @@ redc_mont_256:
 	ldr	x29,[sp],#2*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .def	__mul_by_1_mont_256;
@@ -472,4 +480,6 @@ __mul_by_1_mont_256:
 	adc	x13,x9,x17
 
 	ret
+	dsb	sy
+	isb
 

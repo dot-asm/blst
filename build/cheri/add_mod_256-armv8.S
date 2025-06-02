@@ -41,6 +41,8 @@ add_mod_256:
 	stp	x10,x11,[c0,#16]
 
 	ret
+	dsb	sy
+	isb
 .size	add_mod_256,.-add_mod_256
 
 .globl	mul_by_3_mod_256
@@ -91,6 +93,8 @@ mul_by_3_mod_256:
 	stp	x10,x11,[c0,#16]
 
 	ret
+	dsb	sy
+	isb
 .size	mul_by_3_mod_256,.-mul_by_3_mod_256
 
 .globl	lshift_mod_256
@@ -130,6 +134,8 @@ lshift_mod_256:
 	stp	x10,x11,[c0,#16]
 
 	ret
+	dsb	sy
+	isb
 .size	lshift_mod_256,.-lshift_mod_256
 
 .globl	rshift_mod_256
@@ -170,6 +176,8 @@ rshift_mod_256:
 	stp	x10,x11,[c0,#16]
 
 	ret
+	dsb	sy
+	isb
 .size	rshift_mod_256,.-rshift_mod_256
 
 .globl	cneg_mod_256
@@ -202,6 +210,8 @@ cneg_mod_256:
 	stp	x10,x11,[c0,#16]
 
 	ret
+	dsb	sy
+	isb
 .size	cneg_mod_256,.-cneg_mod_256
 
 .globl	sub_mod_256
@@ -234,6 +244,8 @@ sub_mod_256:
 	stp	x10,x11,[c0,#16]
 
 	ret
+	dsb	sy
+	isb
 .size	sub_mod_256,.-sub_mod_256
 
 .globl	check_mod_256
@@ -268,6 +280,8 @@ check_mod_256:
 	and	x0,x0,x1
 
 	ret
+	dsb	sy
+	isb
 .size	check_mod_256,.-check_mod_256
 
 .globl	add_n_check_mod_256
@@ -329,6 +343,8 @@ add_n_check_mod_256:
 	csel	x0, x17, xzr, ne
 
 	ret
+	dsb	sy
+	isb
 .size	add_n_check_mod_256,.-add_n_check_mod_256
 
 .globl	sub_n_check_mod_256
@@ -388,6 +404,8 @@ sub_n_check_mod_256:
 	csel	x0, x17, xzr, ne
 
 	ret
+	dsb	sy
+	isb
 .size	sub_n_check_mod_256,.-sub_n_check_mod_256
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

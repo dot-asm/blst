@@ -35,6 +35,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -85,6 +87,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -124,6 +128,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -164,6 +170,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -196,6 +204,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -228,6 +238,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -262,6 +274,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	and	x0,x0,x1
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -323,6 +337,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	cselne	x0,x17,xzr
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -382,5 +398,7 @@ __SIZEOF_POINTER__ SETA 64/8
 	cselne	x0,x17,xzr
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 	END

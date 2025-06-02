@@ -441,6 +441,8 @@ ct_inverse_mod_383:
 	ldr	x29, [sp],#16*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	ct_inverse_mod_383,.-ct_inverse_mod_383
 
 ////////////////////////////////////////////////////////////////////////
@@ -534,6 +536,8 @@ __smul_383x63:
 	adc	x28,   x2,   xzr	// used in __smul_767x63_tail
 
 	ret
+	dsb	sy
+	isb
 .size	__smul_383x63,.-__smul_383x63
 
 .type	__smul_767x63_tail, %function
@@ -589,6 +593,8 @@ __smul_767x63_tail:
 	stp	x7, x8, [x0,#8*10]
 
 	ret
+	dsb	sy
+	isb
 .size	__smul_767x63_tail,.-__smul_767x63_tail
 
 .type	__smul_383_n_shift_by_62, %function
@@ -708,6 +714,8 @@ __smul_383_n_shift_by_62:
 	sub	x16, x16, x28
 
 	ret
+	dsb	sy
+	isb
 .size	__smul_383_n_shift_by_62,.-__smul_383_n_shift_by_62
 .type	__ab_approximation_62, %function
 .align	4
@@ -761,6 +769,8 @@ __ab_approximation_62:
 
 	b	__inner_loop_62
 	ret
+	dsb	sy
+	isb
 .size	__ab_approximation_62,.-__ab_approximation_62
 .type	__inner_loop_62, %function
 .align	4
@@ -800,6 +810,8 @@ __inner_loop_62:
 	cbnz	x2, .Loop_62
 
 	ret
+	dsb	sy
+	isb
 .size	__inner_loop_62,.-__inner_loop_62
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

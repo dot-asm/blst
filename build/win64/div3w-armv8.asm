@@ -36,6 +36,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	orr	x0,x0,x3
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -73,6 +75,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	mov	x0,x2
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -93,5 +97,7 @@ __SIZEOF_POINTER__ SETA 64/8
 	mov	x0,x2
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 	END

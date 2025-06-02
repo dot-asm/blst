@@ -435,6 +435,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	ldr	x29, [sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -528,6 +530,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	adc	x28,   x2,   xzr
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -583,6 +587,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x7, x8, [x0,#8*10]
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -702,6 +708,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	sub	x16, x16, x28
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 	ALIGN	16
@@ -755,6 +763,8 @@ __SIZEOF_POINTER__ SETA 64/8
 
 	b	__inner_loop_62
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 	ALIGN	16
@@ -794,5 +804,7 @@ __SIZEOF_POINTER__ SETA 64/8
 	cbnz	x2, |$Loop_62|
 
 	ret
+	dsb	sy
+	isb
 	ENDP
 	END

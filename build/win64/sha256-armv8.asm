@@ -184,6 +184,8 @@ __SIZEOF_POINTER__ SETA 64/8
 
 	ldr	x29,[sp],#2*__SIZEOF_POINTER__
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -1034,6 +1036,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	ldr	x29,[x29]
 	add	sp,sp,#16*4+2*__SIZEOF_POINTER__
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -1062,6 +1066,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	str	w6,[x0,#16]
 	str	w7,[x0,#24]
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -1076,6 +1082,8 @@ __SIZEOF_POINTER__ SETA 64/8
 	strb	w3,[x0],#1
 	cbnz	x2,|$Loop_bcopy|
 	ret
+	dsb	sy
+	isb
 	ENDP
 
 
@@ -1089,5 +1097,7 @@ __SIZEOF_POINTER__ SETA 64/8
 	stp	x4,x5,[x0]
 	stp	x6,x7,[x0,#16]
 	ret
+	dsb	sy
+	isb
 	ENDP
 	END

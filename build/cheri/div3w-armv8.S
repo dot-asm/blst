@@ -42,6 +42,8 @@ div_3_limbs:
 	orr	x0,x0,x3	// all ones if overflow
 
 	ret
+	dsb	sy
+	isb
 .size	div_3_limbs,.-div_3_limbs
 .globl	quot_rem_128
 .hidden	quot_rem_128
@@ -79,6 +81,8 @@ quot_rem_128:
 	mov	x0,x2		// return adjusted quotient
 
 	ret
+	dsb	sy
+	isb
 .size	quot_rem_128,.-quot_rem_128
 
 .globl	quot_rem_64
@@ -99,6 +103,8 @@ quot_rem_64:
 	mov	x0,x2		// return quotient
 
 	ret
+	dsb	sy
+	isb
 .size	quot_rem_64,.-quot_rem_64
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

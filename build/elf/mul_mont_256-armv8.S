@@ -199,6 +199,8 @@ mul_mont_sparse_256:
 	ldp	x23,x24,[x29,#6*__SIZEOF_POINTER__]
 	ldr	x29,[sp],#8*__SIZEOF_POINTER__
 	ret
+	dsb	sy
+	isb
 .size	mul_mont_sparse_256,.-mul_mont_sparse_256
 .globl	sqr_mont_sparse_256
 .hidden	sqr_mont_sparse_256
@@ -308,6 +310,8 @@ sqr_mont_sparse_256:
 	ldr	x29,[sp],#6*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	sqr_mont_sparse_256,.-sqr_mont_sparse_256
 .globl	from_mont_256
 .hidden	from_mont_256
@@ -341,6 +345,8 @@ from_mont_256:
 	ldr	x29,[sp],#2*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	from_mont_256,.-from_mont_256
 
 .globl	redc_mont_256
@@ -385,6 +391,8 @@ redc_mont_256:
 	ldr	x29,[sp],#2*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	redc_mont_256,.-redc_mont_256
 
 .type	__mul_by_1_mont_256,%function
@@ -470,6 +478,8 @@ __mul_by_1_mont_256:
 	adc	x13,x9,x17
 
 	ret
+	dsb	sy
+	isb
 .size	__mul_by_1_mont_256,.-__mul_by_1_mont_256
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

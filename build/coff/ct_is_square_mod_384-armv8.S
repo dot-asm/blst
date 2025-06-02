@@ -88,6 +88,8 @@ ct_is_square_mod_384:
 	ldr	x29, [sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .def	__smul_384_n_shift_by_30;
@@ -208,6 +210,8 @@ __smul_384_n_shift_by_30:
 	stp	x7, x8, [x1,#8*4]
 
 	ret
+	dsb	sy
+	isb
 
 .def	__ab_approximation_30;
 .type	32;
@@ -267,6 +271,8 @@ __ab_approximation_30:
 
 	b	__inner_loop_30
 	ret
+	dsb	sy
+	isb
 
 
 .def	__inner_loop_30;
@@ -317,6 +323,8 @@ __inner_loop_30:
 	sub	x20, x20, x27
 
 	ret
+	dsb	sy
+	isb
 
 .def	__inner_loop_48;
 .type	32;
@@ -341,4 +349,6 @@ __inner_loop_48:
 	cbnz	x15, .Loop_48
 
 	ret
+	dsb	sy
+	isb
 

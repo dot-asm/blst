@@ -35,6 +35,8 @@ add_mod_256:
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	mul_by_3_mod_256
@@ -87,6 +89,8 @@ mul_by_3_mod_256:
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	lshift_mod_256
@@ -128,6 +132,8 @@ lshift_mod_256:
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	rshift_mod_256
@@ -170,6 +176,8 @@ rshift_mod_256:
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	cneg_mod_256
@@ -204,6 +212,8 @@ cneg_mod_256:
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	sub_mod_256
@@ -238,6 +248,8 @@ sub_mod_256:
 	stp	x10,x11,[x0,#16]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	check_mod_256
@@ -274,6 +286,8 @@ check_mod_256:
 	and	x0,x0,x1
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	add_n_check_mod_256
@@ -337,6 +351,8 @@ add_n_check_mod_256:
 	csel	x0, x17, xzr, ne
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	sub_n_check_mod_256
@@ -398,4 +414,6 @@ sub_n_check_mod_256:
 	csel	x0, x17, xzr, ne
 
 	ret
+	dsb	sy
+	isb
 

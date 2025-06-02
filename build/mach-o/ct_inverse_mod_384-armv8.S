@@ -433,6 +433,8 @@ _ct_inverse_mod_383:
 	ldr	x29, [sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -526,6 +528,8 @@ __smul_383x63:
 	adc	x28,   x2,   xzr	// used in __smul_767x63_tail
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -581,6 +585,8 @@ __smul_767x63_tail:
 	stp	x7, x8, [x0,#8*10]
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -700,6 +706,8 @@ __smul_383_n_shift_by_62:
 	sub	x16, x16, x28
 
 	ret
+	dsb	sy
+	isb
 
 
 .align	4
@@ -753,6 +761,8 @@ Lab_approximation_62_loaded:
 
 	b	__inner_loop_62
 	ret
+	dsb	sy
+	isb
 
 
 .align	4
@@ -792,4 +802,6 @@ Loop_62:
 	cbnz	x2, Loop_62
 
 	ret
+	dsb	sy
+	isb
 

@@ -551,6 +551,8 @@ ct_inverse_mod_256:
 	ldr	x29, [sp],#10*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	ct_inverse_mod_256,.-ct_inverse_mod_256
 
 ////////////////////////////////////////////////////////////////////////
@@ -627,6 +629,8 @@ __smul_256x63:
 	stp	x6, x24, [x0,#8*2]
 
 	ret
+	dsb	sy
+	isb
 .size	__smul_256x63,.-__smul_256x63
 
 .type	__smul_512x63_tail, %function
@@ -672,6 +676,8 @@ __smul_512x63_tail:
 	stp	x6, x22,   [x0,#8*6]
 
 	ret
+	dsb	sy
+	isb
 .size	__smul_512x63_tail,.-__smul_512x63_tail
 
 .type	__smul_256_n_shift_by_31, %function
@@ -764,6 +770,8 @@ __smul_256_n_shift_by_31:
 	sub	x13, x13, x23
 
 	ret
+	dsb	sy
+	isb
 .size	__smul_256_n_shift_by_31,.-__smul_256_n_shift_by_31
 .type	__ab_approximation_31_256, %function
 .align	4
@@ -810,6 +818,8 @@ __ab_approximation_31_256:
 
 	b	__inner_loop_31_256
 	ret
+	dsb	sy
+	isb
 .size	__ab_approximation_31_256,.-__ab_approximation_31_256
 
 .type	__inner_loop_31_256, %function
@@ -851,6 +861,8 @@ __inner_loop_31_256:
 	sub	x15, x15, x23
 
 	ret
+	dsb	sy
+	isb
 .size	__inner_loop_31_256,.-__inner_loop_31_256
 
 .type	__inner_loop_62_256, %function
@@ -885,6 +897,8 @@ __inner_loop_62_256:
 	cbnz	x2, .Loop_62_256
 
 	ret
+	dsb	sy
+	isb
 .size	__inner_loop_62_256,.-__inner_loop_62_256
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

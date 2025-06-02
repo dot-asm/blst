@@ -36,6 +36,8 @@ div_3_limbs:
 	orr	x0,x0,x3	// all ones if overflow
 
 	ret
+	dsb	sy
+	isb
 
 .globl	quot_rem_128
 
@@ -75,6 +77,8 @@ quot_rem_128:
 	mov	x0,x2		// return adjusted quotient
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	quot_rem_64
@@ -97,4 +101,6 @@ quot_rem_64:
 	mov	x0,x2		// return quotient
 
 	ret
+	dsb	sy
+	isb
 

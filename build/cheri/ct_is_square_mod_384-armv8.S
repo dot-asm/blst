@@ -94,6 +94,8 @@ ct_is_square_mod_384:
 	ldr	c29, [csp],#16*__SIZEOF_POINTER__
 	hint	#AUTI_HINT
 	ret
+	dsb	sy
+	isb
 .size	ct_is_square_mod_384,.-ct_is_square_mod_384
 
 .type	__smul_384_n_shift_by_30, %function
@@ -212,6 +214,8 @@ __smul_384_n_shift_by_30:
 	stp	x7, x8, [c1,#8*4]
 
 	ret
+	dsb	sy
+	isb
 .size	__smul_384_n_shift_by_30,.-__smul_384_n_shift_by_30
 .type	__ab_approximation_30, %function
 .align	4
@@ -269,6 +273,8 @@ __ab_approximation_30:
 
 	b	__inner_loop_30
 	ret
+	dsb	sy
+	isb
 .size	__ab_approximation_30,.-__ab_approximation_30
 
 .type	__inner_loop_30, %function
@@ -317,6 +323,8 @@ __inner_loop_30:
 	sub	x20, x20, x27
 
 	ret
+	dsb	sy
+	isb
 .size	__inner_loop_30,.-__inner_loop_30
 .type	__inner_loop_48, %function
 .align	4
@@ -339,6 +347,8 @@ __inner_loop_48:
 	cbnz	x15, .Loop_48
 
 	ret
+	dsb	sy
+	isb
 .size	__inner_loop_48,.-__inner_loop_48
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT) || defined(__ARM_FEATURE_PAC_DEFAULT)

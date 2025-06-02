@@ -543,6 +543,8 @@ _ct_inverse_mod_256:
 	ldr	x29, [sp],#10*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -619,6 +621,8 @@ __smul_256x63:
 	stp	x6, x24, [x0,#8*2]
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -664,6 +668,8 @@ __smul_512x63_tail:
 	stp	x6, x22,   [x0,#8*6]
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -756,6 +762,8 @@ __smul_256_n_shift_by_31:
 	sub	x13, x13, x23
 
 	ret
+	dsb	sy
+	isb
 
 
 .align	4
@@ -802,6 +810,8 @@ Lab_approximation_31_256_loaded:
 
 	b	__inner_loop_31_256
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -843,6 +853,8 @@ Loop_31_256:
 	sub	x15, x15, x23
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -877,4 +889,6 @@ Loop_62_256:
 	cbnz	x2, Loop_62_256
 
 	ret
+	dsb	sy
+	isb
 

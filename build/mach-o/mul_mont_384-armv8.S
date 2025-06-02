@@ -25,6 +25,8 @@ _add_mod_384x384:
 	ldr	x29,[sp],#8*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -80,6 +82,8 @@ __add_mod_384x384:
 	stp	x15,x16,[x0,#80]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sub_mod_384x384
@@ -107,6 +111,8 @@ _sub_mod_384x384:
 	ldr	x29,[sp],#8*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -160,6 +166,8 @@ __sub_mod_384x384:
 	stp	x15,x16,[x0,#80]
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -198,6 +206,8 @@ __add_mod_384:
 	stp	x15,x16,[x0,#32]
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -234,6 +244,8 @@ __sub_mod_384:
 	stp	x15,x16,[x0,#32]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_mul_mont_384x
@@ -316,6 +328,8 @@ _mul_mont_384x:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sqr_mont_384x
@@ -401,6 +415,8 @@ _sqr_mont_384x:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_mul_mont_384
@@ -442,6 +458,8 @@ _mul_mont_384:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -814,6 +832,8 @@ __mul_mont_384:
 	csel	x15,x23,x1,lo
 	csel	x16,x24,x3,lo
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sqr_mont_384
@@ -860,6 +880,8 @@ _sqr_mont_384:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sqr_n_mul_mont_383
@@ -925,6 +947,8 @@ Loop_sqr_383:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .align	5
@@ -1038,6 +1062,8 @@ __sqr_384:
 	stp	x28,x16,[x0,#80]
 
 	ret
+	dsb	sy
+	isb
 
 .globl	_sqr_384
 .private_extern	_sqr_384
@@ -1068,6 +1094,8 @@ _sqr_384:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_redc_mont_384
@@ -1101,6 +1129,8 @@ _redc_mont_384:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_from_mont_384
@@ -1151,6 +1181,8 @@ _from_mont_384:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -1323,6 +1355,8 @@ __mul_by_1_mont_384:
 	adc	x16,x16,x25
 
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -1360,6 +1394,8 @@ __redc_tail_mont_384:
 	stp	x15,x16,[x0,#32]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_mul_384
@@ -1387,6 +1423,8 @@ _mul_384:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -1564,6 +1602,8 @@ __mul_384:
 	stp	x23,x24,[x0,#80]
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_mul_382x
@@ -1655,6 +1695,8 @@ _mul_382x:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sqr_382x
@@ -1755,6 +1797,8 @@ _sqr_382x:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sqr_mont_382x
@@ -1879,6 +1923,8 @@ _sqr_mont_382x:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 
@@ -2219,6 +2265,8 @@ __mul_mont_383_nonred:
 	adcs	x16,x25,x3
 
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sgn0_pty_mont_384
@@ -2273,6 +2321,8 @@ _sgn0_pty_mont_384:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
 
 .globl	_sgn0_pty_mont_384x
@@ -2371,4 +2421,6 @@ _sgn0_pty_mont_384x:
 	ldr	x29,[sp],#16*__SIZEOF_POINTER__
 	hint	#29
 	ret
+	dsb	sy
+	isb
 
