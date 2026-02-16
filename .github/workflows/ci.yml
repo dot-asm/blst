@@ -281,6 +281,7 @@ jobs:
         if [ -x ~/$base_dir/zig ]; then
             PATH=~/$base_dir:$PATH
             zig build test --summary new
+            echo '--- test wasm32-wasi
             if [ ! -d ~/.wasmtime ]; then
                 curl https://wasmtime.dev/install.sh -sSf | bash
             fi
