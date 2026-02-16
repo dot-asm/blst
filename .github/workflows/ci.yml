@@ -250,7 +250,7 @@ jobs:
       uses: docker://emscripten/emsdk
       with:
         args: >
-          --network none bindings/emscripten/run.me -O2
+          /github/workspace/bindings/emscripten/run.me -O2
 
     - name: C#
       run: |
