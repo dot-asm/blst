@@ -248,7 +248,9 @@ jobs:
 
     - name: Emscripten
       uses: docker://emscripten/emsdk
-      run: bindings/emscripten/run.me -O2
+      with:
+        args: >
+          --network none bindings/emscripten/run.me -O2
 
     - name: C#
       run: |
