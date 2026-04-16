@@ -290,6 +290,7 @@ jobs:
                 fi
             fi
             if [ -x ~/$base_dir/zig ]; then
+                echo "--- test $base_dir"
                 PATH=~/$base_dir:$PATH
                 zig build test --summary new
                 echo '--- test wasm32-wasi'
