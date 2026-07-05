@@ -40,6 +40,8 @@ static int __blst_cpuid(void)
         __cpuidex(info, 7, 0);
         cap |= (info[1]>>19) & 1; /* ADX */
         cap |= (info[1]>>28) & 2; /* SHA */
+        __cpuidex(info, 7, 1);
+        cap |= (info[3]>>19) & 4; /* APX_F */
     }
 
     __blst_platform_cap = cap;
