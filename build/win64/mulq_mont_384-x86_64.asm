@@ -234,7 +234,10 @@ $L$SEH_begin_mul_mont_384x::
 	mov	rcx,r9
 	mov	r8,QWORD PTR[40+rsp]
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	mul_mont_384x$4
+	test	eax,1
 	jnz	mul_mont_384x$1
 endif
 	push	rbp
@@ -368,7 +371,10 @@ $L$SEH_begin_sqr_mont_384x::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sqr_mont_384x$4
+	test	eax,1
 	jnz	sqr_mont_384x$1
 endif
 	push	rbp
@@ -510,7 +516,10 @@ $L$SEH_begin_mul_382x::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	mul_382x$4
+	test	eax,1
 	jnz	mul_382x$1
 endif
 	push	rbp
@@ -662,7 +671,10 @@ $L$SEH_begin_sqr_382x::
 	mov	rsi,rdx
 	mov	rdx,r8
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sqr_382x$4
+	test	eax,1
 	jnz	sqr_382x$1
 endif
 	push	rbp
@@ -812,7 +824,10 @@ $L$SEH_begin_mul_384::
 	mov	rsi,rdx
 	mov	rdx,r8
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	mul_384$4
+	test	eax,1
 	jnz	mul_384$1
 endif
 	push	rbp
@@ -1161,7 +1176,10 @@ $L$SEH_begin_sqr_384::
 	mov	rdi,rcx
 	mov	rsi,rdx
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sqr_384$4
+	test	eax,1
 	jnz	sqr_384$1
 endif
 	push	rbp
@@ -1431,7 +1449,10 @@ $L$SEH_begin_sqr_mont_384::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sqr_mont_384$4
+	test	eax,1
 	jnz	sqr_mont_384$1
 endif
 	push	rbp
@@ -1516,7 +1537,10 @@ $L$SEH_begin_redc_mont_384::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	redc_mont_384$4
+	test	eax,1
 	jnz	redc_mont_384$1
 endif
 	push	rbp
@@ -1591,7 +1615,10 @@ $L$SEH_begin_from_mont_384::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	from_mont_384$4
+	test	eax,1
 	jnz	from_mont_384$1
 endif
 	push	rbp
@@ -2051,7 +2078,10 @@ $L$SEH_begin_sgn0_pty_mont_384::
 	mov	rsi,rdx
 	mov	rdx,r8
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sgn0_pty_mont_384$4
+	test	eax,1
 	jnz	sgn0_pty_mont_384$1
 endif
 	push	rbp
@@ -2146,7 +2176,10 @@ $L$SEH_begin_sgn0_pty_mont_384x::
 	mov	rsi,rdx
 	mov	rdx,r8
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sgn0_pty_mont_384x$4
+	test	eax,1
 	jnz	sgn0_pty_mont_384x$1
 endif
 	push	rbp
@@ -2292,7 +2325,10 @@ $L$SEH_begin_mul_mont_384::
 	mov	rcx,r9
 	mov	r8,QWORD PTR[40+rsp]
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	mul_mont_384$4
+	test	eax,1
 	jnz	mul_mont_384$1
 endif
 	push	rbp
@@ -2982,7 +3018,10 @@ $L$SEH_begin_sqr_n_mul_mont_384::
 	mov	r8,QWORD PTR[40+rsp]
 	mov	r9,QWORD PTR[48+rsp]
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sqr_n_mul_mont_384$4
+	test	eax,1
 	jnz	sqr_n_mul_mont_384$1
 endif
 	push	rbp
@@ -3090,7 +3129,10 @@ $L$SEH_begin_sqr_n_mul_mont_383::
 	mov	r8,QWORD PTR[40+rsp]
 	mov	r9,QWORD PTR[48+rsp]
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sqr_n_mul_mont_383$4
+	test	eax,1
 	jnz	sqr_n_mul_mont_383$1
 endif
 	push	rbp
