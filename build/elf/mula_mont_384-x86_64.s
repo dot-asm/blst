@@ -43,12 +43,12 @@ __suba_mod_384x384:
 	sbbq	88(%rdx),%r27
 	sbbq	%rdx,%rdx
 
-	andq	0(%rcx),%rdx,%r16
-	andq	8(%rcx),%rdx,%r17
-	andq	16(%rcx),%rdx,%r18
-	andq	24(%rcx),%rdx,%r19
-	andq	32(%rcx),%rdx,%r20
-	andq	40(%rcx),%rdx,%r21
+{nf}	andq	0(%rcx),%rdx,%r16
+{nf}	andq	8(%rcx),%rdx,%r17
+{nf}	andq	16(%rcx),%rdx,%r18
+{nf}	andq	24(%rcx),%rdx,%r19
+{nf}	andq	32(%rcx),%rdx,%r20
+{nf}	andq	40(%rcx),%rdx,%r21
 
 	addq	%r16,%r22
 	adcq	%r17,%r23
@@ -157,12 +157,12 @@ __suba_mod_384_a_is_loaded:
 	sbbq	40(%rdx),%r21
 	sbbq	%rdx,%rdx
 
-	andq	0(%rcx),%rdx,%r22
-	andq	8(%rcx),%rdx,%r23
-	andq	16(%rcx),%rdx,%r24
-	andq	24(%rcx),%rdx,%r25
-	andq	32(%rcx),%rdx,%r26
-	andq	40(%rcx),%rdx,%r27
+{nf}	andq	0(%rcx),%rdx,%r22
+{nf}	andq	8(%rcx),%rdx,%r23
+{nf}	andq	16(%rcx),%rdx,%r24
+{nf}	andq	24(%rcx),%rdx,%r25
+{nf}	andq	32(%rcx),%rdx,%r26
+{nf}	andq	40(%rcx),%rdx,%r27
 
 	addq	%r22,%r16
 	adcq	%r23,%r17
@@ -1143,7 +1143,7 @@ __mula_by_1_mont_384:
 	movq	24(%rsi),%r19
 	movq	32(%rsi),%r20
 	movq	40(%rsi),%r21
-{nf}	imulq	%r16, %r8, %rdx
+{nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
@@ -1171,7 +1171,7 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
-{nf}	imulq	%r16, %r8, %rdx
+{nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
@@ -1199,7 +1199,7 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
-{nf}	imulq	%r16, %r8, %rdx
+{nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
@@ -1227,7 +1227,7 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
-{nf}	imulq	%r16, %r8, %rdx
+{nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
@@ -1255,7 +1255,7 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
-{nf}	imulq	%r16, %r8, %rdx
+{nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
@@ -1283,7 +1283,7 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
-{nf}	imulq	%r16, %r8, %rdx
+{nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
@@ -1335,28 +1335,28 @@ __reda_tail_mont_384:
 	adcq	72(%rsi),%r19
 	adcq	80(%rsi),%r20
 	adcq	88(%rsi),%r21
-	sbbq	%r22,%r22
+	sbbq	%r11,%r11
 
 
 
 
-	subq	0(%rcx),%r16,%r23
-	sbbq	8(%rcx),%r17,%r24
-	sbbq	16(%rcx),%r18,%r25
-	sbbq	24(%rcx),%r19,%r26
-	sbbq	32(%rcx),%r20,%r27
-	sbbq	40(%rcx),%r21,%rsi
-	sbbq	$0,%r22
+	subq	0(%rcx),%r16,%r22
+	sbbq	8(%rcx),%r17,%r23
+	sbbq	16(%rcx),%r18,%r24
+	sbbq	24(%rcx),%r19,%r25
+	sbbq	32(%rcx),%r20,%r26
+	sbbq	40(%rcx),%r21,%r27
+	sbbq	$0,%r11
 
-	cmovncq	%r23,%r16
-	cmovncq	%r24,%r17
-	cmovncq	%r25,%r18
+	cmovncq	%r22,%r16
+	cmovncq	%r23,%r17
+	cmovncq	%r24,%r18
 	movq	%r16,0(%rdi)
-	cmovncq	%r26,%r19
+	cmovncq	%r25,%r19
 	movq	%r17,8(%rdi)
-	cmovncq	%r27,%r20
+	cmovncq	%r26,%r20
 	movq	%r18,16(%rdi)
-	cmovncq	%rsi,%r21
+	cmovncq	%r27,%r21
 	movq	%r19,24(%rdi)
 	movq	%r20,32(%rdi)
 	movq	%r21,40(%rdi)
@@ -1609,6 +1609,8 @@ __mula_mont_384:
 	adcq	$0,%r22
 	xorq	%r23,%r23
 
+{nf}	imulq	%r8,%r16,%rsi
+
 
 	xorq	%r24,%r24
 	mulxq	%r25,%rax,%r11
@@ -1632,17 +1634,17 @@ __mula_mont_384:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%rsi,%rdx
 	adoxq	%rax,%r22
-	adcxq	%r11,%r23
-	adoxq	%r24,%r23
+	adcxq	%r24,%r11
+	adoxq	%r11,%r23
 	adoxq	%r24,%r24
 
 
-	xorq	%rax,%rax
-	mulxq	0+128(%rcx),%r11,%rax
-	adcxq	%r16,%r11
-	adoxq	%rax,%r17,%r16
+	xorq	%rsi,%rsi
+	mulxq	0+128(%rcx),%rax,%r11
+	adcxq	%r16,%rax
+	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
 	adcxq	%rax,%r16
@@ -1661,14 +1663,14 @@ __mula_mont_384:
 	adoxq	%r21,%r20
 
 	mulxq	40+128(%rcx),%rax,%r21
-	movq	16(%r10),%rdx
+	movq	8+8(%r10),%rdx
 	adcxq	%rax,%r20
-	adoxq	%r22,%r21
-	adcxq	%r11,%r21
-	adoxq	%r11,%r23
-	adcxq	%r11,%r23,%r22
-	adoxq	%r11,%r24
-	adcxq	%r11,%r24,%r23
+	adoxq	%rsi,%r21
+	adcxq	%r22,%r21
+	adcxq	%rsi,%r23,%r22
+	adcxq	%rsi,%r24,%r23
+{nf}	imulq	%r8,%r16,%rsi
+
 
 	xorq	%r24,%r24
 	mulxq	%r25,%rax,%r11
@@ -1692,17 +1694,17 @@ __mula_mont_384:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%rsi,%rdx
 	adoxq	%rax,%r22
-	adcxq	%r11,%r23
-	adoxq	%r24,%r23
+	adcxq	%r24,%r11
+	adoxq	%r11,%r23
 	adoxq	%r24,%r24
 
 
-	xorq	%rax,%rax
-	mulxq	0+128(%rcx),%r11,%rax
-	adcxq	%r16,%r11
-	adoxq	%rax,%r17,%r16
+	xorq	%rsi,%rsi
+	mulxq	0+128(%rcx),%rax,%r11
+	adcxq	%r16,%rax
+	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
 	adcxq	%rax,%r16
@@ -1721,14 +1723,14 @@ __mula_mont_384:
 	adoxq	%r21,%r20
 
 	mulxq	40+128(%rcx),%rax,%r21
-	movq	24(%r10),%rdx
+	movq	16+8(%r10),%rdx
 	adcxq	%rax,%r20
-	adoxq	%r22,%r21
-	adcxq	%r11,%r21
-	adoxq	%r11,%r23
-	adcxq	%r11,%r23,%r22
-	adoxq	%r11,%r24
-	adcxq	%r11,%r24,%r23
+	adoxq	%rsi,%r21
+	adcxq	%r22,%r21
+	adcxq	%rsi,%r23,%r22
+	adcxq	%rsi,%r24,%r23
+{nf}	imulq	%r8,%r16,%rsi
+
 
 	xorq	%r24,%r24
 	mulxq	%r25,%rax,%r11
@@ -1752,17 +1754,17 @@ __mula_mont_384:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%rsi,%rdx
 	adoxq	%rax,%r22
-	adcxq	%r11,%r23
-	adoxq	%r24,%r23
+	adcxq	%r24,%r11
+	adoxq	%r11,%r23
 	adoxq	%r24,%r24
 
 
-	xorq	%rax,%rax
-	mulxq	0+128(%rcx),%r11,%rax
-	adcxq	%r16,%r11
-	adoxq	%rax,%r17,%r16
+	xorq	%rsi,%rsi
+	mulxq	0+128(%rcx),%rax,%r11
+	adcxq	%r16,%rax
+	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
 	adcxq	%rax,%r16
@@ -1781,14 +1783,14 @@ __mula_mont_384:
 	adoxq	%r21,%r20
 
 	mulxq	40+128(%rcx),%rax,%r21
-	movq	32(%r10),%rdx
+	movq	24+8(%r10),%rdx
 	adcxq	%rax,%r20
-	adoxq	%r22,%r21
-	adcxq	%r11,%r21
-	adoxq	%r11,%r23
-	adcxq	%r11,%r23,%r22
-	adoxq	%r11,%r24
-	adcxq	%r11,%r24,%r23
+	adoxq	%rsi,%r21
+	adcxq	%r22,%r21
+	adcxq	%rsi,%r23,%r22
+	adcxq	%rsi,%r24,%r23
+{nf}	imulq	%r8,%r16,%rsi
+
 
 	xorq	%r24,%r24
 	mulxq	%r25,%rax,%r11
@@ -1812,17 +1814,17 @@ __mula_mont_384:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%rsi,%rdx
 	adoxq	%rax,%r22
-	adcxq	%r11,%r23
-	adoxq	%r24,%r23
+	adcxq	%r24,%r11
+	adoxq	%r11,%r23
 	adoxq	%r24,%r24
 
 
-	xorq	%rax,%rax
-	mulxq	0+128(%rcx),%r11,%rax
-	adcxq	%r16,%r11
-	adoxq	%rax,%r17,%r16
+	xorq	%rsi,%rsi
+	mulxq	0+128(%rcx),%rax,%r11
+	adcxq	%r16,%rax
+	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
 	adcxq	%rax,%r16
@@ -1841,14 +1843,14 @@ __mula_mont_384:
 	adoxq	%r21,%r20
 
 	mulxq	40+128(%rcx),%rax,%r21
-	movq	40(%r10),%rdx
+	movq	32+8(%r10),%rdx
 	adcxq	%rax,%r20
-	adoxq	%r22,%r21
-	adcxq	%r11,%r21
-	adoxq	%r11,%r23
-	adcxq	%r11,%r23,%r22
-	adoxq	%r11,%r24
-	adcxq	%r11,%r24,%r23
+	adoxq	%rsi,%r21
+	adcxq	%r22,%r21
+	adcxq	%rsi,%r23,%r22
+	adcxq	%rsi,%r24,%r23
+{nf}	imulq	%r8,%r16,%rsi
+
 
 	xorq	%r24,%r24
 	mulxq	%r25,%rax,%r11
@@ -1872,17 +1874,17 @@ __mula_mont_384:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%rsi,%rdx
 	adoxq	%rax,%r22
-	adcxq	%r11,%r23
-	adoxq	%r24,%r23
+	adcxq	%r24,%r11
+	adoxq	%r11,%r23
 	adoxq	%r24,%r24
 
 
-	xorq	%rax,%rax
-	mulxq	0+128(%rcx),%r11,%rax
-	adcxq	%r16,%r11
-	adoxq	%rax,%r17,%r16
+	xorq	%rsi,%rsi
+	mulxq	0+128(%rcx),%rax,%r11
+	adcxq	%r16,%rax
+	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
 	adcxq	%rax,%r16
@@ -1901,16 +1903,12 @@ __mula_mont_384:
 	adoxq	%r21,%r20
 
 	mulxq	40+128(%rcx),%rax,%r21
-	movq	%r16,%rdx
+{nf}	imulq	%r8,%r16,%rdx
 	adcxq	%rax,%r20
-	adoxq	%r22,%r21
-	adcxq	%r11,%r21
-	adoxq	%r11,%r23
-	adcxq	%r11,%r23,%r22
-	adoxq	%r11,%r24
-	adcxq	%r11,%r24,%r23
-{nf}	imulq	%r8, %r16, %rdx
-
+	adoxq	%rsi,%r21
+	adcxq	%r22,%r21
+	adcxq	%rsi,%r23,%r22
+	adcxq	%rsi,%r24,%r23
 
 	xorq	%r24,%r24
 	mulxq	0+128(%rcx),%rax,%r25
@@ -1935,10 +1933,9 @@ __mula_mont_384:
 
 	mulxq	40+128(%rcx),%rax,%r30
 	adcxq	%rax,%r29
-	adoxq	%r22,%r30
-	adcxq	%r24,%r30
-	adoxq	%r24,%r23
+	adoxq	%r24,%r30
 	leaq	128(%rcx),%rcx
+	adcxq	%r22,%r30
 	adcq	$0,%r23
 
 
@@ -2129,6 +2126,7 @@ sqr_n_mul_mont_383$4:
 	adcq	%r23,%r20
 	adcq	%r24,%r21
 	adcq	$0,%r22
+{nf}	imulq	%r8,%r16,%r24
 
 
 	xorq	%r23,%r23
@@ -2153,7 +2151,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%r24,%rdx
 	adoxq	%rax,%r22
 	adcxq	%r23,%r11
 	adoxq	%r11,%r23
@@ -2187,6 +2185,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r24,%r21
 	adoxq	%r24,%r23
 	adcxq	%r24,%r23,%r22
+{nf}	imulq	%r8,%r16,%r24
 
 
 	xorq	%r23,%r23
@@ -2211,7 +2210,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%r24,%rdx
 	adoxq	%rax,%r22
 	adcxq	%r23,%r11
 	adoxq	%r11,%r23
@@ -2245,6 +2244,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r24,%r21
 	adoxq	%r24,%r23
 	adcxq	%r24,%r23,%r22
+{nf}	imulq	%r8,%r16,%r24
 
 
 	xorq	%r23,%r23
@@ -2269,7 +2269,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%r24,%rdx
 	adoxq	%rax,%r22
 	adcxq	%r23,%r11
 	adoxq	%r11,%r23
@@ -2303,6 +2303,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r24,%r21
 	adoxq	%r24,%r23
 	adcxq	%r24,%r23,%r22
+{nf}	imulq	%r8,%r16,%r24
 
 
 	xorq	%r23,%r23
@@ -2327,7 +2328,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%r24,%rdx
 	adoxq	%rax,%r22
 	adcxq	%r23,%r11
 	adoxq	%r11,%r23
@@ -2361,6 +2362,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r24,%r21
 	adoxq	%r24,%r23
 	adcxq	%r24,%r23,%r22
+{nf}	imulq	%r8,%r16,%r24
 
 
 	xorq	%r23,%r23
@@ -2385,7 +2387,7 @@ sqr_n_mul_mont_383$4:
 	adcxq	%r11,%r22
 
 	mulxq	%r30,%rax,%r11
-{nf}	 imulq	%r8, %r16, %rdx
+	movq	%r24,%rdx
 	adoxq	%rax,%r22
 	adcxq	%r23,%r11
 	adoxq	%r11,%r23
@@ -2413,14 +2415,12 @@ sqr_n_mul_mont_383$4:
 	adoxq	%r21,%r20
 
 	mulxq	40+128(%rcx),%rax,%r21
-	movq	%r16,%rdx
+{nf}	imulq	%r8,%r16,%rdx
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r24,%r21
 	adoxq	%r24,%r23
 	adcxq	%r24,%r23,%r22
-{nf}	imulq	%r8, %r16, %rdx
-
 
 	xorq	%r24,%r24
 	mulxq	0+128(%rcx),%rax,%r25
