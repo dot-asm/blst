@@ -32,7 +32,6 @@ $code.=<<___ if ($flavour =~ /masm/);
 .globl	sqr_mont_384\$4
 .globl	sqr_n_mul_mont_384\$4
 .globl	sqr_n_mul_mont_383\$4
-.globl	sqr_mont_382x\$4
 ___
 
 # common argument layout
@@ -88,12 +87,12 @@ __suba_mod_384x384:
 	sbb	8*11($b_org), @acc[11]
 	sbb	$b_org, $b_org
 
-	and	8*0($n_ptr), $b_org, @acc[0]
-	and	8*1($n_ptr), $b_org, @acc[1]
-	and	8*2($n_ptr), $b_org, @acc[2]
-	and	8*3($n_ptr), $b_org, @acc[3]
-	and	8*4($n_ptr), $b_org, @acc[4]
-	and	8*5($n_ptr), $b_org, @acc[5]
+{nf}	and	8*0($n_ptr), $b_org, @acc[0]
+{nf}	and	8*1($n_ptr), $b_org, @acc[1]
+{nf}	and	8*2($n_ptr), $b_org, @acc[2]
+{nf}	and	8*3($n_ptr), $b_org, @acc[3]
+{nf}	and	8*4($n_ptr), $b_org, @acc[4]
+{nf}	and	8*5($n_ptr), $b_org, @acc[5]
 
 	add	@acc[0], @acc[6]
 	adc	@acc[1], @acc[7]
@@ -178,12 +177,12 @@ __suba_mod_384_a_is_loaded:
 	sbb	8*5($b_org), @acc[5]
 	sbb	$b_org, $b_org
 
-	and	8*0($n_ptr), $b_org, @acc[6]
-	and	8*1($n_ptr), $b_org, @acc[7]
-	and	8*2($n_ptr), $b_org, @acc[8]
-	and	8*3($n_ptr), $b_org, @acc[9]
-	and	8*4($n_ptr), $b_org, @acc[10]
-	and	8*5($n_ptr), $b_org, @acc[11]
+{nf}	and	8*0($n_ptr), $b_org, @acc[6]
+{nf}	and	8*1($n_ptr), $b_org, @acc[7]
+{nf}	and	8*2($n_ptr), $b_org, @acc[8]
+{nf}	and	8*3($n_ptr), $b_org, @acc[9]
+{nf}	and	8*4($n_ptr), $b_org, @acc[10]
+{nf}	and	8*5($n_ptr), $b_org, @acc[11]
 
 	add	@acc[6], @acc[0]
 	adc	@acc[7], @acc[1]
@@ -1017,28 +1016,28 @@ __reda_tail_mont_384:
 	adc	8*9($a_ptr), @acc[3]
 	adc	8*10($a_ptr), @acc[4]
 	adc	8*11($a_ptr), @acc[5]
-	sbb	@acc[6], @acc[6]
+	sbb	$hi, $hi
 
 	#################################
 	# Branch-less conditional acc[0:6] - modulus
 
-	sub	8*0($n_ptr), @acc[0], @acc[7]
-	sbb	8*1($n_ptr), @acc[1], @acc[8]
-	sbb	8*2($n_ptr), @acc[2], @acc[9]
-	sbb	8*3($n_ptr), @acc[3], @acc[10]
-	sbb	8*4($n_ptr), @acc[4], @acc[11]
-	sbb	8*5($n_ptr), @acc[5], $a_ptr
-	sbb	\$0, @acc[6]
+	sub	8*0($n_ptr), @acc[0], @acc[6]
+	sbb	8*1($n_ptr), @acc[1], @acc[7]
+	sbb	8*2($n_ptr), @acc[2], @acc[8]
+	sbb	8*3($n_ptr), @acc[3], @acc[9]
+	sbb	8*4($n_ptr), @acc[4], @acc[10]
+	sbb	8*5($n_ptr), @acc[5], @acc[11]
+	sbb	\$0, $hi
 
-	cmovnc	@acc[7], @acc[0]
-	cmovnc	@acc[8], @acc[1]
-	cmovnc	@acc[9], @acc[2]
+	cmovnc	@acc[6], @acc[0]
+	cmovnc	@acc[7], @acc[1]
+	cmovnc	@acc[8], @acc[2]
 	mov	@acc[0], 8*0($r_ptr)
-	cmovnc	@acc[10], @acc[3]
+	cmovnc	@acc[9], @acc[3]
 	mov	@acc[1], 8*1($r_ptr)
-	cmovnc	@acc[11], @acc[4]
+	cmovnc	@acc[10], @acc[4]
 	mov	@acc[2], 8*2($r_ptr)
-	cmovnc	$a_ptr,  @acc[5]
+	cmovnc	@acc[11], @acc[5]
 	mov	@acc[3], 8*3($r_ptr)
 	mov	@acc[4], 8*4($r_ptr)
 	mov	@acc[5], 8*5($r_ptr)
@@ -1248,8 +1247,11 @@ __mula_mont_384:
 
 ___
 for (my $i=1; $i<6; $i++) {
-my $b_next = $i<5 ? 8*($i+1)."($b_ptr)" : @acc[0];
+my $next_rdx = $i<5 ? "mov		8*$i+8($b_ptr), %rdx"
+                    : "{nf} imulq	$n0, @acc[0], %rdx";
 $code.=<<___;
+{nf}	 imulq	$n0, @acc[0], $a_ptr
+
 	################################# Multiply by b[$i]
 	xor	@acc[8], @acc[8]	# @acc[8]=0, cf=0, of=0
 	mulx	@a[0], $lo, $hi
@@ -1273,17 +1275,17 @@ $code.=<<___;
 	adcx	$hi, @acc[6]
 
 	mulx	@a[5], $lo, $hi
-{nf}	 imulq	$n0, @acc[0], %rdx
+	 mov	$a_ptr, %rdx
 	adox	$lo, @acc[6]
-	adcx	$hi, @acc[7]		# cf=0
-	adox	@acc[8], @acc[7]
+	adcx	@acc[8], $hi		# cf=0
+	adox	$hi, @acc[7]
 	adox	@acc[8], @acc[8]
 
 	################################# reduction
-	xor	$lo, $lo		# cf=0, of=0
-	mulx	8*0+128($n_ptr), $hi, $lo
-	adcx	@acc[0], $hi		# guaranteed to be zero
-	adox	$lo, @acc[1], @acc[0]
+	xor	$a_ptr, $a_ptr		# $a_ptr=0, cf=0, of=0
+	mulx	8*0+128($n_ptr), $lo, $hi
+	adcx	@acc[0], $lo		# guaranteed to be zero
+	adox	$hi, @acc[1], @acc[0]
 
 	mulx	8*1+128($n_ptr), $lo, @acc[1]
 	adcx	$lo, @acc[0]
@@ -1302,19 +1304,15 @@ $code.=<<___;
 	adox	@acc[5], @acc[4]
 
 	mulx	8*5+128($n_ptr), $lo, @acc[5]
-	 mov	$b_next, %rdx
+	 $next_rdx
 	adcx	$lo, @acc[4]
-	adox	@acc[6], @acc[5]
-	adcx	$hi, @acc[5]
-	adox	$hi, @acc[7]
-	adcx	$hi, @acc[7], @acc[6]
-	adox	$hi, @acc[8]
-	adcx	$hi, @acc[8], @acc[7]
+	adox	$a_ptr, @acc[5]		# of = 0
+	adcx	@acc[6], @acc[5]
+	adcx	$a_ptr, @acc[7], @acc[6]
+	adcx	$a_ptr, @acc[8], @acc[7]
 ___
 }
 $code.=<<___;
-{nf}	imulq	$n0, @acc[0], %rdx
-
 	################################# last reduction
 	xor	@acc[8], @acc[8]	# @acc[8]=0, cf=0, of=0
 	mulx	8*0+128($n_ptr), $lo, @a[0]
@@ -1339,14 +1337,13 @@ $code.=<<___;
 
 	mulx	8*5+128($n_ptr), $lo, @a[5]
 	adcx	$lo, @a[4]
-	adox	@acc[6], @a[5]
-	adcx	@acc[8], @a[5]
-	adox	@acc[8], @acc[7]
+	adox	@acc[8], @a[5]		# of=0
 	 lea	128($n_ptr), $n_ptr
+	adcx	@acc[6], @a[5]
 	adc	\$0, @acc[7]
 
 	#################################
-	# Branch-less conditional acc[1:7] - modulus
+	# Branch-less conditional a[0:6] - modulus
 
 	sub	8*0($n_ptr), @a[0], %rdx
 	sbb	8*1($n_ptr), @a[1], @acc[1]
@@ -1502,8 +1499,10 @@ sqr_n_mul_mont_383\$4:
 	adc	\$0, @acc[6]
 ___
 for (my $i=1; $i<6; $i++) {
-my $b_next = $i<5 ? @a[$i+1] : @acc[0];
+my $next_rdx = $i<5 ? "mov		@a[$i+1], %rdx"
+                    : "{nf} imulq	$n0, @acc[0], %rdx";
 $code.=<<___;
+{nf}	 imulq	$n0, @acc[0], @acc[8]
 
 	################################# Multiply by b[$i]
 	xor	@acc[7], @acc[7]	# @acc[7]=0, cf=0, of=0
@@ -1528,7 +1527,7 @@ $code.=<<___;
 	adcx	$hi, @acc[6]
 
 	mulx	@a[5], $lo, $hi
-{nf}	 imulq	$n0, @acc[0], %rdx
+	 mov	@acc[8], %rdx
 	adox	$lo, @acc[6]
 	adcx	@acc[7], $hi
 	adox	$hi, @acc[7]
@@ -1556,7 +1555,7 @@ $code.=<<___;
 	adox	@acc[5], @acc[4]
 
 	mulx	8*5+128($n_ptr), $lo, @acc[5]
-	 mov	$b_next, %rdx
+	 $next_rdx
 	adcx	$lo, @acc[4]
 	adox	@acc[6], @acc[5]
 	adcx	@acc[8], @acc[5]
@@ -1565,8 +1564,6 @@ $code.=<<___;
 ___
 }
 $code.=<<___;
-{nf}	imulq	$n0, @acc[0], %rdx
-
 	################################# last reduction
 	xor	@acc[8], @acc[8]	# @acc[8]=0, cf=0, of=0
 	mulx	8*0+128($n_ptr), $lo, @a[0]
