@@ -14,6 +14,7 @@ use alloc::boxed::Box;
 use alloc::vec;
 use alloc::vec::Vec;
 use core::any::Any;
+use core::marker::PhantomData;
 use core::mem::{transmute, MaybeUninit};
 use core::ptr;
 use zeroize::Zeroize;
@@ -278,21 +279,23 @@ impl blst_scalar {
 }
 
 #[derive(Debug)]
-pub struct Pairing {
+pub struct Pairing<'p> {
     v: Box<[u64]>,
+    p: PhantomData<&'p [u8]>,
 }
 
-impl Pairing {
-    pub fn new(hash_or_encode: bool, dst: &[u8]) -> Self {
+impl<'p> Pairing<'p> {
+    pub fn new(hash_or_encode: bool, dst: &'p [u8]) -> Self {
         let v: Vec<u64> = vec![0; unsafe { blst_pairing_sizeof() } / 8];
         let mut obj = Self {
             v: v.into_boxed_slice(),
+            p: PhantomData,
         };
         obj.init(hash_or_encode, dst);
         obj
     }
 
-    pub fn init(&mut self, hash_or_encode: bool, dst: &[u8]) {
+    pub fn init(&mut self, hash_or_encode: bool, dst: &'p [u8]) {
         unsafe {
             blst_pairing_init(
                 self.ctx(),
