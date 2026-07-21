@@ -34,6 +34,20 @@ $code.=<<___ if ($flavour =~ /masm/);
 .extern	sqr_mont_384\$1
 .extern	sqr_n_mul_mont_384\$1
 .extern	sqr_n_mul_mont_383\$1
+.extern	mul_mont_384x\$4
+.extern	sqr_mont_384x\$4
+.extern	mul_382x\$4
+.extern	sqr_382x\$4
+.extern	mul_384\$4
+.extern	sqr_384\$4
+.extern	redc_mont_384\$4
+.extern	from_mont_384\$4
+.extern	sgn0_pty_mont_384\$4
+.extern	sgn0_pty_mont_384x\$4
+.extern	mul_mont_384\$4
+.extern	sqr_mont_384\$4
+.extern	sqr_n_mul_mont_384\$4
+.extern	sqr_n_mul_mont_383\$4
 #endif
 ___
 

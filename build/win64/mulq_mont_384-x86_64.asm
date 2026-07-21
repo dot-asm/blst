@@ -14,6 +14,20 @@ EXTERN	mul_mont_384$1:NEAR
 EXTERN	sqr_mont_384$1:NEAR
 EXTERN	sqr_n_mul_mont_384$1:NEAR
 EXTERN	sqr_n_mul_mont_383$1:NEAR
+EXTERN	mul_mont_384x$4:NEAR
+EXTERN	sqr_mont_384x$4:NEAR
+EXTERN	mul_382x$4:NEAR
+EXTERN	sqr_382x$4:NEAR
+EXTERN	mul_384$4:NEAR
+EXTERN	sqr_384$4:NEAR
+EXTERN	redc_mont_384$4:NEAR
+EXTERN	from_mont_384$4:NEAR
+EXTERN	sgn0_pty_mont_384$4:NEAR
+EXTERN	sgn0_pty_mont_384x$4:NEAR
+EXTERN	mul_mont_384$4:NEAR
+EXTERN	sqr_mont_384$4:NEAR
+EXTERN	sqr_n_mul_mont_384$4:NEAR
+EXTERN	sqr_n_mul_mont_383$4:NEAR
 endif
 _DATA	SEGMENT
 COMM	__blst_platform_cap:DWORD:1
