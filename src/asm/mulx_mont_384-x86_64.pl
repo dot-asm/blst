@@ -1806,8 +1806,8 @@ $code.=<<___;
 	mulx	8*5+128($a_ptr), $lo, $hi
 	 mov	@acc[0], %rdx
 	adox	$lo, @acc[6]
-	adcx	$hi, @acc[7]		# cf=0
-	adox	@acc[8], @acc[7]
+	adcx	@acc[8], $hi		# cf=0
+	adox	$hi, @acc[7]
 	adox	@acc[8], @acc[8]
 
 	################################# reduction
@@ -1835,11 +1835,9 @@ $code.=<<___;
 	mulx	8*5+128($n_ptr), $lo, $hi
 	 mov	$b_next, %rdx
 	adcx	$lo, @acc[5]
-	adox	$hi, @acc[6]
-	adcx	@acc[0], @acc[6]
-	adox	@acc[0], @acc[7]
+	adox	@acc[0], $hi		# of=0
+	adcx	$hi, @acc[6]
 	adcx	@acc[0], @acc[7]
-	adox	@acc[0], @acc[8]
 	adcx	@acc[0], @acc[8]
 ___
     push(@acc,shift(@acc));
@@ -1874,10 +1872,9 @@ $code.=<<___;
 
 	mulx	8*5+128($n_ptr), $lo, $hi
 	adcx	$lo, @acc[5]
-	adox	$hi, @acc[6]
+	adox	@acc[8], $hi		# of=0
 	 mov	@acc[1], %rdx
-	adcx	@acc[8], @acc[6]
-	adox	@acc[8], @acc[7]
+	adcx	$hi, @acc[6]
 	 lea	128($n_ptr), $n_ptr
 	 mov	@acc[4], @acc[8]
 	adc	\$0, @acc[7]
@@ -2215,9 +2212,8 @@ $code.=<<___;
 	mulx	8*5+128($n_ptr), $lo, $hi
 	 mov	$b_next, %rdx
 	adcx	$lo, @acc[5]
-	adox	$hi, @acc[6]
-	adcx	@acc[8], @acc[6]
-	adox	@acc[8], @acc[7]
+	adox	@acc[8], $hi		# of=0
+	adcx	$hi, @acc[6]
 	adcx	@acc[8], @acc[7]
 ___
     push(@acc,shift(@acc));

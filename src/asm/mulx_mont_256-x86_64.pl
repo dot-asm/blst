@@ -198,7 +198,7 @@ $code.=<<___;
 	 imulq	$n0, %rax
 
 	################################# Multiply by b[$i]
-	xor	$a5, $a5		# [@acc[5]=0,] cf=0, of=0
+	xor	@acc[5], @acc[5]	# @acc[5]=0, cf=0, of=0
 	mulx	8*0+128($a_ptr), $lo, $hi
 	adox	$lo, @acc[1]
 	adcx	$hi, @acc[2]
@@ -233,12 +233,9 @@ $code.=<<___;
 	mulx	8*3+128($n_ptr), $lo, $hi
 	 mov	$b_next, %rdx
 	adcx	$lo, @acc[3]
-	adox	$hi, @acc[4]
-	adcx	@acc[0], @acc[4]
-	adox	@acc[0], @acc[5]
+	adox	@acc[0], $hi		# of=0
+	adcx	$hi, @acc[4]
 	adcx	@acc[0], @acc[5]
-	adox	@acc[0], @acc[0]	# acc[5] in next iteration
-	adc	\$0, @acc[0]		# cf=0, of=0
 ___
     push(@acc,shift(@acc));
 }
@@ -246,7 +243,7 @@ $code.=<<___;
 	imulq	$n0, %rdx
 
 	################################# last reduction
-	xor	$lo, $lo		# cf=0, of=0
+	xor	@acc[5], @acc[5]	# cf=0, of=0
 	mulx	8*0+128($n_ptr), @acc[0], $hi
 	adcx	%rax, @acc[0]		# guaranteed to be zero
 	adox	$hi, @acc[1]
@@ -263,11 +260,10 @@ $code.=<<___;
 	 mov	@acc[1], %rdx
 	 lea	128($n_ptr), $n_ptr
 	adcx	$lo, @acc[3]
-	adox	$hi, @acc[4]
+	adox	@acc[0], $hi		# of=0
 	 mov	@acc[2], %rax
-	adcx	@acc[0], @acc[4]
-	adox	@acc[0], @acc[5]
-	adc	\$0, @acc[5]
+	adcx	$hi, @acc[4]
+	adcx	@acc[0], @acc[5]
 
 	#################################
 	# Branch-less conditional acc[1:5] - modulus
