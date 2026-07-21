@@ -378,6 +378,10 @@ impl<'p> Pairing<'p> {
         msg: &[u8],
         aug: &[u8],
     ) -> BLST_ERROR {
+        if scalar.len() < (nbits + 7) / 8 {
+            panic!("scalar length mismatch");
+        }
+
         if pk.is::<blst_p1_affine>() {
             unsafe {
                 blst_pairing_chk_n_mul_n_aggr_pk_in_g1(
