@@ -67,10 +67,14 @@ pub const Pairing = struct {
 
     pub fn init(hash_or_encode: bool, DST: []const u8,
                 allocator: std.mem.Allocator) !Pairing {
-        const nlimbs = (c.pairing_sizeof() + @sizeOf(u64) - 1) / @sizeOf(u64);
+        const sz = c.pairing_sizeof();
+        const nlimbs = (sz + DST.len + @sizeOf(u64) - 1) / @sizeOf(u64);
         const buffer = try allocator.alloc(u64, nlimbs);
+        const dst = std.mem.sliceAsBytes(buffer)[sz..sz + DST.len];
 
-        c.pairing_init(@ptrCast(buffer), hash_or_encode, &DST[0], DST.len);
+        @memcpy(dst, DST);
+
+        c.pairing_init(@ptrCast(buffer), hash_or_encode, &dst[0], dst.len);
 
         return Pairing{
             .ctx = buffer,
