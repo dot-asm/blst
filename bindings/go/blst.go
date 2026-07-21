@@ -1709,6 +1709,10 @@ func PairingMulNAggregatePkInG1(ctx Pairing, PK *P1Affine, pkValidate bool,
 		aug = optional[0]
 	}
 
+	if randBits > 256 {
+		panic("scalar length mismatch")
+	}
+
 	r := C.blst_pairing_chk_n_mul_n_aggr_pk_in_g1(&ctx[0],
 		PK.asPtr(), C.bool(pkValidate),
 		sig.asPtr(), C.bool(sigGroupcheck),
@@ -2522,6 +2526,10 @@ func PairingMulNAggregatePkInG2(ctx Pairing, PK *P2Affine, pkValidate bool,
 	var aug []byte
 	if len(optional) > 0 {
 		aug = optional[0]
+	}
+
+	if randBits > 256 {
+		panic("scalar length mismatch")
 	}
 
 	r := C.blst_pairing_chk_n_mul_n_aggr_pk_in_g2(&ctx[0],
