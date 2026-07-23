@@ -1,4 +1,5 @@
 OPTION	DOTNAME
+ifdef	__BLST_PORTABLE__
 EXTERN	mul_mont_384x$1:NEAR
 EXTERN	sqr_mont_384x$1:NEAR
 EXTERN	mul_382x$1:NEAR
@@ -13,6 +14,7 @@ EXTERN	mul_mont_384$1:NEAR
 EXTERN	sqr_mont_384$1:NEAR
 EXTERN	sqr_n_mul_mont_384$1:NEAR
 EXTERN	sqr_n_mul_mont_383$1:NEAR
+endif
 _DATA	SEGMENT
 COMM	__blst_platform_cap:DWORD:1
 _DATA	ENDS

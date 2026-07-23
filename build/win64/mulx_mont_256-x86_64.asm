@@ -1,8 +1,10 @@
 OPTION	DOTNAME
+ifdef	__BLST_PORTABLE__
 PUBLIC	mul_mont_sparse_256$1
 PUBLIC	sqr_mont_sparse_256$1
 PUBLIC	from_mont_256$1
 PUBLIC	redc_mont_256$1
+endif
 .text$	SEGMENT ALIGN(256) 'CODE'
 
 PUBLIC	mulx_mont_sparse_256

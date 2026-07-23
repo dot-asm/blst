@@ -1,4 +1,5 @@
 OPTION	DOTNAME
+ifdef	__BLST_PORTABLE__
 PUBLIC	mul_mont_384x$1
 PUBLIC	sqr_mont_384x$1
 PUBLIC	mul_382x$1
@@ -13,6 +14,7 @@ PUBLIC	mul_mont_384$1
 PUBLIC	sqr_mont_384$1
 PUBLIC	sqr_n_mul_mont_384$1
 PUBLIC	sqr_n_mul_mont_383$1
+endif
 .text$	SEGMENT ALIGN(256) 'CODE'
 
 
