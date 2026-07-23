@@ -19,6 +19,7 @@ open STDOUT,"| \"$^X\" \"$xlate\" $flavour \"$output\""
     or die "can't call $xlate: $!";
 
 $code.=<<___ if ($flavour =~ /masm/);
+#ifdef	__BLST_PORTABLE__
 .extern	mul_mont_384x\$1
 .extern	sqr_mont_384x\$1
 .extern	mul_382x\$1
@@ -33,6 +34,7 @@ $code.=<<___ if ($flavour =~ /masm/);
 .extern	sqr_mont_384\$1
 .extern	sqr_n_mul_mont_384\$1
 .extern	sqr_n_mul_mont_383\$1
+#endif
 ___
 
 # common argument layout
