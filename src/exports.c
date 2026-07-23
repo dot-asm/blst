@@ -64,7 +64,7 @@ void blst_fr_cneg(vec256 ret, const vec256 a, int flag)
 {   cneg_mod_256(ret, a, is_zero(flag) ^ 1, BLS12_381_r);   }
 
 void blst_fr_to(vec256 ret, const vec256 a)
-{   mul_mont_sparse_256(ret, a, BLS12_381_rRR, BLS12_381_r, r0);   }
+{   mul_mont_sparse_256(ret, BLS12_381_rRR, a, BLS12_381_r, r0);   }
 
 void blst_fr_from(vec256 ret, const vec256 a)
 {   from_mont_256(ret, a, BLS12_381_r, r0);   }
@@ -82,7 +82,7 @@ void blst_fr_from_scalar(vec256 ret, const pow256 a)
     } else {
         vec256 out;
         limbs_from_le_bytes(out, a, 32);
-        mul_mont_sparse_256(ret, out, BLS12_381_rRR, BLS12_381_r, r0);
+        mul_mont_sparse_256(ret, BLS12_381_rRR, out, BLS12_381_r, r0);
         vec_zero(out, sizeof(out));
     }
 }
@@ -151,14 +151,14 @@ void blst_sk_inverse(pow256 ret, const pow256 a)
 
     if (((size_t)a|(size_t)ret)%sizeof(limb_t) == 0 && is_endian.little) {
         limb_t *out = (limb_t *)ret;
-        mul_mont_sparse_256(out, (const limb_t *)a, BLS12_381_rRR,
-                                                    BLS12_381_r, r0);
+        mul_mont_sparse_256(out, BLS12_381_rRR, (const limb_t *)a,
+                                 BLS12_381_r, r0);
         reciprocal_fr(out, out);
         from_mont_256(out, out, BLS12_381_r, r0);
     } else {
         vec256 out;
         limbs_from_le_bytes(out, a, 32);
-        mul_mont_sparse_256(out, out, BLS12_381_rRR, BLS12_381_r, r0);
+        mul_mont_sparse_256(out, BLS12_381_rRR, out, BLS12_381_r, r0);
         reciprocal_fr(out, out);
         from_mont_256(out, out, BLS12_381_r, r0);
         le_bytes_from_limbs(ret, out, 32);
@@ -472,7 +472,7 @@ void blst_fr_from_uint64(vec256 ret, const unsigned long long a[4])
         }
         a = (const unsigned long long *)ret;
     }
-    mul_mont_sparse_256(ret, (const limb_t *)a, BLS12_381_rRR, BLS12_381_r, r0);
+    mul_mont_sparse_256(ret, BLS12_381_rRR, (const limb_t *)a, BLS12_381_r, r0);
 }
 
 void blst_uint64_from_fr(unsigned long long ret[4], const vec256 a)
@@ -610,7 +610,7 @@ void blst_scalar_from_hexascii(pow256 ret, const char *hex)
 void blst_fr_from_hexascii(vec256 ret, const char *hex)
 {
     limbs_from_hexascii(ret, sizeof(vec256), hex);
-    mul_mont_sparse_256(ret, ret, BLS12_381_rRR, BLS12_381_r, r0);
+    mul_mont_sparse_256(ret, BLS12_381_rRR, ret, BLS12_381_r, r0);
 }
 
 void blst_fp_from_hexascii(vec384 ret, const char *hex)
