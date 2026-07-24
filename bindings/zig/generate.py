@@ -448,7 +448,7 @@ if newer("../blst.h", "c.zig"):
             print("pub const {} = {};".format(key, val), file=fd)
         del pubs
 
-version = "0.3.16"
+version = "0.3.17"
 
 os.chdir("../..")
 try:

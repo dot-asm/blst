@@ -6,7 +6,7 @@ The object-oriented interface is modeled after [C++ interface](../blst.hpp), but
 
 Execute
 ```
-zig fetch --save git+https://github.com/supranational/blst
+zig fetch --save git+https://github.com/supranational/blst#v0.3.17
 ```
 and add an equivalent of the following line to your build.zig prior to `b.installArtifact(exe)`:
 ```
