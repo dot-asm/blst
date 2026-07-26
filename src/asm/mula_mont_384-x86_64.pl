@@ -354,7 +354,7 @@ sqr_mont_384x\$4:
 	adc	@a[3], @a[3]
 	adc	@a[4], @a[4]
 	adc	@a[5], @a[5]
-	sbb	$a_ptr, $a_ptr	
+	sbb	$a_ptr, $a_ptr
 
 	sub	8*0($n_ptr), %rdx,  @acc[0]
 	sbb	8*1($n_ptr), @a[1], @acc[1]
@@ -999,8 +999,8 @@ $code.=<<___;
 
 	mulx	8*5($n_ptr), $lo, @acc[5]
 	adcx	$lo, @acc[4]
-	adox	@acc[6], @acc[5]
-	adcx	@acc[6], @acc[5]
+	adox	@acc[6], @acc[5]	# of=0
+	adcx	@acc[6], @acc[5]	# cf=0
 ___
 }
 $code.=<<___;
