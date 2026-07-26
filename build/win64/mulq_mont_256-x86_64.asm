@@ -4,6 +4,10 @@ EXTERN	mul_mont_sparse_256$1:NEAR
 EXTERN	sqr_mont_sparse_256$1:NEAR
 EXTERN	from_mont_256$1:NEAR
 EXTERN	redc_mont_256$1:NEAR
+EXTERN	mul_mont_sparse_256$4:NEAR
+EXTERN	sqr_mont_sparse_256$4:NEAR
+EXTERN	from_mont_256$4:NEAR
+EXTERN	redc_mont_256$4:NEAR
 endif
 _DATA	SEGMENT
 COMM	__blst_platform_cap:DWORD:1
@@ -28,7 +32,10 @@ $L$SEH_begin_mul_mont_sparse_256::
 	mov	rcx,r9
 	mov	r8,QWORD PTR[40+rsp]
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	mul_mont_sparse_256$4
+	test	eax,1
 	jnz	mul_mont_sparse_256$1
 endif
 	push	rbp
@@ -110,7 +117,10 @@ $L$SEH_begin_sqr_mont_sparse_256::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	sqr_mont_sparse_256$4
+	test	eax,1
 	jnz	sqr_mont_sparse_256$1
 endif
 	push	rbp
@@ -481,7 +491,10 @@ $L$SEH_begin_from_mont_256::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
-	test	DWORD PTR[__blst_platform_cap],1
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	from_mont_256$4
+	test	eax,1
 	jnz	from_mont_256$1
 endif
 	push	rbp
@@ -574,6 +587,9 @@ $L$SEH_begin_redc_mont_256::
 	mov	rdx,r8
 	mov	rcx,r9
 ifdef __BLST_PORTABLE__
+	mov	eax,DWORD PTR[__blst_platform_cap]
+	test	eax,4
+	jnz	redc_mont_256$4
 	test	DWORD PTR[__blst_platform_cap],1
 	jnz	redc_mont_256$1
 endif
