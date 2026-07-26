@@ -71,11 +71,11 @@ typedef limb_t bool_t;
  */
 #if defined(__ADX__) /* e.g. -march=broadwell */ && !defined(__BLST_PORTABLE__)\
                                                  && !defined(__BLST_NO_ASM__)
-# define mul_mont_sparse_256 mulx_mont_sparse_256
-# define sqr_mont_sparse_256 sqrx_mont_sparse_256
-# define from_mont_256 fromx_mont_256
-# define redc_mont_256 redcx_mont_256
 # if defined(__APX_F__)
+#  define mul_mont_sparse_256 mula_mont_sparse_256
+#  define sqr_mont_sparse_256 sqra_mont_sparse_256
+#  define from_mont_256 froma_mont_256
+#  define redc_mont_256 redca_mont_256
 #  define mul_mont_384 mula_mont_384
 #  define sqr_mont_384 sqra_mont_384
 #  define sqr_n_mul_mont_384 sqra_n_mul_mont_384
@@ -87,6 +87,10 @@ typedef limb_t bool_t;
 #  define sgn0_pty_mont_384 sgn0a_pty_mont_384
 #  define sgn0_pty_mont_384x sgn0a_pty_mont_384x
 # else
+#  define mul_mont_sparse_256 mulx_mont_sparse_256
+#  define sqr_mont_sparse_256 sqrx_mont_sparse_256
+#  define from_mont_256 fromx_mont_256
+#  define redc_mont_256 redcx_mont_256
 #  define mul_mont_384 mulx_mont_384
 #  define sqr_mont_384 sqrx_mont_384
 #  define sqr_n_mul_mont_384 sqrx_n_mul_mont_384

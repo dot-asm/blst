@@ -15,12 +15,11 @@
 #  include "elf/add_mod_384x384-x86_64.s"
 #  if (defined(__ADX__) && !defined(__APX_F__)) || defined(__BLST_PORTABLE__)
 #   include "elf/mulx_mont_384-x86_64.s"
+#   include "elf/mulx_mont_256-x86_64.s"
 #  endif
 #  if defined(__APX_F__) || defined(__BLST_PORTABLE__)
 #   include "elf/mula_mont_384-x86_64.s"
-#  endif
-#  if defined(__ADX__) || defined(__BLST_PORTABLE__)
-#   include "elf/mulx_mont_256-x86_64.s"
+#   include "elf/mula_mont_256-x86_64.s"
 #  endif
 #  if (!defined(__ADX__) && !defined(__APX_F__)) || defined(__BLST_PORTABLE__)
 #   include "elf/mulq_mont_384-x86_64.s"
@@ -53,11 +52,15 @@
 #  endif
 #  include "coff/add_mod_384-x86_64.s"
 #  include "coff/add_mod_384x384-x86_64.s"
-#  if defined(__ADX__) || defined(__BLST_PORTABLE__)
+#  if (defined(__ADX__) && !defined(__APX_F__)) || defined(__BLST_PORTABLE__)
 #   include "coff/mulx_mont_384-x86_64.s"
 #   include "coff/mulx_mont_256-x86_64.s"
 #  endif
-#  if !defined(__ADX__) || defined(__BLST_PORTABLE__)
+#  if defined(__APX_F__) || defined(__BLST_PORTABLE__)
+#   include "coff/mula_mont_384-x86_64.s"
+#   include "coff/mula_mont_256-x86_64.s"
+#  endif
+#  if (!defined(__ADX__) && !defined(__APX_F__)) || defined(__BLST_PORTABLE__)
 #   include "coff/mulq_mont_384-x86_64.s"
 #   include "coff/mulq_mont_256-x86_64.s"
 #  endif

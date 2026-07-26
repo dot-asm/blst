@@ -27,6 +27,10 @@ $code.=<<___ if ($flavour =~ /masm/);
 .extern	sqr_mont_sparse_256\$1
 .extern	from_mont_256\$1
 .extern	redc_mont_256\$1
+.extern	mul_mont_sparse_256\$4
+.extern	sqr_mont_sparse_256\$4
+.extern	from_mont_256\$4
+.extern	redc_mont_256\$4
 #endif
 ___
 
@@ -51,7 +55,10 @@ $code.=<<___;
 mul_mont_sparse_256:
 .cfi_startproc
 #ifdef __BLST_PORTABLE__
-	testl	\$1, __blst_platform_cap(%rip)
+	mov	__blst_platform_cap(%rip), %eax
+	testl	\$4, %eax
+	jnz	mul_mont_sparse_256\$4
+	testl	\$1, %eax
 	jnz	mul_mont_sparse_256\$1
 #endif
 	push	%rbp
@@ -110,7 +117,10 @@ mul_mont_sparse_256:
 sqr_mont_sparse_256:
 .cfi_startproc
 #ifdef __BLST_PORTABLE__
-	testl	\$1, __blst_platform_cap(%rip)
+	mov	__blst_platform_cap(%rip), %eax
+	testl	\$4, %eax
+	jnz	sqr_mont_sparse_256\$4
+	testl	\$1, %eax
 	jnz	sqr_mont_sparse_256\$1
 #endif
 	push	%rbp
@@ -333,7 +343,10 @@ $code.=<<___;
 from_mont_256:
 .cfi_startproc
 #ifdef __BLST_PORTABLE__
-	testl	\$1, __blst_platform_cap(%rip)
+	mov	__blst_platform_cap(%rip), %eax
+	testl	\$4, %eax
+	jnz	from_mont_256\$4
+	testl	\$1, %eax
 	jnz	from_mont_256\$1
 #endif
 	push	%rbp
@@ -403,6 +416,9 @@ from_mont_256:
 redc_mont_256:
 .cfi_startproc
 #ifdef __BLST_PORTABLE__
+	mov	__blst_platform_cap(%rip), %eax
+	testl	\$4, %eax
+	jnz	redc_mont_256\$4
 	testl	\$1, __blst_platform_cap(%rip)
 	jnz	redc_mont_256\$1
 #endif
