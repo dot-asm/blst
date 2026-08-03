@@ -55,14 +55,14 @@ __suba_mod_384x384	PROC PRIVATE
 	sbb	r26,QWORD PTR[80+rdx]
 	mov	QWORD PTR[40+rdi],r21
 	sbb	r27,QWORD PTR[88+rdx]
-	sbb	rdx,rdx
+	sbb	rax,rax
 
-{nf}	and	r16,rdx,QWORD PTR[rcx]
-{nf}	and	r17,rdx,QWORD PTR[8+rcx]
-{nf}	and	r18,rdx,QWORD PTR[16+rcx]
-{nf}	and	r19,rdx,QWORD PTR[24+rcx]
-{nf}	and	r20,rdx,QWORD PTR[32+rcx]
-{nf}	and	r21,rdx,QWORD PTR[40+rcx]
+{nf}	and	r16,rax,QWORD PTR[rcx]
+{nf}	and	r17,rax,QWORD PTR[8+rcx]
+{nf}	and	r18,rax,QWORD PTR[16+rcx]
+{nf}	and	r19,rax,QWORD PTR[24+rcx]
+{nf}	and	r20,rax,QWORD PTR[32+rcx]
+{nf}	and	r21,rax,QWORD PTR[40+rcx]
 
 	add	r22,r16
 	adc	r23,r17
@@ -88,6 +88,48 @@ else
 endif
 __suba_mod_384x384	ENDP
 
+PUBLIC	adda_mod_384
+
+
+ALIGN	32
+adda_mod_384	PROC PUBLIC
+	DB	243,15,30,250
+	mov	QWORD PTR[8+rsp],rdi	;WIN64 prologue
+	mov	QWORD PTR[16+rsp],rsi
+	mov	r11,rsp
+$L$SEH_begin_adda_mod_384::
+
+
+	mov	rdi,rcx
+	mov	rsi,rdx
+	mov	rdx,r8
+	mov	rcx,r9
+	sub	rsp,8
+
+$L$SEH_body_adda_mod_384::
+
+
+	call	__adda_mod_384
+
+	lea	rsp,QWORD PTR[8+rsp]
+
+$L$SEH_epilogue_adda_mod_384::
+	mov	rdi,QWORD PTR[8+rsp]	;WIN64 epilogue
+	mov	rsi,QWORD PTR[16+rsp]
+
+	
+ifdef	__SGX_LVI_HARDENING__
+	pop	rdx
+	lfence
+	jmp	rdx
+	ud2
+else
+	DB	0F3h,0C3h
+endif
+
+$L$SEH_end_adda_mod_384::
+adda_mod_384	ENDP
+
 
 ALIGN	32
 __adda_mod_384	PROC PRIVATE
@@ -109,7 +151,7 @@ endif
 	adc	r19,QWORD PTR[24+rdx]
 	adc	r20,QWORD PTR[32+rdx]
 	adc	r21,QWORD PTR[40+rdx]
-	sbb	rdx,rdx
+	sbb	rax,rax
 
 	sub	r22,r16,QWORD PTR[rcx]
 	sbb	r23,r17,QWORD PTR[8+rcx]
@@ -117,7 +159,7 @@ endif
 	sbb	r25,r19,QWORD PTR[24+rcx]
 	sbb	r26,r20,QWORD PTR[32+rcx]
 	sbb	r27,r21,QWORD PTR[40+rcx]
-	sbb	rdx,0
+	sbb	rax,0
 
 	cmovnc	r16,r22
 	cmovnc	r17,r23
@@ -143,6 +185,48 @@ else
 endif
 __adda_mod_384	ENDP
 
+PUBLIC	suba_mod_384
+
+
+ALIGN	32
+suba_mod_384	PROC PUBLIC
+	DB	243,15,30,250
+	mov	QWORD PTR[8+rsp],rdi	;WIN64 prologue
+	mov	QWORD PTR[16+rsp],rsi
+	mov	r11,rsp
+$L$SEH_begin_suba_mod_384::
+
+
+
+	mov	rdi,rcx
+	mov	rsi,rdx
+	mov	rdx,r8
+	mov	rcx,r9
+	sub	rsp,8
+$L$SEH_body_suba_mod_384::
+
+
+	call	__suba_mod_384
+
+	lea	rsp,QWORD PTR[8+rsp]
+
+$L$SEH_epilogue_suba_mod_384::
+	mov	rdi,QWORD PTR[8+rsp]	;WIN64 epilogue
+	mov	rsi,QWORD PTR[16+rsp]
+
+	
+ifdef	__SGX_LVI_HARDENING__
+	pop	rdx
+	lfence
+	jmp	rdx
+	ud2
+else
+	DB	0F3h,0C3h
+endif
+
+$L$SEH_end_suba_mod_384::
+suba_mod_384	ENDP
+
 
 ALIGN	32
 __suba_mod_384	PROC PRIVATE
@@ -165,14 +249,14 @@ __suba_mod_384_a_is_loaded::
 	sbb	r19,QWORD PTR[24+rdx]
 	sbb	r20,QWORD PTR[32+rdx]
 	sbb	r21,QWORD PTR[40+rdx]
-	sbb	rdx,rdx
+	sbb	rax,rax
 
-{nf}	and	r22,rdx,QWORD PTR[rcx]
-{nf}	and	r23,rdx,QWORD PTR[8+rcx]
-{nf}	and	r24,rdx,QWORD PTR[16+rcx]
-{nf}	and	r25,rdx,QWORD PTR[24+rcx]
-{nf}	and	r26,rdx,QWORD PTR[32+rcx]
-{nf}	and	r27,rdx,QWORD PTR[40+rcx]
+{nf}	and	r22,rax,QWORD PTR[rcx]
+{nf}	and	r23,rax,QWORD PTR[8+rcx]
+{nf}	and	r24,rax,QWORD PTR[16+rcx]
+{nf}	and	r25,rax,QWORD PTR[24+rcx]
+{nf}	and	r26,rax,QWORD PTR[32+rcx]
+{nf}	and	r27,rax,QWORD PTR[40+rcx]
 
 	add	r16,r22
 	adc	r17,r23
@@ -761,6 +845,9 @@ __mula_384	PROC PRIVATE
 	mov	rdx,QWORD PTR[8+r10]
 	adc	r21,r11
 	adc	r22,0
+ifdef	__CRYPTOLINE__
+	cmovc	r22,r22
+endif
 	xor	r23,r23
 	mulx	rax,r16,r25
 	adcx	r16,r17
@@ -788,6 +875,9 @@ __mula_384	PROC PRIVATE
 	adcx	r21,r22
 	adox	r11,r23
 	adcx	r22,r11,r23
+ifdef	__CRYPTOLINE__
+	cmovo	r22,r22
+endif
 	xor	r23,r23
 	mulx	rax,r16,r25
 	adcx	r16,r17
@@ -815,6 +905,9 @@ __mula_384	PROC PRIVATE
 	adcx	r21,r22
 	adox	r11,r23
 	adcx	r22,r11,r23
+ifdef	__CRYPTOLINE__
+	cmovo	r22,r22
+endif
 	xor	r23,r23
 	mulx	rax,r16,r25
 	adcx	r16,r17
@@ -842,6 +935,9 @@ __mula_384	PROC PRIVATE
 	adcx	r21,r22
 	adox	r11,r23
 	adcx	r22,r11,r23
+ifdef	__CRYPTOLINE__
+	cmovo	r22,r22
+endif
 	xor	r23,r23
 	mulx	rax,r16,r25
 	adcx	r16,r17
@@ -869,6 +965,9 @@ __mula_384	PROC PRIVATE
 	adcx	r21,r22
 	adox	r11,r23
 	adcx	r22,r11,r23
+ifdef	__CRYPTOLINE__
+	cmovo	r22,r22
+endif
 	xor	r23,r23
 	mulx	rax,r16,r25
 	adcx	r16,r17
@@ -896,6 +995,9 @@ __mula_384	PROC PRIVATE
 	adcx	r21,r22
 	adox	r11,r23
 	adcx	r22,r11,r23
+ifdef	__CRYPTOLINE__
+	cmovo	r22,r22
+endif
 	mov	QWORD PTR[48+rdi],r17
 	mov	QWORD PTR[56+rdi],r18
 	mov	QWORD PTR[64+rdi],r19
@@ -981,6 +1083,9 @@ __sqra_384	PROC PRIVATE
 	mov	rdx,r23
 	adc	r21,r11
 	adc	r22,0
+ifdef	__CRYPTOLINE__
+	cmovc	r22,r22
+endif
 
 
 	xor	r23,r23
@@ -1001,6 +1106,9 @@ __sqra_384	PROC PRIVATE
 	adcx	r22,rax
 	adox	r11,r23
 	adcx	r23,r11
+ifdef	__CRYPTOLINE__
+	cmovo	r23,r23
+endif
 
 
 	xor	r24,r24
@@ -1017,6 +1125,9 @@ __sqra_384	PROC PRIVATE
 	adcx	r23,rax
 	adox	r11,r24
 	adcx	r24,r11
+ifdef	__CRYPTOLINE__
+	cmovo	r24,r24
+endif
 
 
 	xor	r25,r25
@@ -1029,12 +1140,18 @@ __sqra_384	PROC PRIVATE
 	adcx	r24,rax
 	adox	r11,r25
 	adcx	r25,r11
+ifdef	__CRYPTOLINE__
+	cmovo	r25,r25
+endif
 
 
 	mulx	r26,rax,r27
 	mov	rdx,QWORD PTR[rsi]
 	add	r25,rax
 	adc	r26,0
+ifdef	__CRYPTOLINE__
+	cmovc	r26,r26
+endif
 
 
 	xor	r27,r27
@@ -1043,6 +1160,9 @@ __sqra_384	PROC PRIVATE
 	adcx	r19,r19
 	adcx	r20,r20
 	adcx	r21,r21
+ifdef	__CRYPTOLINE__
+	cmovc	r21,r21
+endif
 
 
 	mulx	r11,rdx,rdx
@@ -1088,6 +1208,9 @@ __sqra_384	PROC PRIVATE
 	mulx	r18,r17,rdx
 	adox	r26,r17
 	adox	r27,r18
+ifdef	__CRYPTOLINE__
+	cmovo	r27,r27
+endif
 
 	mov	QWORD PTR[80+rdi],r26
 	mov	QWORD PTR[88+rdi],r27
@@ -1246,6 +1369,9 @@ __mula_by_1_mont_384	PROC PRIVATE
 	xor	r22,r22
 	mulx	r11,rax,QWORD PTR[rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[8+rcx]
@@ -1268,12 +1394,18 @@ __mula_by_1_mont_384	PROC PRIVATE
 	adcx	r20,rax
 	adox	r21,r22
 	adcx	r21,r22
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 {nf}	imul	rdx,r8,r16
 
 
 	xor	r22,r22
 	mulx	r11,rax,QWORD PTR[rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[8+rcx]
@@ -1296,12 +1428,18 @@ __mula_by_1_mont_384	PROC PRIVATE
 	adcx	r20,rax
 	adox	r21,r22
 	adcx	r21,r22
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 {nf}	imul	rdx,r8,r16
 
 
 	xor	r22,r22
 	mulx	r11,rax,QWORD PTR[rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[8+rcx]
@@ -1324,12 +1462,18 @@ __mula_by_1_mont_384	PROC PRIVATE
 	adcx	r20,rax
 	adox	r21,r22
 	adcx	r21,r22
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 {nf}	imul	rdx,r8,r16
 
 
 	xor	r22,r22
 	mulx	r11,rax,QWORD PTR[rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[8+rcx]
@@ -1352,12 +1496,18 @@ __mula_by_1_mont_384	PROC PRIVATE
 	adcx	r20,rax
 	adox	r21,r22
 	adcx	r21,r22
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 {nf}	imul	rdx,r8,r16
 
 
 	xor	r22,r22
 	mulx	r11,rax,QWORD PTR[rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[8+rcx]
@@ -1380,12 +1530,18 @@ __mula_by_1_mont_384	PROC PRIVATE
 	adcx	r20,rax
 	adox	r21,r22
 	adcx	r21,r22
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 {nf}	imul	rdx,r8,r16
 
 
 	xor	r22,r22
 	mulx	r11,rax,QWORD PTR[rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[8+rcx]
@@ -1408,6 +1564,9 @@ __mula_by_1_mont_384	PROC PRIVATE
 	adcx	r20,rax
 	adox	r21,r22
 	adcx	r21,r22
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 	
 ifdef	__SGX_LVI_HARDENING__
 	pop	rdx
@@ -1735,8 +1894,10 @@ __mula_mont_384	PROC PRIVATE
 	adc	r20,r23
 	adc	r21,r24
 	adc	r22,0
+ifdef	__CRYPTOLINE__
+	cmovc	r22,r22
+endif
 	xor	r23,r23
-
 {nf}	imul	rsi,r16,r8
 
 
@@ -1767,11 +1928,17 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r11,r24
 	adox	r23,r11
 	adox	r24,r24
+ifdef	__CRYPTOLINE__
+	cmovo	r24,r24
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,QWORD PTR[((0+128))+rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[((8+128))+rcx]
@@ -1797,6 +1964,9 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r21,r22
 	adcx	r22,r23,rsi
 	adcx	r23,r24,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r23,r23
+endif
 {nf}	imul	rsi,r16,r8
 
 
@@ -1827,11 +1997,17 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r11,r24
 	adox	r23,r11
 	adox	r24,r24
+ifdef	__CRYPTOLINE__
+	cmovo	r24,r24
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,QWORD PTR[((0+128))+rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[((8+128))+rcx]
@@ -1857,6 +2033,9 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r21,r22
 	adcx	r22,r23,rsi
 	adcx	r23,r24,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r23,r23
+endif
 {nf}	imul	rsi,r16,r8
 
 
@@ -1887,11 +2066,17 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r11,r24
 	adox	r23,r11
 	adox	r24,r24
+ifdef	__CRYPTOLINE__
+	cmovo	r24,r24
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,QWORD PTR[((0+128))+rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[((8+128))+rcx]
@@ -1917,6 +2102,9 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r21,r22
 	adcx	r22,r23,rsi
 	adcx	r23,r24,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r23,r23
+endif
 {nf}	imul	rsi,r16,r8
 
 
@@ -1947,11 +2135,17 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r11,r24
 	adox	r23,r11
 	adox	r24,r24
+ifdef	__CRYPTOLINE__
+	cmovo	r24,r24
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,QWORD PTR[((0+128))+rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[((8+128))+rcx]
@@ -1977,6 +2171,9 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r21,r22
 	adcx	r22,r23,rsi
 	adcx	r23,r24,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r23,r23
+endif
 {nf}	imul	rsi,r16,r8
 
 
@@ -2007,11 +2204,17 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r11,r24
 	adox	r23,r11
 	adox	r24,r24
+ifdef	__CRYPTOLINE__
+	cmovo	r24,r24
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,QWORD PTR[((0+128))+rcx]
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,QWORD PTR[((8+128))+rcx]
@@ -2037,10 +2240,16 @@ __mula_mont_384	PROC PRIVATE
 	adcx	r21,r22
 	adcx	r22,r23,rsi
 	adcx	r23,r24,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r23,r23
+endif
 
 	xor	r24,r24
 	mulx	r25,rax,QWORD PTR[((0+128))+rcx]
 	adcx	r16,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r16,r16
+endif
 	adox	r25,r17
 
 	mulx	r26,rax,QWORD PTR[((8+128))+rcx]
@@ -2065,6 +2274,9 @@ __mula_mont_384	PROC PRIVATE
 	lea	rcx,QWORD PTR[128+rcx]
 	adcx	r30,r22
 	adc	r23,0
+ifdef	__CRYPTOLINE__
+	cmovo	r23,r23
+endif
 
 
 
@@ -2640,9 +2852,140 @@ endif
 
 $L$SEH_end_sqra_n_mul_mont_383::
 sqra_n_mul_mont_383	ENDP
+PUBLIC	mula_by_1_plus_i_mod_384x
+
+
+ALIGN	32
+mula_by_1_plus_i_mod_384x	PROC PUBLIC
+	DB	243,15,30,250
+	mov	QWORD PTR[8+rsp],rdi	;WIN64 prologue
+	mov	QWORD PTR[16+rsp],rsi
+	mov	r11,rsp
+$L$SEH_begin_mula_by_1_plus_i_mod_384x::
+
+
+	mov	rdi,rcx
+	mov	rsi,rdx
+	mov	rdx,r8
+	sub	rsp,8
+
+$L$SEH_body_mula_by_1_plus_i_mod_384x::
+
+
+ifdef	__SGX_LVI_HARDENING__
+	lfence
+endif
+	mov	r22,QWORD PTR[rsi]
+	mov	r23,QWORD PTR[8+rsi]
+	mov	r24,QWORD PTR[16+rsi]
+	mov	r25,QWORD PTR[24+rsi]
+	mov	r26,QWORD PTR[32+rsi]
+	mov	r27,QWORD PTR[40+rsi]
+
+	sub	r16,r22,QWORD PTR[48+rsi]
+	sbb	r17,r23,QWORD PTR[56+rsi]
+	sbb	r18,r24,QWORD PTR[64+rsi]
+	sbb	r19,r25,QWORD PTR[72+rsi]
+	sbb	r20,r26,QWORD PTR[80+rsi]
+	sbb	r21,r27,QWORD PTR[88+rsi]
+	sbb	rax,rax
+
+	add	r22,QWORD PTR[48+rsi]
+	adc	r23,QWORD PTR[56+rsi]
+	adc	r24,QWORD PTR[64+rsi]
+	adc	r25,QWORD PTR[72+rsi]
+	adc	r26,QWORD PTR[80+rsi]
+	adc	r27,QWORD PTR[88+rsi]
+	sbb	r11,r11
+
+{nf}	and	r28,rax,QWORD PTR[rdx]
+{nf}	and	r29,rax,QWORD PTR[8+rdx]
+{nf}	and	r30,rax,QWORD PTR[16+rdx]
+{nf}	and	r31,rax,QWORD PTR[24+rdx]
+{nf}	and	r8,rax,QWORD PTR[32+rdx]
+{nf}	and	r9,rax,QWORD PTR[40+rdx]
+
+	add	r16,r28
+	adc	r17,r29
+	adc	r18,r30
+	adc	r19,r31
+	adc	r20,r8
+	adc	r21,r9
+
+	sub	r28,r22,QWORD PTR[rdx]
+	sbb	r29,r23,QWORD PTR[8+rdx]
+	sbb	r30,r24,QWORD PTR[16+rdx]
+	sbb	r31,r25,QWORD PTR[24+rdx]
+	sbb	r8,r26,QWORD PTR[32+rdx]
+	sbb	r9,r27,QWORD PTR[40+rdx]
+	sbb	r11,0
+
+	mov	QWORD PTR[rdi],r16
+	mov	QWORD PTR[8+rdi],r17
+	mov	QWORD PTR[16+rdi],r18
+	mov	QWORD PTR[24+rdi],r19
+	mov	QWORD PTR[32+rdi],r20
+	mov	QWORD PTR[40+rdi],r21
+
+	cmovnc	r22,r28
+	cmovnc	r23,r29
+	cmovnc	r24,r30
+	cmovnc	r25,r31
+	cmovnc	r26,r8
+	cmovnc	r27,r9
+
+	mov	QWORD PTR[48+rdi],r22
+	mov	QWORD PTR[56+rdi],r23
+	mov	QWORD PTR[64+rdi],r24
+	mov	QWORD PTR[72+rdi],r25
+	mov	QWORD PTR[80+rdi],r26
+	mov	QWORD PTR[88+rdi],r27
+
+	lea	rsp,QWORD PTR[8+rsp]
+
+$L$SEH_epilogue_mula_by_1_plus_i_mod_384x::
+	mov	rdi,QWORD PTR[8+rsp]	;WIN64 epilogue
+	mov	rsi,QWORD PTR[16+rsp]
+
+	
+ifdef	__SGX_LVI_HARDENING__
+	pop	rdx
+	lfence
+	jmp	rdx
+	ud2
+else
+	DB	0F3h,0C3h
+endif
+
+$L$SEH_end_mula_by_1_plus_i_mod_384x::
+mula_by_1_plus_i_mod_384x	ENDP
 .text$	ENDS
 .pdata	SEGMENT READONLY ALIGN(4)
 ALIGN	4
+	DD	imagerel $L$SEH_begin_adda_mod_384
+	DD	imagerel $L$SEH_body_adda_mod_384
+	DD	imagerel $L$SEH_info_adda_mod_384_prologue
+
+	DD	imagerel $L$SEH_body_adda_mod_384
+	DD	imagerel $L$SEH_epilogue_adda_mod_384
+	DD	imagerel $L$SEH_info_adda_mod_384_body
+
+	DD	imagerel $L$SEH_epilogue_adda_mod_384
+	DD	imagerel $L$SEH_end_adda_mod_384
+	DD	imagerel $L$SEH_info_adda_mod_384_epilogue
+
+	DD	imagerel $L$SEH_begin_suba_mod_384
+	DD	imagerel $L$SEH_body_suba_mod_384
+	DD	imagerel $L$SEH_info_suba_mod_384_prologue
+
+	DD	imagerel $L$SEH_body_suba_mod_384
+	DD	imagerel $L$SEH_epilogue_suba_mod_384
+	DD	imagerel $L$SEH_info_suba_mod_384_body
+
+	DD	imagerel $L$SEH_epilogue_suba_mod_384
+	DD	imagerel $L$SEH_end_suba_mod_384
+	DD	imagerel $L$SEH_info_suba_mod_384_epilogue
+
 	DD	imagerel $L$SEH_begin_mula_mont_384x
 	DD	imagerel $L$SEH_body_mula_mont_384x
 	DD	imagerel $L$SEH_info_mula_mont_384x_prologue
@@ -2811,9 +3154,61 @@ ALIGN	4
 	DD	imagerel $L$SEH_end_sqra_n_mul_mont_383
 	DD	imagerel $L$SEH_info_sqra_n_mul_mont_383_epilogue
 
+	DD	imagerel $L$SEH_begin_mula_by_1_plus_i_mod_384x
+	DD	imagerel $L$SEH_body_mula_by_1_plus_i_mod_384x
+	DD	imagerel $L$SEH_info_mula_by_1_plus_i_mod_384x_prologue
+
+	DD	imagerel $L$SEH_body_mula_by_1_plus_i_mod_384x
+	DD	imagerel $L$SEH_epilogue_mula_by_1_plus_i_mod_384x
+	DD	imagerel $L$SEH_info_mula_by_1_plus_i_mod_384x_body
+
+	DD	imagerel $L$SEH_epilogue_mula_by_1_plus_i_mod_384x
+	DD	imagerel $L$SEH_end_mula_by_1_plus_i_mod_384x
+	DD	imagerel $L$SEH_info_mula_by_1_plus_i_mod_384x_epilogue
+
 .pdata	ENDS
 .xdata	SEGMENT READONLY ALIGN(8)
 ALIGN	8
+$L$SEH_info_adda_mod_384_prologue::
+DB	1,0,5,00bh
+DB	0,074h,1,0
+DB	0,064h,2,0
+DB	0,0b3h
+DB	0,0
+	DD	0,0
+$L$SEH_info_adda_mod_384_body::
+DB	1,0,5,0
+DB	000h,074h,002h,000h
+DB	000h,064h,003h,000h
+DB	000h,002h
+DB	000h,000h,000h,000h,000h,000h
+DB	000h,000h,000h,000h
+$L$SEH_info_adda_mod_384_epilogue::
+DB	1,0,4,0
+DB	000h,074h,001h,000h
+DB	000h,064h,002h,000h
+DB	000h,000h,000h,000h
+
+$L$SEH_info_suba_mod_384_prologue::
+DB	1,0,5,00bh
+DB	0,074h,1,0
+DB	0,064h,2,0
+DB	0,0b3h
+DB	0,0
+	DD	0,0
+$L$SEH_info_suba_mod_384_body::
+DB	1,0,5,0
+DB	000h,074h,002h,000h
+DB	000h,064h,003h,000h
+DB	000h,002h
+DB	000h,000h,000h,000h,000h,000h
+DB	000h,000h,000h,000h
+$L$SEH_info_suba_mod_384_epilogue::
+DB	1,0,4,0
+DB	000h,074h,001h,000h
+DB	000h,064h,002h,000h
+DB	000h,000h,000h,000h
+
 $L$SEH_info_mula_mont_384x_prologue::
 DB	1,0,5,00bh
 DB	0,074h,1,0
@@ -3089,6 +3484,26 @@ DB	000h,002h
 DB	000h,000h,000h,000h,000h,000h
 DB	000h,000h,000h,000h
 $L$SEH_info_sqra_n_mul_mont_383_epilogue::
+DB	1,0,4,0
+DB	000h,074h,001h,000h
+DB	000h,064h,002h,000h
+DB	000h,000h,000h,000h
+
+$L$SEH_info_mula_by_1_plus_i_mod_384x_prologue::
+DB	1,0,5,00bh
+DB	0,074h,1,0
+DB	0,064h,2,0
+DB	0,0b3h
+DB	0,0
+	DD	0,0
+$L$SEH_info_mula_by_1_plus_i_mod_384x_body::
+DB	1,0,5,0
+DB	000h,074h,002h,000h
+DB	000h,064h,003h,000h
+DB	000h,002h
+DB	000h,000h,000h,000h,000h,000h
+DB	000h,000h,000h,000h
+$L$SEH_info_mula_by_1_plus_i_mod_384x_epilogue::
 DB	1,0,4,0
 DB	000h,074h,001h,000h
 DB	000h,064h,002h,000h

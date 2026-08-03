@@ -133,6 +133,9 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adc	r19,rax
 	mov	r27,QWORD PTR[8+rcx]
 	adc	r20,0
+ifdef	__CRYPTOLINE__
+	cmovc	r20,r20
+endif
 	mov	r28,QWORD PTR[16+rcx]
 	mov	r29,QWORD PTR[24+rcx]
 {nf}	imul	rsi,r16,r8
@@ -156,11 +159,17 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adox	r20,rax
 	adcx	r11,r21
 	adox	r21,r11
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,r26
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,r27
@@ -177,6 +186,9 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adox	r19,rsi
 	adcx	r19,r20
 	adcx	r20,r21,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r20,r20
+endif
 {nf}	imul	rsi,r16,r8
 
 
@@ -198,11 +210,17 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adox	r20,rax
 	adcx	r11,r21
 	adox	r21,r11
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,r26
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,r27
@@ -219,6 +237,9 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adox	r19,rsi
 	adcx	r19,r20
 	adcx	r20,r21,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r20,r20
+endif
 {nf}	imul	rsi,r16,r8
 
 
@@ -240,11 +261,17 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adox	r20,rax
 	adcx	r11,r21
 	adox	r21,r11
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 
 
 	xor	rsi,rsi
 	mulx	r11,rax,r26
 	adcx	rax,r16
+ifdef	__CRYPTOLINE__
+	cmovp	rax,rax
+endif
 	adox	r16,r17,r11
 
 	mulx	r17,rax,r27
@@ -261,10 +288,16 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adox	r19,rsi
 	adcx	r19,r20
 	adcx	r20,r21,rsi
+ifdef	__CRYPTOLINE__
+	cmovo	r20,r20
+endif
 
 	xor	r21,r21
 	mulx	r22,rax,r26
 	adcx	r16,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r16,r16
+endif
 	adox	r22,r17
 
 	mulx	r23,rax,r27
@@ -280,6 +313,9 @@ __mula_mont_sparse_256	PROC PRIVATE
 	adox	r25,r21
 	adcx	r25,r20
 	adcx	r21,r21
+ifdef	__CRYPTOLINE__
+	cmovo	r21,r21
+endif
 
 
 

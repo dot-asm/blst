@@ -1998,6 +1998,9 @@ __mulx_mont_384:
 	adcq	%rdi,%r12
 	adcq	%rbp,%r13
 	adcq	$0,%r14
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r14,%r14
+#endif
 	xorq	%r15,%r15
 
 	movq	%r8,16(%rsp)
@@ -2031,11 +2034,17 @@ __mulx_mont_384:
 	adcxq	%rax,%rbp
 	adoxq	%rbp,%r15
 	adoxq	%rax,%rax
+#ifdef	__CRYPTOLINE__
+	cmovoq	%rax,%rax
+#endif
 
 
 	xorq	%r8,%r8
 	mulxq	0+128(%rcx),%rdi,%rbp
 	adcxq	16(%rsp),%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	adoxq	%rbp,%r9
 
 	mulxq	8+128(%rcx),%rdi,%rbp
@@ -2061,6 +2070,9 @@ __mulx_mont_384:
 	adcxq	%rbp,%r14
 	adcxq	%r8,%r15
 	adcxq	%r8,%rax
+#ifdef	__CRYPTOLINE__
+	cmovoq	%rax,%rax
+#endif
 	movq	%r9,16(%rsp)
 	imulq	8(%rsp),%r9
 
@@ -2092,11 +2104,17 @@ __mulx_mont_384:
 	adcxq	%r8,%rbp
 	adoxq	%rbp,%rax
 	adoxq	%r8,%r8
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r8,%r8
+#endif
 
 
 	xorq	%r9,%r9
 	mulxq	0+128(%rcx),%rdi,%rbp
 	adcxq	16(%rsp),%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	adoxq	%rbp,%r10
 
 	mulxq	8+128(%rcx),%rdi,%rbp
@@ -2122,6 +2140,9 @@ __mulx_mont_384:
 	adcxq	%rbp,%r15
 	adcxq	%r9,%rax
 	adcxq	%r9,%r8
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r8,%r8
+#endif
 	movq	%r10,16(%rsp)
 	imulq	8(%rsp),%r10
 
@@ -2153,11 +2174,17 @@ __mulx_mont_384:
 	adcxq	%r9,%rbp
 	adoxq	%rbp,%r8
 	adoxq	%r9,%r9
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r9,%r9
+#endif
 
 
 	xorq	%r10,%r10
 	mulxq	0+128(%rcx),%rdi,%rbp
 	adcxq	16(%rsp),%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	adoxq	%rbp,%r11
 
 	mulxq	8+128(%rcx),%rdi,%rbp
@@ -2183,6 +2210,9 @@ __mulx_mont_384:
 	adcxq	%rbp,%rax
 	adcxq	%r10,%r8
 	adcxq	%r10,%r9
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r9,%r9
+#endif
 	movq	%r11,16(%rsp)
 	imulq	8(%rsp),%r11
 
@@ -2214,11 +2244,17 @@ __mulx_mont_384:
 	adcxq	%r10,%rbp
 	adoxq	%rbp,%r9
 	adoxq	%r10,%r10
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r10,%r10
+#endif
 
 
 	xorq	%r11,%r11
 	mulxq	0+128(%rcx),%rdi,%rbp
 	adcxq	16(%rsp),%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	adoxq	%rbp,%r12
 
 	mulxq	8+128(%rcx),%rdi,%rbp
@@ -2244,6 +2280,9 @@ __mulx_mont_384:
 	adcxq	%rbp,%r8
 	adcxq	%r11,%r9
 	adcxq	%r11,%r10
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r10,%r10
+#endif
 	movq	%r12,16(%rsp)
 	imulq	8(%rsp),%r12
 
@@ -2275,11 +2314,17 @@ __mulx_mont_384:
 	adcxq	%r11,%rbp
 	adoxq	%rbp,%r10
 	adoxq	%r11,%r11
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r11,%r11
+#endif
 
 
 	xorq	%r12,%r12
 	mulxq	0+128(%rcx),%rdi,%rbp
 	adcxq	16(%rsp),%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	adoxq	%rbp,%r13
 
 	mulxq	8+128(%rcx),%rdi,%rbp
@@ -2305,6 +2350,9 @@ __mulx_mont_384:
 	adcxq	%rbp,%r9
 	adcxq	%r12,%r10
 	adcxq	%r12,%r11
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r11,%r11
+#endif
 	imulq	8(%rsp),%rdx
 	movq	24(%rsp),%rbx
 
@@ -2312,6 +2360,9 @@ __mulx_mont_384:
 	xorq	%r12,%r12
 	mulxq	0+128(%rcx),%rdi,%rbp
 	adcxq	%rdi,%r13
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r13,%r13
+#endif
 	adoxq	%rbp,%r14
 
 	mulxq	8+128(%rcx),%rdi,%rbp
@@ -2340,6 +2391,9 @@ __mulx_mont_384:
 	leaq	128(%rcx),%rcx
 	movq	%r8,%r12
 	adcq	$0,%r11
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r11,%r11
+#endif
 
 
 

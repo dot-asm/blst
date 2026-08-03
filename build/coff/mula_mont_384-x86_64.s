@@ -40,14 +40,14 @@ __suba_mod_384x384:
 	sbbq	80(%rdx),%r26
 	movq	%r21,40(%rdi)
 	sbbq	88(%rdx),%r27
-	sbbq	%rdx,%rdx
+	sbbq	%rax,%rax
 
-{nf}	andq	0(%rcx),%rdx,%r16
-{nf}	andq	8(%rcx),%rdx,%r17
-{nf}	andq	16(%rcx),%rdx,%r18
-{nf}	andq	24(%rcx),%rdx,%r19
-{nf}	andq	32(%rcx),%rdx,%r20
-{nf}	andq	40(%rcx),%rdx,%r21
+{nf}	andq	0(%rcx),%rax,%r16
+{nf}	andq	8(%rcx),%rax,%r17
+{nf}	andq	16(%rcx),%rax,%r18
+{nf}	andq	24(%rcx),%rax,%r19
+{nf}	andq	32(%rcx),%rax,%r20
+{nf}	andq	40(%rcx),%rax,%r21
 
 	addq	%r16,%r22
 	adcq	%r17,%r23
@@ -73,6 +73,47 @@ __suba_mod_384x384:
 #endif
 
 
+.globl	adda_mod_384
+
+.def	adda_mod_384;	.scl 2;	.type 32;	.endef
+.p2align	5
+adda_mod_384:
+	.byte	0xf3,0x0f,0x1e,0xfa
+	movq	%rdi,8(%rsp)
+	movq	%rsi,16(%rsp)
+	movq	%rsp,%r11
+.LSEH_begin_adda_mod_384:
+
+
+	movq	%rcx,%rdi
+	movq	%rdx,%rsi
+	movq	%r8,%rdx
+	movq	%r9,%rcx
+	subq	$8,%rsp
+
+.LSEH_body_adda_mod_384:
+
+
+	call	__adda_mod_384
+
+	leaq	8(%rsp),%rsp
+
+.LSEH_epilogue_adda_mod_384:
+	mov	8(%rsp),%rdi
+	mov	16(%rsp),%rsi
+
+	
+#ifdef	__SGX_LVI_HARDENING__
+	popq	%rdx
+	lfence
+	jmpq	*%rdx
+	ud2
+#else
+	.byte	0xf3,0xc3
+#endif
+
+.LSEH_end_adda_mod_384:
+
 .def	__adda_mod_384;	.scl 3;	.type 32;	.endef
 .p2align	5
 __adda_mod_384:
@@ -94,7 +135,7 @@ __adda_mod_384:
 	adcq	24(%rdx),%r19
 	adcq	32(%rdx),%r20
 	adcq	40(%rdx),%r21
-	sbbq	%rdx,%rdx
+	sbbq	%rax,%rax
 
 	subq	0(%rcx),%r16,%r22
 	sbbq	8(%rcx),%r17,%r23
@@ -102,7 +143,7 @@ __adda_mod_384:
 	sbbq	24(%rcx),%r19,%r25
 	sbbq	32(%rcx),%r20,%r26
 	sbbq	40(%rcx),%r21,%r27
-	sbbq	$0,%rdx
+	sbbq	$0,%rax
 
 	cmovncq	%r22,%r16
 	cmovncq	%r23,%r17
@@ -128,6 +169,47 @@ __adda_mod_384:
 #endif
 
 
+.globl	suba_mod_384
+
+.def	suba_mod_384;	.scl 2;	.type 32;	.endef
+.p2align	5
+suba_mod_384:
+	.byte	0xf3,0x0f,0x1e,0xfa
+	movq	%rdi,8(%rsp)
+	movq	%rsi,16(%rsp)
+	movq	%rsp,%r11
+.LSEH_begin_suba_mod_384:
+
+
+
+	movq	%rcx,%rdi
+	movq	%rdx,%rsi
+	movq	%r8,%rdx
+	movq	%r9,%rcx
+	subq	$8,%rsp
+.LSEH_body_suba_mod_384:
+
+
+	call	__suba_mod_384
+
+	leaq	8(%rsp),%rsp
+
+.LSEH_epilogue_suba_mod_384:
+	mov	8(%rsp),%rdi
+	mov	16(%rsp),%rsi
+
+	
+#ifdef	__SGX_LVI_HARDENING__
+	popq	%rdx
+	lfence
+	jmpq	*%rdx
+	ud2
+#else
+	.byte	0xf3,0xc3
+#endif
+
+.LSEH_end_suba_mod_384:
+
 .def	__suba_mod_384;	.scl 3;	.type 32;	.endef
 .p2align	5
 __suba_mod_384:
@@ -150,14 +232,14 @@ __suba_mod_384_a_is_loaded:
 	sbbq	24(%rdx),%r19
 	sbbq	32(%rdx),%r20
 	sbbq	40(%rdx),%r21
-	sbbq	%rdx,%rdx
+	sbbq	%rax,%rax
 
-{nf}	andq	0(%rcx),%rdx,%r22
-{nf}	andq	8(%rcx),%rdx,%r23
-{nf}	andq	16(%rcx),%rdx,%r24
-{nf}	andq	24(%rcx),%rdx,%r25
-{nf}	andq	32(%rcx),%rdx,%r26
-{nf}	andq	40(%rcx),%rdx,%r27
+{nf}	andq	0(%rcx),%rax,%r22
+{nf}	andq	8(%rcx),%rax,%r23
+{nf}	andq	16(%rcx),%rax,%r24
+{nf}	andq	24(%rcx),%rax,%r25
+{nf}	andq	32(%rcx),%rax,%r26
+{nf}	andq	40(%rcx),%rax,%r27
 
 	addq	%r22,%r16
 	adcq	%r23,%r17
@@ -741,6 +823,9 @@ __mula_384:
 	movq	8(%r10),%rdx
 	adcq	%r11,%r21
 	adcq	$0,%r22
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r22,%r22
+#endif
 	xorq	%r23,%r23
 	mulxq	%r25,%r16,%rax
 	adcxq	%r17,%r16
@@ -768,6 +853,9 @@ __mula_384:
 	adcxq	%r22,%r21
 	adoxq	%r23,%r11
 	adcxq	%r23,%r11,%r22
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r22,%r22
+#endif
 	xorq	%r23,%r23
 	mulxq	%r25,%r16,%rax
 	adcxq	%r17,%r16
@@ -795,6 +883,9 @@ __mula_384:
 	adcxq	%r22,%r21
 	adoxq	%r23,%r11
 	adcxq	%r23,%r11,%r22
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r22,%r22
+#endif
 	xorq	%r23,%r23
 	mulxq	%r25,%r16,%rax
 	adcxq	%r17,%r16
@@ -822,6 +913,9 @@ __mula_384:
 	adcxq	%r22,%r21
 	adoxq	%r23,%r11
 	adcxq	%r23,%r11,%r22
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r22,%r22
+#endif
 	xorq	%r23,%r23
 	mulxq	%r25,%r16,%rax
 	adcxq	%r17,%r16
@@ -849,6 +943,9 @@ __mula_384:
 	adcxq	%r22,%r21
 	adoxq	%r23,%r11
 	adcxq	%r23,%r11,%r22
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r22,%r22
+#endif
 	xorq	%r23,%r23
 	mulxq	%r25,%r16,%rax
 	adcxq	%r17,%r16
@@ -876,6 +973,9 @@ __mula_384:
 	adcxq	%r22,%r21
 	adoxq	%r23,%r11
 	adcxq	%r23,%r11,%r22
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r22,%r22
+#endif
 	movq	%r17,48(%rdi)
 	movq	%r18,56(%rdi)
 	movq	%r19,64(%rdi)
@@ -960,6 +1060,9 @@ __sqra_384:
 	movq	%r23,%rdx
 	adcq	%r11,%r21
 	adcq	$0,%r22
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r22,%r22
+#endif
 
 
 	xorq	%r23,%r23
@@ -980,6 +1083,9 @@ __sqra_384:
 	adcxq	%rax,%r22
 	adoxq	%r23,%r11
 	adcxq	%r11,%r23
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r23,%r23
+#endif
 
 
 	xorq	%r24,%r24
@@ -996,6 +1102,9 @@ __sqra_384:
 	adcxq	%rax,%r23
 	adoxq	%r24,%r11
 	adcxq	%r11,%r24
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r24,%r24
+#endif
 
 
 	xorq	%r25,%r25
@@ -1008,12 +1117,18 @@ __sqra_384:
 	adcxq	%rax,%r24
 	adoxq	%r25,%r11
 	adcxq	%r11,%r25
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r25,%r25
+#endif
 
 
 	mulxq	%r27,%rax,%r26
 	movq	0(%rsi),%rdx
 	addq	%rax,%r25
 	adcq	$0,%r26
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r26,%r26
+#endif
 
 
 	xorq	%r27,%r27
@@ -1022,6 +1137,9 @@ __sqra_384:
 	adcxq	%r19,%r19
 	adcxq	%r20,%r20
 	adcxq	%r21,%r21
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r21,%r21
+#endif
 
 
 	mulxq	%rdx,%rdx,%r11
@@ -1067,6 +1185,9 @@ __sqra_384:
 	mulxq	%rdx,%r17,%r18
 	adoxq	%r17,%r26
 	adoxq	%r18,%r27
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r27,%r27
+#endif
 
 	movq	%r26,80(%rdi)
 	movq	%r27,88(%rdi)
@@ -1223,6 +1344,9 @@ __mula_by_1_mont_384:
 	xorq	%r22,%r22
 	mulxq	0(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8(%rcx),%rax,%r17
@@ -1245,12 +1369,18 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r21,%r21
+#endif
 {nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
 	mulxq	0(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8(%rcx),%rax,%r17
@@ -1273,12 +1403,18 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r21,%r21
+#endif
 {nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
 	mulxq	0(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8(%rcx),%rax,%r17
@@ -1301,12 +1437,18 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r21,%r21
+#endif
 {nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
 	mulxq	0(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8(%rcx),%rax,%r17
@@ -1329,12 +1471,18 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r21,%r21
+#endif
 {nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
 	mulxq	0(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8(%rcx),%rax,%r17
@@ -1357,12 +1505,18 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r21,%r21
+#endif
 {nf}	imulq	%r16,%r8,%rdx
 
 
 	xorq	%r22,%r22
 	mulxq	0(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8(%rcx),%rax,%r17
@@ -1385,6 +1539,9 @@ __mula_by_1_mont_384:
 	adcxq	%rax,%r20
 	adoxq	%r22,%r21
 	adcxq	%r22,%r21
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r21,%r21
+#endif
 	
 #ifdef	__SGX_LVI_HARDENING__
 	popq	%rdx
@@ -1709,8 +1866,10 @@ __mula_mont_384:
 	adcq	%r23,%r20
 	adcq	%r24,%r21
 	adcq	$0,%r22
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r22,%r22
+#endif
 	xorq	%r23,%r23
-
 {nf}	imulq	%r8,%r16,%rsi
 
 
@@ -1741,11 +1900,17 @@ __mula_mont_384:
 	adcxq	%r24,%r11
 	adoxq	%r11,%r23
 	adoxq	%r24,%r24
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r24,%r24
+#endif
 
 
 	xorq	%rsi,%rsi
 	mulxq	0+128(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
@@ -1771,6 +1936,9 @@ __mula_mont_384:
 	adcxq	%r22,%r21
 	adcxq	%rsi,%r23,%r22
 	adcxq	%rsi,%r24,%r23
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r23,%r23
+#endif
 {nf}	imulq	%r8,%r16,%rsi
 
 
@@ -1801,11 +1969,17 @@ __mula_mont_384:
 	adcxq	%r24,%r11
 	adoxq	%r11,%r23
 	adoxq	%r24,%r24
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r24,%r24
+#endif
 
 
 	xorq	%rsi,%rsi
 	mulxq	0+128(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
@@ -1831,6 +2005,9 @@ __mula_mont_384:
 	adcxq	%r22,%r21
 	adcxq	%rsi,%r23,%r22
 	adcxq	%rsi,%r24,%r23
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r23,%r23
+#endif
 {nf}	imulq	%r8,%r16,%rsi
 
 
@@ -1861,11 +2038,17 @@ __mula_mont_384:
 	adcxq	%r24,%r11
 	adoxq	%r11,%r23
 	adoxq	%r24,%r24
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r24,%r24
+#endif
 
 
 	xorq	%rsi,%rsi
 	mulxq	0+128(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
@@ -1891,6 +2074,9 @@ __mula_mont_384:
 	adcxq	%r22,%r21
 	adcxq	%rsi,%r23,%r22
 	adcxq	%rsi,%r24,%r23
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r23,%r23
+#endif
 {nf}	imulq	%r8,%r16,%rsi
 
 
@@ -1921,11 +2107,17 @@ __mula_mont_384:
 	adcxq	%r24,%r11
 	adoxq	%r11,%r23
 	adoxq	%r24,%r24
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r24,%r24
+#endif
 
 
 	xorq	%rsi,%rsi
 	mulxq	0+128(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
@@ -1951,6 +2143,9 @@ __mula_mont_384:
 	adcxq	%r22,%r21
 	adcxq	%rsi,%r23,%r22
 	adcxq	%rsi,%r24,%r23
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r23,%r23
+#endif
 {nf}	imulq	%r8,%r16,%rsi
 
 
@@ -1981,11 +2176,17 @@ __mula_mont_384:
 	adcxq	%r24,%r11
 	adoxq	%r11,%r23
 	adoxq	%r24,%r24
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r24,%r24
+#endif
 
 
 	xorq	%rsi,%rsi
 	mulxq	0+128(%rcx),%rax,%r11
 	adcxq	%r16,%rax
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rax,%rax
+#endif
 	adoxq	%r11,%r17,%r16
 
 	mulxq	8+128(%rcx),%rax,%r17
@@ -2011,10 +2212,16 @@ __mula_mont_384:
 	adcxq	%r22,%r21
 	adcxq	%rsi,%r23,%r22
 	adcxq	%rsi,%r24,%r23
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r23,%r23
+#endif
 
 	xorq	%r24,%r24
 	mulxq	0+128(%rcx),%rax,%r25
 	adcxq	%rax,%r16
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r16,%r16
+#endif
 	adoxq	%r17,%r25
 
 	mulxq	8+128(%rcx),%rax,%r26
@@ -2039,6 +2246,9 @@ __mula_mont_384:
 	leaq	128(%rcx),%rcx
 	adcxq	%r22,%r30
 	adcq	$0,%r23
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r23,%r23
+#endif
 
 
 
@@ -2611,8 +2821,138 @@ sqr_n_mul_mont_383$4:
 #endif
 
 .LSEH_end_sqra_n_mul_mont_383:
+.globl	mula_by_1_plus_i_mod_384x
+
+.def	mula_by_1_plus_i_mod_384x;	.scl 2;	.type 32;	.endef
+.p2align	5
+mula_by_1_plus_i_mod_384x:
+	.byte	0xf3,0x0f,0x1e,0xfa
+	movq	%rdi,8(%rsp)
+	movq	%rsi,16(%rsp)
+	movq	%rsp,%r11
+.LSEH_begin_mula_by_1_plus_i_mod_384x:
+
+
+	movq	%rcx,%rdi
+	movq	%rdx,%rsi
+	movq	%r8,%rdx
+	subq	$8,%rsp
+
+.LSEH_body_mula_by_1_plus_i_mod_384x:
+
+
+#ifdef	__SGX_LVI_HARDENING__
+	lfence
+#endif
+	movq	0(%rsi),%r22
+	movq	8(%rsi),%r23
+	movq	16(%rsi),%r24
+	movq	24(%rsi),%r25
+	movq	32(%rsi),%r26
+	movq	40(%rsi),%r27
+
+	subq	48(%rsi),%r22,%r16
+	sbbq	56(%rsi),%r23,%r17
+	sbbq	64(%rsi),%r24,%r18
+	sbbq	72(%rsi),%r25,%r19
+	sbbq	80(%rsi),%r26,%r20
+	sbbq	88(%rsi),%r27,%r21
+	sbbq	%rax,%rax
+
+	addq	48(%rsi),%r22
+	adcq	56(%rsi),%r23
+	adcq	64(%rsi),%r24
+	adcq	72(%rsi),%r25
+	adcq	80(%rsi),%r26
+	adcq	88(%rsi),%r27
+	sbbq	%r11,%r11
+
+{nf}	andq	0(%rdx),%rax,%r28
+{nf}	andq	8(%rdx),%rax,%r29
+{nf}	andq	16(%rdx),%rax,%r30
+{nf}	andq	24(%rdx),%rax,%r31
+{nf}	andq	32(%rdx),%rax,%r8
+{nf}	andq	40(%rdx),%rax,%r9
+
+	addq	%r28,%r16
+	adcq	%r29,%r17
+	adcq	%r30,%r18
+	adcq	%r31,%r19
+	adcq	%r8,%r20
+	adcq	%r9,%r21
+
+	subq	0(%rdx),%r22,%r28
+	sbbq	8(%rdx),%r23,%r29
+	sbbq	16(%rdx),%r24,%r30
+	sbbq	24(%rdx),%r25,%r31
+	sbbq	32(%rdx),%r26,%r8
+	sbbq	40(%rdx),%r27,%r9
+	sbbq	$0,%r11
+
+	movq	%r16,0(%rdi)
+	movq	%r17,8(%rdi)
+	movq	%r18,16(%rdi)
+	movq	%r19,24(%rdi)
+	movq	%r20,32(%rdi)
+	movq	%r21,40(%rdi)
+
+	cmovncq	%r28,%r22
+	cmovncq	%r29,%r23
+	cmovncq	%r30,%r24
+	cmovncq	%r31,%r25
+	cmovncq	%r8,%r26
+	cmovncq	%r9,%r27
+
+	movq	%r22,48(%rdi)
+	movq	%r23,56(%rdi)
+	movq	%r24,64(%rdi)
+	movq	%r25,72(%rdi)
+	movq	%r26,80(%rdi)
+	movq	%r27,88(%rdi)
+
+	leaq	8(%rsp),%rsp
+
+.LSEH_epilogue_mula_by_1_plus_i_mod_384x:
+	mov	8(%rsp),%rdi
+	mov	16(%rsp),%rsi
+
+	
+#ifdef	__SGX_LVI_HARDENING__
+	popq	%rdx
+	lfence
+	jmpq	*%rdx
+	ud2
+#else
+	.byte	0xf3,0xc3
+#endif
+
+.LSEH_end_mula_by_1_plus_i_mod_384x:
 .section	.pdata
 .p2align	2
+.rva	.LSEH_begin_adda_mod_384
+.rva	.LSEH_body_adda_mod_384
+.rva	.LSEH_info_adda_mod_384_prologue
+
+.rva	.LSEH_body_adda_mod_384
+.rva	.LSEH_epilogue_adda_mod_384
+.rva	.LSEH_info_adda_mod_384_body
+
+.rva	.LSEH_epilogue_adda_mod_384
+.rva	.LSEH_end_adda_mod_384
+.rva	.LSEH_info_adda_mod_384_epilogue
+
+.rva	.LSEH_begin_suba_mod_384
+.rva	.LSEH_body_suba_mod_384
+.rva	.LSEH_info_suba_mod_384_prologue
+
+.rva	.LSEH_body_suba_mod_384
+.rva	.LSEH_epilogue_suba_mod_384
+.rva	.LSEH_info_suba_mod_384_body
+
+.rva	.LSEH_epilogue_suba_mod_384
+.rva	.LSEH_end_suba_mod_384
+.rva	.LSEH_info_suba_mod_384_epilogue
+
 .rva	.LSEH_begin_mula_mont_384x
 .rva	.LSEH_body_mula_mont_384x
 .rva	.LSEH_info_mula_mont_384x_prologue
@@ -2781,8 +3121,60 @@ sqr_n_mul_mont_383$4:
 .rva	.LSEH_end_sqra_n_mul_mont_383
 .rva	.LSEH_info_sqra_n_mul_mont_383_epilogue
 
+.rva	.LSEH_begin_mula_by_1_plus_i_mod_384x
+.rva	.LSEH_body_mula_by_1_plus_i_mod_384x
+.rva	.LSEH_info_mula_by_1_plus_i_mod_384x_prologue
+
+.rva	.LSEH_body_mula_by_1_plus_i_mod_384x
+.rva	.LSEH_epilogue_mula_by_1_plus_i_mod_384x
+.rva	.LSEH_info_mula_by_1_plus_i_mod_384x_body
+
+.rva	.LSEH_epilogue_mula_by_1_plus_i_mod_384x
+.rva	.LSEH_end_mula_by_1_plus_i_mod_384x
+.rva	.LSEH_info_mula_by_1_plus_i_mod_384x_epilogue
+
 .section	.xdata
 .p2align	3
+.LSEH_info_adda_mod_384_prologue:
+.byte	1,0,5,0x0b
+.byte	0,0x74,1,0
+.byte	0,0x64,2,0
+.byte	0,0xb3
+.byte	0,0
+.long	0,0
+.LSEH_info_adda_mod_384_body:
+.byte	1,0,5,0
+.byte	0x00,0x74,0x02,0x00
+.byte	0x00,0x64,0x03,0x00
+.byte	0x00,0x02
+.byte	0x00,0x00,0x00,0x00,0x00,0x00
+.byte	0x00,0x00,0x00,0x00
+.LSEH_info_adda_mod_384_epilogue:
+.byte	1,0,4,0
+.byte	0x00,0x74,0x01,0x00
+.byte	0x00,0x64,0x02,0x00
+.byte	0x00,0x00,0x00,0x00
+
+.LSEH_info_suba_mod_384_prologue:
+.byte	1,0,5,0x0b
+.byte	0,0x74,1,0
+.byte	0,0x64,2,0
+.byte	0,0xb3
+.byte	0,0
+.long	0,0
+.LSEH_info_suba_mod_384_body:
+.byte	1,0,5,0
+.byte	0x00,0x74,0x02,0x00
+.byte	0x00,0x64,0x03,0x00
+.byte	0x00,0x02
+.byte	0x00,0x00,0x00,0x00,0x00,0x00
+.byte	0x00,0x00,0x00,0x00
+.LSEH_info_suba_mod_384_epilogue:
+.byte	1,0,4,0
+.byte	0x00,0x74,0x01,0x00
+.byte	0x00,0x64,0x02,0x00
+.byte	0x00,0x00,0x00,0x00
+
 .LSEH_info_mula_mont_384x_prologue:
 .byte	1,0,5,0x0b
 .byte	0,0x74,1,0
@@ -3058,6 +3450,26 @@ sqr_n_mul_mont_383$4:
 .byte	0x00,0x00,0x00,0x00,0x00,0x00
 .byte	0x00,0x00,0x00,0x00
 .LSEH_info_sqra_n_mul_mont_383_epilogue:
+.byte	1,0,4,0
+.byte	0x00,0x74,0x01,0x00
+.byte	0x00,0x64,0x02,0x00
+.byte	0x00,0x00,0x00,0x00
+
+.LSEH_info_mula_by_1_plus_i_mod_384x_prologue:
+.byte	1,0,5,0x0b
+.byte	0,0x74,1,0
+.byte	0,0x64,2,0
+.byte	0,0xb3
+.byte	0,0
+.long	0,0
+.LSEH_info_mula_by_1_plus_i_mod_384x_body:
+.byte	1,0,5,0
+.byte	0x00,0x74,0x02,0x00
+.byte	0x00,0x64,0x03,0x00
+.byte	0x00,0x02
+.byte	0x00,0x00,0x00,0x00,0x00,0x00
+.byte	0x00,0x00,0x00,0x00
+.LSEH_info_mula_by_1_plus_i_mod_384x_epilogue:
 .byte	1,0,4,0
 .byte	0x00,0x74,0x01,0x00
 .byte	0x00,0x64,0x02,0x00
