@@ -57,7 +57,7 @@ inline void mul_by_8_mod_384x(vec384x ret, const vec384x a, const vec384 mod)
 }
 #endif
 
-#ifdef mul_by_1_plus_i_mod_384x
+#if defined(mul_by_1_plus_i_mod_384x) && !defined(__APX_F__)
 inline void mul_by_1_plus_i_mod_384x(vec384x ret, const vec384x a,
                                      const vec384 mod)
 {

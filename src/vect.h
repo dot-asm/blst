@@ -86,6 +86,11 @@ typedef limb_t bool_t;
 #  define from_mont_384 froma_mont_384
 #  define sgn0_pty_mont_384 sgn0a_pty_mont_384
 #  define sgn0_pty_mont_384x sgn0a_pty_mont_384x
+#  define add_mod_384 adda_mod_384
+#  define sub_mod_384 suba_mod_384
+#  define add_mod_384x adda_mod_384x
+#  define sub_mod_384x suba_mod_384x
+#  define mul_by_1_plus_i_mod_384x mula_by_1_plus_i_mod_384x
 # else
 #  define mul_mont_sparse_256 mulx_mont_sparse_256
 #  define sqr_mont_sparse_256 sqrx_mont_sparse_256
