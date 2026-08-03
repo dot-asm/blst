@@ -1773,6 +1773,9 @@ __mulx_mont_384:
 	adc	$lo, @acc[4]
 	adc	$hi, @acc[5]
 	adc	\$0, @acc[6]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[6], @acc[6]
+#endif
 	xor	@acc[7], @acc[7]
 
 ___
@@ -1811,11 +1814,17 @@ $code.=<<___;
 	adcx	@acc[8], $hi		# cf=0
 	adox	$hi, @acc[7]
 	adox	@acc[8], @acc[8]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[8], @acc[8]
+#endif
 
 	################################# reduction
 	xor	@acc[0], @acc[0]	# acc[0]=0, cf=0, of=0
 	mulx	8*0+128($n_ptr), $lo, $hi
 	adcx	16(%rsp), $lo		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	$lo, $lo
+#endif
 	adox	$hi, @acc[1]
 
 	mulx	8*1+128($n_ptr), $lo, $hi
@@ -1841,6 +1850,9 @@ $code.=<<___;
 	adcx	$hi, @acc[6]
 	adcx	@acc[0], @acc[7]
 	adcx	@acc[0], @acc[8]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[8], @acc[8]
+#endif
 ___
     push(@acc,shift(@acc));
 }
@@ -1852,6 +1864,9 @@ $code.=<<___;
 	xor	@acc[8], @acc[8]	# @acc[8]=0, cf=0, of=0
 	mulx	8*0+128($n_ptr), $lo, $hi
 	adcx	$lo, @acc[0]		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	@acc[0], @acc[0]
+#endif
 	adox	$hi, @acc[1]
 
 	mulx	8*1+128($n_ptr), $lo, $hi
@@ -1880,6 +1895,9 @@ $code.=<<___;
 	 lea	128($n_ptr), $n_ptr
 	 mov	@acc[4], @acc[8]
 	adc	\$0, @acc[7]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[7], @acc[7]
+#endif
 
 	#################################
 	# Branch-less conditional acc[1:7] - modulus

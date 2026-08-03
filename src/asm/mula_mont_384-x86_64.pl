@@ -713,6 +713,9 @@ __mula_384:
 	 mov	8*1($b_ptr), %rdx
 	adc	$hi, @acc[5]
 	adc	\$0, @acc[6]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[6], @acc[6]
+#endif
 ___
 for(my $i=1; $i<6; $i++) {
 my $b_next = $i<5 ? 8*($i+1)."($b_ptr)" : "%rax";
@@ -744,6 +747,9 @@ $code.=<<___;
 	adcx	@acc[6], @acc[5]
 	adox	$zr, $hi
 	adcx	$zr, $hi, @acc[6]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[6], @acc[6]
+#endif
 ___
 }
 $code.=<<___;
@@ -805,6 +811,9 @@ __sqra_384:
 	 mov	@acc[7], %rdx
 	adc	$hi, @acc[5]
 	adc	\$0, @acc[6]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[6], @acc[6]
+#endif
 
 	#########################################
 	xor	@acc[7], @acc[7]
@@ -825,6 +834,9 @@ __sqra_384:
 	adcx	$lo, @acc[6]
 	adox	@acc[7], $hi
 	adcx	$hi, @acc[7]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[7], @acc[7]
+#endif
 
 	#########################################
 	xor	@acc[8], @acc[8]
@@ -841,6 +853,9 @@ __sqra_384:
 	adcx	$lo, @acc[7]
 	adox	@acc[8], $hi
 	adcx	$hi, @acc[8]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[8], @acc[8]
+#endif
 
 	#########################################
 	xor	@acc[9], @acc[9]
@@ -853,12 +868,18 @@ __sqra_384:
 	adcx	$lo, @acc[8]
 	adox	@acc[9], $hi
 	adcx	$hi, @acc[9]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[9], @acc[9]
+#endif
 
 	#########################################
 	mulx	@acc[11], $lo, @acc[10]		# a[5]*a[4]
 	 mov	8*0($a_ptr), %rdx
 	add	$lo, @acc[9]
 	adc	\$0, @acc[10]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[10], @acc[10]
+#endif
 
 	######################################### double acc[1:10]
 	xor	@acc[11], @acc[11]
@@ -867,6 +888,9 @@ __sqra_384:
 	adcx	@acc[3], @acc[3]
 	adcx	@acc[4], @acc[4]
 	adcx	@acc[5], @acc[5]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[5], @acc[5]
+#endif
 
 	######################################### accumulate a[i]*a[i]
 	mulx	%rdx, %rdx, $hi 		# a[0]*a[0]
@@ -912,6 +936,9 @@ __sqra_384:
 	mulx	%rdx, @acc[1], @acc[2]		# a[5]*a[5]
 	adox	@acc[1], @acc[10]
 	adox	@acc[2], @acc[11]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[11], @acc[11]
+#endif
 
 	mov	@acc[10], 8*10($r_ptr)
 	mov	@acc[11], 8*11($r_ptr)
@@ -1017,6 +1044,9 @@ $code.=<<___;
 	xor	@acc[6], @acc[6]	# @acc[6]=0, cf=0, of=0
 	mulx	8*0($n_ptr), $lo, $hi
 	adcx	@acc[0], $lo		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	$lo, $lo
+#endif
 	adox	$hi, @acc[1], @acc[0]
 
 	mulx	8*1($n_ptr), $lo, @acc[1]
@@ -1039,6 +1069,9 @@ $code.=<<___;
 	adcx	$lo, @acc[4]
 	adox	@acc[6], @acc[5]	# of=0
 	adcx	@acc[6], @acc[5]	# cf=0
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[5], @acc[5]
+#endif
 ___
 }
 $code.=<<___;
@@ -1281,6 +1314,9 @@ __mula_mont_384:
 	adc	@acc[7], @acc[4]
 	adc	@acc[8], @acc[5]
 	adc	\$0, @acc[6]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[6], @acc[6]
+#endif
 	xor	@acc[7], @acc[7]
 ___
 for (my $i=1; $i<6; $i++) {
@@ -1317,11 +1353,17 @@ $code.=<<___;
 	adcx	@acc[8], $hi		# cf=0
 	adox	$hi, @acc[7]
 	adox	@acc[8], @acc[8]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[8], @acc[8]
+#endif
 
 	################################# reduction
 	xor	$a_ptr, $a_ptr		# $a_ptr=0, cf=0, of=0
 	mulx	8*0+128($n_ptr), $lo, $hi
 	adcx	@acc[0], $lo		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	$lo, $lo
+#endif
 	adox	$hi, @acc[1], @acc[0]
 
 	mulx	8*1+128($n_ptr), $lo, @acc[1]
@@ -1347,6 +1389,9 @@ $code.=<<___;
 	adcx	@acc[6], @acc[5]
 	adcx	$a_ptr, @acc[7], @acc[6]
 	adcx	$a_ptr, @acc[8], @acc[7]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[7], @acc[7]
+#endif
 ___
 }
 $code.=<<___;
@@ -1354,6 +1399,9 @@ $code.=<<___;
 	xor	@acc[8], @acc[8]	# @acc[8]=0, cf=0, of=0
 	mulx	8*0+128($n_ptr), $lo, @a[0]
 	adcx	$lo, @acc[0]		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	@acc[0], @acc[0]
+#endif
 	adox	@acc[1], @a[0]
 
 	mulx	8*1+128($n_ptr), $lo, @a[1]
@@ -1378,6 +1426,9 @@ $code.=<<___;
 	 lea	128($n_ptr), $n_ptr
 	adcx	@acc[6], @a[5]
 	adc	\$0, @acc[7]
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[7], @acc[7]
+#endif
 
 	#################################
 	# Branch-less conditional a[0:6] - modulus

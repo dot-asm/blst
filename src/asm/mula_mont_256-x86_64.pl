@@ -130,6 +130,9 @@ __mula_mont_sparse_256:
 	adc	$lo, @acc[3]
 	mov	8*1($n_ptr), @n[1]
 	adc	\$0, @acc[4]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[4], @acc[4]
+#endif
 	mov	8*2($n_ptr), @n[2]
 	mov	8*3($n_ptr), @n[3]
 ___
@@ -158,11 +161,17 @@ $code.=<<___;
 	adox	$lo, @acc[4]
 	adcx	@acc[5], $hi 		# cf=0
 	adox	$hi, @acc[5]		# of=0
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[5], @acc[5]
+#endif
 
 	################################# reduction
 	xor	$a_ptr, $a_ptr		# $a_ptr=0, cf=0, of=0
 	mulx	@n[0], $lo, $hi
 	adcx	@acc[0], $lo		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	$lo, $lo
+#endif
 	adox	$hi, @acc[1], @acc[0]
 
 	mulx	@n[1], $lo, @acc[1]
@@ -179,6 +188,9 @@ $code.=<<___;
 	adox	$a_ptr, @acc[3]		# of=0
 	adcx	@acc[4], @acc[3]
 	adcx	$a_ptr, @acc[5], @acc[4]# cf=0
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[4], @acc[4]
+#endif
 ___
 }
 $code.=<<___;
@@ -186,6 +198,9 @@ $code.=<<___;
 	xor	@acc[5], @acc[5]	# cf=0, of=0
 	mulx	@n[0], $lo, @a[0]
 	adcx	$lo, @acc[0]		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	@acc[0], @acc[0]
+#endif
 	adox	@acc[1], @a[0]
 
 	mulx	@n[1], $lo, @a[1]
@@ -201,6 +216,9 @@ $code.=<<___;
 	adox	@acc[5], @a[3]		# of=0
 	adcx	@acc[4], @a[3]
 	adcx	@acc[5], @acc[5]	# cf=0
+#ifdef	__CRYPTOLINE__
+	cmovo	@acc[5], @acc[5]
+#endif
 
 	#################################
 	# Branch-less conditional a[0:5] - modulus
