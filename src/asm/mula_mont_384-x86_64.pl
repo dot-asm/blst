@@ -85,14 +85,14 @@ __suba_mod_384x384:
 	sbb	8*10($b_org), @acc[10]
 	 mov	@acc[5], 8*5($r_ptr)
 	sbb	8*11($b_org), @acc[11]
-	sbb	$b_org, $b_org
+	sbb	$lo, $lo
 
-{nf}	and	8*0($n_ptr), $b_org, @acc[0]
-{nf}	and	8*1($n_ptr), $b_org, @acc[1]
-{nf}	and	8*2($n_ptr), $b_org, @acc[2]
-{nf}	and	8*3($n_ptr), $b_org, @acc[3]
-{nf}	and	8*4($n_ptr), $b_org, @acc[4]
-{nf}	and	8*5($n_ptr), $b_org, @acc[5]
+{nf}	and	8*0($n_ptr), $lo, @acc[0]
+{nf}	and	8*1($n_ptr), $lo, @acc[1]
+{nf}	and	8*2($n_ptr), $lo, @acc[2]
+{nf}	and	8*3($n_ptr), $lo, @acc[3]
+{nf}	and	8*4($n_ptr), $lo, @acc[4]
+{nf}	and	8*5($n_ptr), $lo, @acc[5]
 
 	add	@acc[0], @acc[6]
 	adc	@acc[1], @acc[7]
@@ -109,6 +109,25 @@ __suba_mod_384x384:
 
 	ret
 .size	__suba_mod_384x384,.-__suba_mod_384x384
+
+.globl	adda_mod_384
+.hidden	adda_mod_384
+.type	adda_mod_384,\@function,4,"unwind"
+.align	32
+adda_mod_384:
+.cfi_startproc
+	sub	\$8, %rsp
+.cfi_adjust_cfa_offset	8
+.cfi_end_prologue
+
+	call	__adda_mod_384
+
+	lea	8(%rsp),%rsp
+.cfi_adjust_cfa_offset	-8
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	adda_mod_384,.-adda_mod_384
 
 .type	__adda_mod_384,\@abi-omnipotent
 .align	32
@@ -129,7 +148,7 @@ __adda_mod_384:
 	adc	8*3($b_org), @acc[3]
 	adc	8*4($b_org), @acc[4]
 	adc	8*5($b_org), @acc[5]
-	sbb	$b_org, $b_org
+	sbb	$lo, $lo
 
 	sub	8*0($n_ptr), @acc[0], @acc[6]
 	sbb	8*1($n_ptr), @acc[1], @acc[7]
@@ -137,7 +156,7 @@ __adda_mod_384:
 	sbb	8*3($n_ptr), @acc[3], @acc[9]
 	sbb	8*4($n_ptr), @acc[4], @acc[10]
 	sbb	8*5($n_ptr), @acc[5], @acc[11]
-	sbb	\$0, $b_org
+	sbb	\$0, $lo
 
 	cmovnc	@acc[6], @acc[0]
 	cmovnc	@acc[7], @acc[1]
@@ -154,6 +173,25 @@ __adda_mod_384:
 
 	ret
 .size	__adda_mod_384,.-__adda_mod_384
+
+.globl	suba_mod_384
+.hidden	suba_mod_384
+.type	suba_mod_384,\@function,4,"unwind"
+.align	32
+suba_mod_384:
+.cfi_startproc
+.cfi_adjust_cfa_offset	8
+	sub	\$8, %rsp
+.cfi_end_prologue
+
+	call	__suba_mod_384
+
+	lea	8(%rsp),%rsp
+.cfi_adjust_cfa_offset	-8
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	suba_mod_384,.-suba_mod_384
 
 .type	__suba_mod_384,\@abi-omnipotent
 .align	32
@@ -175,14 +213,14 @@ __suba_mod_384_a_is_loaded:
 	sbb	8*3($b_org), @acc[3]
 	sbb	8*4($b_org), @acc[4]
 	sbb	8*5($b_org), @acc[5]
-	sbb	$b_org, $b_org
+	sbb	$lo, $lo
 
-{nf}	and	8*0($n_ptr), $b_org, @acc[6]
-{nf}	and	8*1($n_ptr), $b_org, @acc[7]
-{nf}	and	8*2($n_ptr), $b_org, @acc[8]
-{nf}	and	8*3($n_ptr), $b_org, @acc[9]
-{nf}	and	8*4($n_ptr), $b_org, @acc[10]
-{nf}	and	8*5($n_ptr), $b_org, @acc[11]
+{nf}	and	8*0($n_ptr), $lo, @acc[6]
+{nf}	and	8*1($n_ptr), $lo, @acc[7]
+{nf}	and	8*2($n_ptr), $lo, @acc[8]
+{nf}	and	8*3($n_ptr), $lo, @acc[9]
+{nf}	and	8*4($n_ptr), $lo, @acc[10]
+{nf}	and	8*5($n_ptr), $lo, @acc[11]
 
 	add	@acc[6], @acc[0]
 	adc	@acc[7], @acc[1]
@@ -1244,7 +1282,6 @@ __mula_mont_384:
 	adc	@acc[8], @acc[5]
 	adc	\$0, @acc[6]
 	xor	@acc[7], @acc[7]
-
 ___
 for (my $i=1; $i<6; $i++) {
 my $next_rdx = $i<5 ? "mov		8*$i+8($b_ptr), %rdx"
@@ -1607,6 +1644,98 @@ $code.=<<___;
 	ret
 .cfi_endproc
 .size	sqra_n_mul_mont_383,.-sqra_n_mul_mont_383
+___
+}
+{
+my $n_ptr = $b_org;
+my @tmp = map("%r$_", (28..31,8,9));
+
+$code.=<<___;
+.globl	mula_by_1_plus_i_mod_384x
+.hidden	mula_by_1_plus_i_mod_384x
+.type	mula_by_1_plus_i_mod_384x,\@function,3,"unwind"
+.align	32
+mula_by_1_plus_i_mod_384x:
+.cfi_startproc
+	sub	\$8, %rsp
+.cfi_adjust_cfa_offset	8
+.cfi_end_prologue
+
+#ifdef	__SGX_LVI_HARDENING__
+	lfence
+#endif
+	mov	8*0($a_ptr), @acc[6]
+	mov	8*1($a_ptr), @acc[7]
+	mov	8*2($a_ptr), @acc[8]
+	mov	8*3($a_ptr), @acc[9]
+	mov	8*4($a_ptr), @acc[10]
+	mov	8*5($a_ptr), @acc[11]
+
+	sub	8*6($a_ptr), @acc[6], @acc[0]	# a->re - a->im
+	sbb	8*7($a_ptr), @acc[7], @acc[1]
+	sbb	8*8($a_ptr), @acc[8], @acc[2]
+	sbb	8*9($a_ptr), @acc[9], @acc[3]
+	sbb	8*10($a_ptr), @acc[10], @acc[4]
+	sbb	8*11($a_ptr), @acc[11], @acc[5]
+	sbb	$lo, $lo
+
+	add	8*6($a_ptr), @acc[6]		# a->re + a->im
+	adc	8*7($a_ptr), @acc[7]
+	adc	8*8($a_ptr), @acc[8]
+	adc	8*9($a_ptr), @acc[9]
+	adc	8*10($a_ptr), @acc[10]
+	adc	8*11($a_ptr), @acc[11]
+	sbb	$hi, $hi
+
+{nf}	and	8*0($n_ptr), $lo, @tmp[0]
+{nf}	and	8*1($n_ptr), $lo, @tmp[1]
+{nf}	and	8*2($n_ptr), $lo, @tmp[2]
+{nf}	and	8*3($n_ptr), $lo, @tmp[3]
+{nf}	and	8*4($n_ptr), $lo, @tmp[4]
+{nf}	and	8*5($n_ptr), $lo, @tmp[5]
+
+	add	@tmp[0], @acc[0]
+	adc	@tmp[1], @acc[1]
+	adc	@tmp[2], @acc[2]
+	adc	@tmp[3], @acc[3]
+	adc	@tmp[4], @acc[4]
+	adc	@tmp[5], @acc[5]
+
+	sub	8*0($n_ptr), @acc[6], @tmp[0]
+	sbb	8*1($n_ptr), @acc[7], @tmp[1]
+	sbb	8*2($n_ptr), @acc[8], @tmp[2]
+	sbb	8*3($n_ptr), @acc[9], @tmp[3]
+	sbb	8*4($n_ptr), @acc[10], @tmp[4]
+	sbb	8*5($n_ptr), @acc[11], @tmp[5]
+	sbb	\$0, $hi
+
+	mov	@acc[0], 8*0($r_ptr)
+	mov	@acc[1], 8*1($r_ptr)
+	mov	@acc[2], 8*2($r_ptr)
+	mov	@acc[3], 8*3($r_ptr)
+	mov	@acc[4], 8*4($r_ptr)
+	mov	@acc[5], 8*5($r_ptr)
+
+	cmovnc	@tmp[0], @acc[6]
+	cmovnc	@tmp[1], @acc[7]
+	cmovnc	@tmp[2], @acc[8]
+	cmovnc	@tmp[3], @acc[9]
+	cmovnc	@tmp[4], @acc[10]
+	cmovnc	@tmp[5], @acc[11]
+
+	mov	@acc[6], 8*6($r_ptr)
+	mov	@acc[7], 8*7($r_ptr)
+	mov	@acc[8], 8*8($r_ptr)
+	mov	@acc[9], 8*9($r_ptr)
+	mov	@acc[10], 8*10($r_ptr)
+	mov	@acc[11], 8*11($r_ptr)
+
+	lea	8(%rsp),%rsp
+.cfi_adjust_cfa_offset	-8
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	mula_by_1_plus_i_mod_384x,.-mula_by_1_plus_i_mod_384x
 ___
 }
 
