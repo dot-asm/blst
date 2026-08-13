@@ -446,6 +446,10 @@ void prefix##s_mult_pippenger(ptype *ret, \
                               const byte *const scalars[], size_t nbits, \
                               ptype##xyzz scratch[]) \
 { \
+    if (npoints == 0) { \
+        vec_zero(ret, sizeof(*ret)); \
+        return; \
+    } \
     if (npoints == 1) { \
         prefix##_from_affine(ret, points[0]); \
         ptype##_mult_w5(ret, ret, scalars[0], nbits); \
