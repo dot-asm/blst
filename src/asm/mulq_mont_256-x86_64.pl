@@ -6,6 +6,12 @@
 #
 # As for "sparse" in subroutine names, see commentary in the
 # asm/mulx_mont_256-x86_64.pl module.
+#
+# CryptoLine verification relies on the following custom rules:
+#
+#! adc \$0x0, $1v -> adcs carry $1v $1v 0@uint64 carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! cmovb $1v, $1v -> assert true && carry = 0@1;\nassume carry = 0 && true
+#! cmovp $1v, $1v -> assert eqmod $1v 0 (2**64) && true;\nassume $1v = 0 && $1v = 0@64
 
 $flavour = shift;
 $output  = shift;
@@ -235,13 +241,22 @@ $code.=<<___;
 	adc	\$0, %rdx
 	add	$hi, @acc[4]
 	adc	%rdx, @acc[5]		# can't overflow
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[5], @acc[5]
+#endif
 	xor	@acc[6], @acc[6]
 
 	################################# reduction
 	mulq	8*0($n_ptr)
 	add	%rax, $a0		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	$a0, $a0
+#endif
 	mov	@acc[0], %rax
 	adc	%rdx, $a0
+#ifdef	__CRYPTOLINE__
+	cmovc	$a0, $a0
+#endif
 
 	mulq	8*1($n_ptr)
 	add	%rax, @acc[1]
@@ -267,7 +282,6 @@ $code.=<<___;
 	adc	\$0, %rdx
 	add	%rdx, @acc[4]
 	adc	\$0, @acc[5]
-	adc	\$0, @acc[6]
 ___
     push(@acc,shift(@acc));
 }
@@ -279,8 +293,14 @@ $code.=<<___;
 	mov	%rax, @acc[6]
 	mulq	8*0($n_ptr)
 	add	%rax, @acc[0]		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	@acc[0], @acc[0]
+#endif
 	mov	@acc[6], %rax
 	adc	%rdx, @acc[0]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[0], @acc[0]
+#endif
 
 	mulq	8*1($n_ptr)
 	add	%rax, @acc[1]

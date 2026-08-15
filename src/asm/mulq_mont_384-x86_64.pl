@@ -3,6 +3,13 @@
 # Copyright Supranational LLC
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
+#
+# CryptoLine verification relies on the following custom rules:
+#
+#! adc \$0x0, $1v -> adcs carry $1v $1v 0@uint64 carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! cmovb $1v, $1v -> assert true && carry = 0@1;\nassume carry = 0 && true
+#! cmovp $1v, $1v -> assert eqmod $1v 0 (2**64) && true;\nassume $1v = 0 && $1v = 0@64
+#! sbb $1v, $1v -> adcs carry $1v 0@uint64 0@uint64 carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
 
 $flavour = shift;
 $output  = shift;
@@ -1374,6 +1381,9 @@ $code.=<<___;
 	mulq	%rax				# a[1]*a[1]
 	xor	@acc[1], @acc[1]
 	add	%rax, @acc[0]			# can't carry
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[0], @acc[0]
+#endif
 	 mov	@acc[8], %rax
 	add	@acc[2], @acc[2]		# double acc[2:3]
 	adc	@acc[3], @acc[3]
@@ -1412,6 +1422,9 @@ $code.=<<___;
 	mulq	%rax				# a[2]*a[2]
 	xor	@acc[3], @acc[3]
 	add	%rax, @acc[1]			# can't carry
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[1], @acc[1]
+#endif
 	 mov	@acc[9], %rax
 	add	@acc[4], @acc[4]		# double acc[4:5]
 	adc	@acc[5], @acc[5]
@@ -1440,6 +1453,9 @@ $code.=<<___;
 	mulq	%rax				# a[3]*a[3]
 	xor	@acc[4], @acc[4]
 	add	%rax, @acc[3]			# can't carry
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[3], @acc[3]
+#endif
 	 mov	@acc[10], %rax
 	add	@acc[6], @acc[6]		# double acc[6:7]
 	adc	@acc[7], @acc[7]
@@ -1460,6 +1476,9 @@ $code.=<<___;
 	mulq	%rax				# a[4]*a[4]
 	xor	@acc[5], @acc[5]
 	add	%rax, @acc[4]			# can't carry
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[4], @acc[4]
+#endif
 	 mov	@acc[11], %rax
 	add	@acc[8], @acc[8]		# double acc[8:9]
 	adc	@acc[9], @acc[9]
@@ -1473,6 +1492,9 @@ $code.=<<___;
 	#########################################
 	mulq	%rax				# a[5]*a[5]
 	add	@acc[5], %rax			# can't carry
+#ifdef	__CRYPTOLINE__
+	cmovc	%rax, %rax
+#endif
 	add	@acc[10], @acc[10]		# double acc[10]
 	adc	\$0, %rdx
 	add	@acc[10], %rax			# accumulate a[5]*a[5]
@@ -1713,8 +1735,14 @@ $code.=<<___;
 	################################# reduction $i
 	mulq	8*0($n_ptr)
 	add	%rax, @acc[6]		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	@acc[6], @acc[6]
+#endif
 	mov	@acc[0], %rax
 	adc	%rdx, @acc[6]
+#ifdef	__CRYPTOLINE__
+	cmovc	@acc[6], @acc[6]
+#endif
 
 	mulq	8*1($n_ptr)
 	add	%rax, @acc[1]
@@ -2132,8 +2160,14 @@ $code.=<<___;
 	################################# reduction $i
 	mulq	8*0($n_ptr)
 	add	%rax, $hi		# guaranteed to be zero
+#ifdef	__CRYPTOLINE__
+	cmovp	$hi, $hi
+#endif
 	mov	@acc[0], %rax
 	adc	%rdx, $hi
+#ifdef	__CRYPTOLINE__
+	cmovc	$hi, $hi
+#endif
 
 	mulq	8*1($n_ptr)
 	add	%rax, @acc[1]
