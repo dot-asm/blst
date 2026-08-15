@@ -110,13 +110,37 @@ __suba_mod_384x384:
 	ret
 .size	__suba_mod_384x384,.-__suba_mod_384x384
 
+.globl	adda_mod_384x
+.hidden	adda_mod_384x
+.type	adda_mod_384x,\@function,4,"unwind"
+.align	32
+adda_mod_384x:
+.cfi_startproc
+	lea	-8(%rsp), %rsp
+.cfi_adjust_cfa_offset	8
+.cfi_end_prologue
+
+	call	__adda_mod_384
+
+	lea	48($a_ptr), $a_ptr
+	lea	48($b_org), $b_org
+	add	\$48, $r_ptr
+	call	__adda_mod_384
+
+	lea	8(%rsp),%rsp
+.cfi_adjust_cfa_offset	-8
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	adda_mod_384x,.-adda_mod_384x
+
 .globl	adda_mod_384
 .hidden	adda_mod_384
 .type	adda_mod_384,\@function,4,"unwind"
 .align	32
 adda_mod_384:
 .cfi_startproc
-	sub	\$8, %rsp
+	lea	-8(%rsp), %rsp
 .cfi_adjust_cfa_offset	8
 .cfi_end_prologue
 
@@ -173,6 +197,30 @@ __adda_mod_384:
 
 	ret
 .size	__adda_mod_384,.-__adda_mod_384
+
+.globl	suba_mod_384x
+.hidden	suba_mod_384x
+.type	suba_mod_384x,\@function,4,"unwind"
+.align	32
+suba_mod_384x:
+.cfi_startproc
+	lea	-8(%rsp), %rsp
+.cfi_adjust_cfa_offset	8
+.cfi_end_prologue
+
+	call	__suba_mod_384
+
+	lea	48($a_ptr), $a_ptr
+	lea	48($b_org), $b_org
+	add	\$48, $r_ptr
+	call	__suba_mod_384
+
+	lea	8(%rsp),%rsp
+.cfi_adjust_cfa_offset	-8
+.cfi_epilogue
+	ret
+.cfi_endproc
+.size	suba_mod_384x,.-suba_mod_384x
 
 .globl	suba_mod_384
 .hidden	suba_mod_384
