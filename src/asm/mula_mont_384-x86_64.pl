@@ -2,6 +2,12 @@
 #
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
+#
+# CryptoLine verification relies on the following custom rules:
+#
+#! cmovb $1v, $1v -> assert true && carry = 0@1;\nassume carry = 0 && true
+#! cmovo $1v, $1v -> assert true && carry = 0@1;\nassume carry = 0 && true;\nassert true && overflow = 0@1;\nassume overflow = 0 && true
+#! cmovp $1v, $1v -> assert eqmod $1v 0 (2**64) && true;\nassume $1v = 0 && $1v = 0@64
 
 $flavour = shift;
 $output  = shift;

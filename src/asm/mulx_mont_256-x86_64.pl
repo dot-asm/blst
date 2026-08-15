@@ -16,6 +16,12 @@
 # subroutines? Unlike the 384-bit case, accounting for additional carry
 # has disproportionate impact on performance, especially in adcx/adox
 # implementation.
+#
+# CryptoLine verification relies on the following custom rules:
+#
+#! cmovb $1v, $1v -> assert true && carry = 0@1;\nassume carry = 0 && true
+#! cmovo $1v, $1v -> assert true && carry = 0@1;\nassume carry = 0 && true;\nassert true && overflow = 0@1;\nassume overflow = 0 && true
+#! cmovp $1v, $1v -> assert eqmod $1v 0 (2**64) && true;\nassume $1v = 0 && $1v = 0@64
 
 $flavour = shift;
 $output  = shift;
