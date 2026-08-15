@@ -75,6 +75,41 @@ __suba_mod_384x384:
 .cfi_endproc
 .size	__suba_mod_384x384,.-__suba_mod_384x384
 
+.globl	adda_mod_384x
+.hidden	adda_mod_384x
+.type	adda_mod_384x,@function
+.align	32
+adda_mod_384x:
+.cfi_startproc
+	.byte	0xf3,0x0f,0x1e,0xfa
+
+
+	leaq	-8(%rsp),%rsp
+.cfi_adjust_cfa_offset	8
+
+
+	call	__adda_mod_384
+
+	leaq	48(%rsi),%rsi
+	leaq	48(%rdx),%rdx
+	addq	$48,%rdi
+	call	__adda_mod_384
+
+	leaq	8(%rsp),%rsp
+.cfi_adjust_cfa_offset	-8
+
+	
+#ifdef	__SGX_LVI_HARDENING__
+	popq	%rdx
+	lfence
+	jmpq	*%rdx
+	ud2
+#else
+	.byte	0xf3,0xc3
+#endif
+.cfi_endproc	
+.size	adda_mod_384x,.-adda_mod_384x
+
 .globl	adda_mod_384
 .hidden	adda_mod_384
 .type	adda_mod_384,@function
@@ -84,7 +119,7 @@ adda_mod_384:
 	.byte	0xf3,0x0f,0x1e,0xfa
 
 
-	subq	$8,%rsp
+	leaq	-8(%rsp),%rsp
 .cfi_adjust_cfa_offset	8
 
 
@@ -161,6 +196,41 @@ __adda_mod_384:
 #endif
 .cfi_endproc
 .size	__adda_mod_384,.-__adda_mod_384
+
+.globl	suba_mod_384x
+.hidden	suba_mod_384x
+.type	suba_mod_384x,@function
+.align	32
+suba_mod_384x:
+.cfi_startproc
+	.byte	0xf3,0x0f,0x1e,0xfa
+
+
+	leaq	-8(%rsp),%rsp
+.cfi_adjust_cfa_offset	8
+
+
+	call	__suba_mod_384
+
+	leaq	48(%rsi),%rsi
+	leaq	48(%rdx),%rdx
+	addq	$48,%rdi
+	call	__suba_mod_384
+
+	leaq	8(%rsp),%rsp
+.cfi_adjust_cfa_offset	-8
+
+	
+#ifdef	__SGX_LVI_HARDENING__
+	popq	%rdx
+	lfence
+	jmpq	*%rdx
+	ud2
+#else
+	.byte	0xf3,0xc3
+#endif
+.cfi_endproc	
+.size	suba_mod_384x,.-suba_mod_384x
 
 .globl	suba_mod_384
 .hidden	suba_mod_384

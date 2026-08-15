@@ -227,13 +227,22 @@ __mulq_mont_sparse_256:
 	adcq	$0,%rdx
 	addq	%rbp,%r13
 	adcq	%rdx,%r14
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r14,%r14
+#endif
 	xorq	%r15,%r15
 
 
 	mulq	0(%rcx)
 	addq	%rax,%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	movq	%r9,%rax
 	adcq	%rdx,%rdi
+#ifdef	__CRYPTOLINE__
+	cmovcq	%rdi,%rdi
+#endif
 
 	mulq	8(%rcx)
 	addq	%rax,%r10
@@ -259,7 +268,6 @@ __mulq_mont_sparse_256:
 	adcq	$0,%rdx
 	addq	%rdx,%r13
 	adcq	$0,%r14
-	adcq	$0,%r15
 	movq	%r10,%rdi
 	imulq	%r8,%r10
 
@@ -293,13 +301,22 @@ __mulq_mont_sparse_256:
 	adcq	$0,%rdx
 	addq	%rbp,%r14
 	adcq	%rdx,%r15
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r15,%r15
+#endif
 	xorq	%r9,%r9
 
 
 	mulq	0(%rcx)
 	addq	%rax,%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	movq	%r10,%rax
 	adcq	%rdx,%rdi
+#ifdef	__CRYPTOLINE__
+	cmovcq	%rdi,%rdi
+#endif
 
 	mulq	8(%rcx)
 	addq	%rax,%r11
@@ -325,7 +342,6 @@ __mulq_mont_sparse_256:
 	adcq	$0,%rdx
 	addq	%rdx,%r14
 	adcq	$0,%r15
-	adcq	$0,%r9
 	movq	%r11,%rdi
 	imulq	%r8,%r11
 
@@ -359,13 +375,22 @@ __mulq_mont_sparse_256:
 	adcq	$0,%rdx
 	addq	%rbp,%r15
 	adcq	%rdx,%r9
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r9,%r9
+#endif
 	xorq	%r10,%r10
 
 
 	mulq	0(%rcx)
 	addq	%rax,%rdi
+#ifdef	__CRYPTOLINE__
+	cmovpq	%rdi,%rdi
+#endif
 	movq	%r11,%rax
 	adcq	%rdx,%rdi
+#ifdef	__CRYPTOLINE__
+	cmovcq	%rdi,%rdi
+#endif
 
 	mulq	8(%rcx)
 	addq	%rax,%r12
@@ -391,7 +416,6 @@ __mulq_mont_sparse_256:
 	adcq	$0,%rdx
 	addq	%rdx,%r15
 	adcq	$0,%r9
-	adcq	$0,%r10
 	imulq	%r8,%rax
 	movq	8(%rsp),%rsi
 
@@ -399,8 +423,14 @@ __mulq_mont_sparse_256:
 	movq	%rax,%r11
 	mulq	0(%rcx)
 	addq	%rax,%r12
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r12,%r12
+#endif
 	movq	%r11,%rax
 	adcq	%rdx,%r12
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r12,%r12
+#endif
 
 	mulq	8(%rcx)
 	addq	%rax,%r13

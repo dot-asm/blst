@@ -242,13 +242,22 @@ __mulq_mont_sparse_256	PROC PRIVATE
 	adc	rdx,0
 	add	r13,rbp
 	adc	r14,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r14,r14
+endif
 	xor	r15,r15
 
 
 	mul	QWORD PTR[rcx]
 	add	rdi,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rdi,rdi
+endif
 	mov	rax,r9
 	adc	rdi,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rdi,rdi
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r10,rax
@@ -274,7 +283,6 @@ __mulq_mont_sparse_256	PROC PRIVATE
 	adc	rdx,0
 	add	r13,rdx
 	adc	r14,0
-	adc	r15,0
 	mov	rdi,r10
 	imul	r10,r8
 
@@ -308,13 +316,22 @@ __mulq_mont_sparse_256	PROC PRIVATE
 	adc	rdx,0
 	add	r14,rbp
 	adc	r15,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r15,r15
+endif
 	xor	r9,r9
 
 
 	mul	QWORD PTR[rcx]
 	add	rdi,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rdi,rdi
+endif
 	mov	rax,r10
 	adc	rdi,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rdi,rdi
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r11,rax
@@ -340,7 +357,6 @@ __mulq_mont_sparse_256	PROC PRIVATE
 	adc	rdx,0
 	add	r14,rdx
 	adc	r15,0
-	adc	r9,0
 	mov	rdi,r11
 	imul	r11,r8
 
@@ -374,13 +390,22 @@ __mulq_mont_sparse_256	PROC PRIVATE
 	adc	rdx,0
 	add	r15,rbp
 	adc	r9,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r9,r9
+endif
 	xor	r10,r10
 
 
 	mul	QWORD PTR[rcx]
 	add	rdi,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rdi,rdi
+endif
 	mov	rax,r11
 	adc	rdi,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rdi,rdi
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r12,rax
@@ -406,7 +431,6 @@ __mulq_mont_sparse_256	PROC PRIVATE
 	adc	rdx,0
 	add	r15,rdx
 	adc	r9,0
-	adc	r10,0
 	imul	rax,r8
 	mov	rsi,QWORD PTR[8+rsp]
 
@@ -414,8 +438,14 @@ __mulq_mont_sparse_256	PROC PRIVATE
 	mov	r11,rax
 	mul	QWORD PTR[rcx]
 	add	r12,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r12,r12
+endif
 	mov	rax,r11
 	adc	r12,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r12,r12
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r13,rax

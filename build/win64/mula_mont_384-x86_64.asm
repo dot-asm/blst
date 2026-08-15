@@ -88,6 +88,53 @@ else
 endif
 __suba_mod_384x384	ENDP
 
+PUBLIC	adda_mod_384x
+
+
+ALIGN	32
+adda_mod_384x	PROC PUBLIC
+	DB	243,15,30,250
+	mov	QWORD PTR[8+rsp],rdi	;WIN64 prologue
+	mov	QWORD PTR[16+rsp],rsi
+	mov	r11,rsp
+$L$SEH_begin_adda_mod_384x::
+
+
+	mov	rdi,rcx
+	mov	rsi,rdx
+	mov	rdx,r8
+	mov	rcx,r9
+	lea	rsp,QWORD PTR[((-8))+rsp]
+
+$L$SEH_body_adda_mod_384x::
+
+
+	call	__adda_mod_384
+
+	lea	rsi,QWORD PTR[48+rsi]
+	lea	rdx,QWORD PTR[48+rdx]
+	add	rdi,48
+	call	__adda_mod_384
+
+	lea	rsp,QWORD PTR[8+rsp]
+
+$L$SEH_epilogue_adda_mod_384x::
+	mov	rdi,QWORD PTR[8+rsp]	;WIN64 epilogue
+	mov	rsi,QWORD PTR[16+rsp]
+
+	
+ifdef	__SGX_LVI_HARDENING__
+	pop	rdx
+	lfence
+	jmp	rdx
+	ud2
+else
+	DB	0F3h,0C3h
+endif
+
+$L$SEH_end_adda_mod_384x::
+adda_mod_384x	ENDP
+
 PUBLIC	adda_mod_384
 
 
@@ -104,7 +151,7 @@ $L$SEH_begin_adda_mod_384::
 	mov	rsi,rdx
 	mov	rdx,r8
 	mov	rcx,r9
-	sub	rsp,8
+	lea	rsp,QWORD PTR[((-8))+rsp]
 
 $L$SEH_body_adda_mod_384::
 
@@ -184,6 +231,53 @@ else
 	DB	0F3h,0C3h
 endif
 __adda_mod_384	ENDP
+
+PUBLIC	suba_mod_384x
+
+
+ALIGN	32
+suba_mod_384x	PROC PUBLIC
+	DB	243,15,30,250
+	mov	QWORD PTR[8+rsp],rdi	;WIN64 prologue
+	mov	QWORD PTR[16+rsp],rsi
+	mov	r11,rsp
+$L$SEH_begin_suba_mod_384x::
+
+
+	mov	rdi,rcx
+	mov	rsi,rdx
+	mov	rdx,r8
+	mov	rcx,r9
+	lea	rsp,QWORD PTR[((-8))+rsp]
+
+$L$SEH_body_suba_mod_384x::
+
+
+	call	__suba_mod_384
+
+	lea	rsi,QWORD PTR[48+rsi]
+	lea	rdx,QWORD PTR[48+rdx]
+	add	rdi,48
+	call	__suba_mod_384
+
+	lea	rsp,QWORD PTR[8+rsp]
+
+$L$SEH_epilogue_suba_mod_384x::
+	mov	rdi,QWORD PTR[8+rsp]	;WIN64 epilogue
+	mov	rsi,QWORD PTR[16+rsp]
+
+	
+ifdef	__SGX_LVI_HARDENING__
+	pop	rdx
+	lfence
+	jmp	rdx
+	ud2
+else
+	DB	0F3h,0C3h
+endif
+
+$L$SEH_end_suba_mod_384x::
+suba_mod_384x	ENDP
 
 PUBLIC	suba_mod_384
 
@@ -2962,6 +3056,18 @@ mula_by_1_plus_i_mod_384x	ENDP
 .text$	ENDS
 .pdata	SEGMENT READONLY ALIGN(4)
 ALIGN	4
+	DD	imagerel $L$SEH_begin_adda_mod_384x
+	DD	imagerel $L$SEH_body_adda_mod_384x
+	DD	imagerel $L$SEH_info_adda_mod_384x_prologue
+
+	DD	imagerel $L$SEH_body_adda_mod_384x
+	DD	imagerel $L$SEH_epilogue_adda_mod_384x
+	DD	imagerel $L$SEH_info_adda_mod_384x_body
+
+	DD	imagerel $L$SEH_epilogue_adda_mod_384x
+	DD	imagerel $L$SEH_end_adda_mod_384x
+	DD	imagerel $L$SEH_info_adda_mod_384x_epilogue
+
 	DD	imagerel $L$SEH_begin_adda_mod_384
 	DD	imagerel $L$SEH_body_adda_mod_384
 	DD	imagerel $L$SEH_info_adda_mod_384_prologue
@@ -2973,6 +3079,18 @@ ALIGN	4
 	DD	imagerel $L$SEH_epilogue_adda_mod_384
 	DD	imagerel $L$SEH_end_adda_mod_384
 	DD	imagerel $L$SEH_info_adda_mod_384_epilogue
+
+	DD	imagerel $L$SEH_begin_suba_mod_384x
+	DD	imagerel $L$SEH_body_suba_mod_384x
+	DD	imagerel $L$SEH_info_suba_mod_384x_prologue
+
+	DD	imagerel $L$SEH_body_suba_mod_384x
+	DD	imagerel $L$SEH_epilogue_suba_mod_384x
+	DD	imagerel $L$SEH_info_suba_mod_384x_body
+
+	DD	imagerel $L$SEH_epilogue_suba_mod_384x
+	DD	imagerel $L$SEH_end_suba_mod_384x
+	DD	imagerel $L$SEH_info_suba_mod_384x_epilogue
 
 	DD	imagerel $L$SEH_begin_suba_mod_384
 	DD	imagerel $L$SEH_body_suba_mod_384
@@ -3169,6 +3287,26 @@ ALIGN	4
 .pdata	ENDS
 .xdata	SEGMENT READONLY ALIGN(8)
 ALIGN	8
+$L$SEH_info_adda_mod_384x_prologue::
+DB	1,0,5,00bh
+DB	0,074h,1,0
+DB	0,064h,2,0
+DB	0,0b3h
+DB	0,0
+	DD	0,0
+$L$SEH_info_adda_mod_384x_body::
+DB	1,0,5,0
+DB	000h,074h,002h,000h
+DB	000h,064h,003h,000h
+DB	000h,002h
+DB	000h,000h,000h,000h,000h,000h
+DB	000h,000h,000h,000h
+$L$SEH_info_adda_mod_384x_epilogue::
+DB	1,0,4,0
+DB	000h,074h,001h,000h
+DB	000h,064h,002h,000h
+DB	000h,000h,000h,000h
+
 $L$SEH_info_adda_mod_384_prologue::
 DB	1,0,5,00bh
 DB	0,074h,1,0
@@ -3184,6 +3322,26 @@ DB	000h,002h
 DB	000h,000h,000h,000h,000h,000h
 DB	000h,000h,000h,000h
 $L$SEH_info_adda_mod_384_epilogue::
+DB	1,0,4,0
+DB	000h,074h,001h,000h
+DB	000h,064h,002h,000h
+DB	000h,000h,000h,000h
+
+$L$SEH_info_suba_mod_384x_prologue::
+DB	1,0,5,00bh
+DB	0,074h,1,0
+DB	0,064h,2,0
+DB	0,0b3h
+DB	0,0
+	DD	0,0
+$L$SEH_info_suba_mod_384x_body::
+DB	1,0,5,0
+DB	000h,074h,002h,000h
+DB	000h,064h,003h,000h
+DB	000h,002h
+DB	000h,000h,000h,000h,000h,000h
+DB	000h,000h,000h,000h
+$L$SEH_info_suba_mod_384x_epilogue::
 DB	1,0,4,0
 DB	000h,074h,001h,000h
 DB	000h,064h,002h,000h

@@ -73,6 +73,52 @@ __suba_mod_384x384:
 #endif
 
 
+.globl	adda_mod_384x
+
+.def	adda_mod_384x;	.scl 2;	.type 32;	.endef
+.p2align	5
+adda_mod_384x:
+	.byte	0xf3,0x0f,0x1e,0xfa
+	movq	%rdi,8(%rsp)
+	movq	%rsi,16(%rsp)
+	movq	%rsp,%r11
+.LSEH_begin_adda_mod_384x:
+
+
+	movq	%rcx,%rdi
+	movq	%rdx,%rsi
+	movq	%r8,%rdx
+	movq	%r9,%rcx
+	leaq	-8(%rsp),%rsp
+
+.LSEH_body_adda_mod_384x:
+
+
+	call	__adda_mod_384
+
+	leaq	48(%rsi),%rsi
+	leaq	48(%rdx),%rdx
+	addq	$48,%rdi
+	call	__adda_mod_384
+
+	leaq	8(%rsp),%rsp
+
+.LSEH_epilogue_adda_mod_384x:
+	mov	8(%rsp),%rdi
+	mov	16(%rsp),%rsi
+
+	
+#ifdef	__SGX_LVI_HARDENING__
+	popq	%rdx
+	lfence
+	jmpq	*%rdx
+	ud2
+#else
+	.byte	0xf3,0xc3
+#endif
+
+.LSEH_end_adda_mod_384x:
+
 .globl	adda_mod_384
 
 .def	adda_mod_384;	.scl 2;	.type 32;	.endef
@@ -89,7 +135,7 @@ adda_mod_384:
 	movq	%rdx,%rsi
 	movq	%r8,%rdx
 	movq	%r9,%rcx
-	subq	$8,%rsp
+	leaq	-8(%rsp),%rsp
 
 .LSEH_body_adda_mod_384:
 
@@ -168,6 +214,52 @@ __adda_mod_384:
 	.byte	0xf3,0xc3
 #endif
 
+
+.globl	suba_mod_384x
+
+.def	suba_mod_384x;	.scl 2;	.type 32;	.endef
+.p2align	5
+suba_mod_384x:
+	.byte	0xf3,0x0f,0x1e,0xfa
+	movq	%rdi,8(%rsp)
+	movq	%rsi,16(%rsp)
+	movq	%rsp,%r11
+.LSEH_begin_suba_mod_384x:
+
+
+	movq	%rcx,%rdi
+	movq	%rdx,%rsi
+	movq	%r8,%rdx
+	movq	%r9,%rcx
+	leaq	-8(%rsp),%rsp
+
+.LSEH_body_suba_mod_384x:
+
+
+	call	__suba_mod_384
+
+	leaq	48(%rsi),%rsi
+	leaq	48(%rdx),%rdx
+	addq	$48,%rdi
+	call	__suba_mod_384
+
+	leaq	8(%rsp),%rsp
+
+.LSEH_epilogue_suba_mod_384x:
+	mov	8(%rsp),%rdi
+	mov	16(%rsp),%rsi
+
+	
+#ifdef	__SGX_LVI_HARDENING__
+	popq	%rdx
+	lfence
+	jmpq	*%rdx
+	ud2
+#else
+	.byte	0xf3,0xc3
+#endif
+
+.LSEH_end_suba_mod_384x:
 
 .globl	suba_mod_384
 
@@ -2929,6 +3021,18 @@ mula_by_1_plus_i_mod_384x:
 .LSEH_end_mula_by_1_plus_i_mod_384x:
 .section	.pdata
 .p2align	2
+.rva	.LSEH_begin_adda_mod_384x
+.rva	.LSEH_body_adda_mod_384x
+.rva	.LSEH_info_adda_mod_384x_prologue
+
+.rva	.LSEH_body_adda_mod_384x
+.rva	.LSEH_epilogue_adda_mod_384x
+.rva	.LSEH_info_adda_mod_384x_body
+
+.rva	.LSEH_epilogue_adda_mod_384x
+.rva	.LSEH_end_adda_mod_384x
+.rva	.LSEH_info_adda_mod_384x_epilogue
+
 .rva	.LSEH_begin_adda_mod_384
 .rva	.LSEH_body_adda_mod_384
 .rva	.LSEH_info_adda_mod_384_prologue
@@ -2940,6 +3044,18 @@ mula_by_1_plus_i_mod_384x:
 .rva	.LSEH_epilogue_adda_mod_384
 .rva	.LSEH_end_adda_mod_384
 .rva	.LSEH_info_adda_mod_384_epilogue
+
+.rva	.LSEH_begin_suba_mod_384x
+.rva	.LSEH_body_suba_mod_384x
+.rva	.LSEH_info_suba_mod_384x_prologue
+
+.rva	.LSEH_body_suba_mod_384x
+.rva	.LSEH_epilogue_suba_mod_384x
+.rva	.LSEH_info_suba_mod_384x_body
+
+.rva	.LSEH_epilogue_suba_mod_384x
+.rva	.LSEH_end_suba_mod_384x
+.rva	.LSEH_info_suba_mod_384x_epilogue
 
 .rva	.LSEH_begin_suba_mod_384
 .rva	.LSEH_body_suba_mod_384
@@ -3135,6 +3251,26 @@ mula_by_1_plus_i_mod_384x:
 
 .section	.xdata
 .p2align	3
+.LSEH_info_adda_mod_384x_prologue:
+.byte	1,0,5,0x0b
+.byte	0,0x74,1,0
+.byte	0,0x64,2,0
+.byte	0,0xb3
+.byte	0,0
+.long	0,0
+.LSEH_info_adda_mod_384x_body:
+.byte	1,0,5,0
+.byte	0x00,0x74,0x02,0x00
+.byte	0x00,0x64,0x03,0x00
+.byte	0x00,0x02
+.byte	0x00,0x00,0x00,0x00,0x00,0x00
+.byte	0x00,0x00,0x00,0x00
+.LSEH_info_adda_mod_384x_epilogue:
+.byte	1,0,4,0
+.byte	0x00,0x74,0x01,0x00
+.byte	0x00,0x64,0x02,0x00
+.byte	0x00,0x00,0x00,0x00
+
 .LSEH_info_adda_mod_384_prologue:
 .byte	1,0,5,0x0b
 .byte	0,0x74,1,0
@@ -3150,6 +3286,26 @@ mula_by_1_plus_i_mod_384x:
 .byte	0x00,0x00,0x00,0x00,0x00,0x00
 .byte	0x00,0x00,0x00,0x00
 .LSEH_info_adda_mod_384_epilogue:
+.byte	1,0,4,0
+.byte	0x00,0x74,0x01,0x00
+.byte	0x00,0x64,0x02,0x00
+.byte	0x00,0x00,0x00,0x00
+
+.LSEH_info_suba_mod_384x_prologue:
+.byte	1,0,5,0x0b
+.byte	0,0x74,1,0
+.byte	0,0x64,2,0
+.byte	0,0xb3
+.byte	0,0
+.long	0,0
+.LSEH_info_suba_mod_384x_body:
+.byte	1,0,5,0
+.byte	0x00,0x74,0x02,0x00
+.byte	0x00,0x64,0x03,0x00
+.byte	0x00,0x02
+.byte	0x00,0x00,0x00,0x00,0x00,0x00
+.byte	0x00,0x00,0x00,0x00
+.LSEH_info_suba_mod_384x_epilogue:
 .byte	1,0,4,0
 .byte	0x00,0x74,0x01,0x00
 .byte	0x00,0x64,0x02,0x00

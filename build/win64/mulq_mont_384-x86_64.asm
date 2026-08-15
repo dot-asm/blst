@@ -1332,6 +1332,9 @@ __sqrq_384	PROC PRIVATE
 	mul	rax
 	xor	r9,r9
 	add	r8,rax
+ifdef	__CRYPTOLINE__
+	cmovc	r8,r8
+endif
 	mov	rax,rcx
 	add	r10,r10
 	adc	r11,r11
@@ -1367,6 +1370,9 @@ __sqrq_384	PROC PRIVATE
 	mul	rax
 	xor	r11,r11
 	add	r9,rax
+ifdef	__CRYPTOLINE__
+	cmovc	r9,r9
+endif
 	mov	rax,rbx
 	add	r12,r12
 	adc	r13,r13
@@ -1395,6 +1401,9 @@ __sqrq_384	PROC PRIVATE
 	mul	rax
 	xor	r12,r12
 	add	r11,rax
+ifdef	__CRYPTOLINE__
+	cmovc	r11,r11
+endif
 	mov	rax,rbp
 	add	r14,r14
 	adc	r15,r15
@@ -1415,6 +1424,9 @@ __sqrq_384	PROC PRIVATE
 	mul	rax
 	xor	r13,r13
 	add	r12,rax
+ifdef	__CRYPTOLINE__
+	cmovc	r12,r12
+endif
 	mov	rax,rsi
 	add	rcx,rcx
 	adc	rbx,rbx
@@ -1428,6 +1440,9 @@ __sqrq_384	PROC PRIVATE
 
 	mul	rax
 	add	rax,r13
+ifdef	__CRYPTOLINE__
+	cmovc	rax,rax
+endif
 	add	rbp,rbp
 	adc	rdx,0
 	add	rax,rbp
@@ -1733,8 +1748,14 @@ __mulq_by_1_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rbx]
 	add	r14,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r14,r14
+endif
 	mov	rax,r8
 	adc	r14,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r14,r14
+endif
 
 	mul	QWORD PTR[8+rbx]
 	add	r9,rax
@@ -1780,8 +1801,14 @@ __mulq_by_1_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rbx]
 	add	r15,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r15,r15
+endif
 	mov	rax,r9
 	adc	r15,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r15,r15
+endif
 
 	mul	QWORD PTR[8+rbx]
 	add	r10,rax
@@ -1827,8 +1854,14 @@ __mulq_by_1_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rbx]
 	add	r8,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r8,r8
+endif
 	mov	rax,r10
 	adc	r8,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r8,r8
+endif
 
 	mul	QWORD PTR[8+rbx]
 	add	r11,rax
@@ -1874,8 +1907,14 @@ __mulq_by_1_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rbx]
 	add	r9,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r9,r9
+endif
 	mov	rax,r11
 	adc	r9,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r9,r9
+endif
 
 	mul	QWORD PTR[8+rbx]
 	add	r12,rax
@@ -1921,8 +1960,14 @@ __mulq_by_1_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rbx]
 	add	r10,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r10,r10
+endif
 	mov	rax,r12
 	adc	r10,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r10,r10
+endif
 
 	mul	QWORD PTR[8+rbx]
 	add	r13,rax
@@ -1968,8 +2013,14 @@ __mulq_by_1_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rbx]
 	add	r11,rax
+ifdef	__CRYPTOLINE__
+	cmovp	r11,r11
+endif
 	mov	rax,r13
 	adc	r11,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	r11,r11
+endif
 
 	mul	QWORD PTR[8+rbx]
 	add	r14,rax
@@ -2450,8 +2501,14 @@ __mulq_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rcx]
 	add	rbp,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rbp,rbp
+endif
 	mov	rax,r8
 	adc	rbp,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rbp,rbp
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r9,rax
@@ -2546,8 +2603,14 @@ __mulq_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rcx]
 	add	rbp,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rbp,rbp
+endif
 	mov	rax,r9
 	adc	rbp,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rbp,rbp
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r10,rax
@@ -2642,8 +2705,14 @@ __mulq_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rcx]
 	add	rbp,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rbp,rbp
+endif
 	mov	rax,r10
 	adc	rbp,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rbp,rbp
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r11,rax
@@ -2738,8 +2807,14 @@ __mulq_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rcx]
 	add	rbp,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rbp,rbp
+endif
 	mov	rax,r11
 	adc	rbp,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rbp,rbp
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r12,rax
@@ -2834,8 +2909,14 @@ __mulq_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rcx]
 	add	rbp,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rbp,rbp
+endif
 	mov	rax,r12
 	adc	rbp,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rbp,rbp
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r13,rax
@@ -2930,8 +3011,14 @@ __mulq_mont_384	PROC PRIVATE
 
 	mul	QWORD PTR[rcx]
 	add	rbp,rax
+ifdef	__CRYPTOLINE__
+	cmovp	rbp,rbp
+endif
 	mov	rax,r13
 	adc	rbp,rdx
+ifdef	__CRYPTOLINE__
+	cmovc	rbp,rbp
+endif
 
 	mul	QWORD PTR[8+rcx]
 	add	r14,rax
