@@ -942,9 +942,6 @@ __sqra_384:
 	adcx	@acc[3], @acc[3]
 	adcx	@acc[4], @acc[4]
 	adcx	@acc[5], @acc[5]
-#ifdef	__CRYPTOLINE__
-	cmovc	@acc[5], @acc[5]
-#endif
 
 	######################################### accumulate a[i]*a[i]
 	mulx	%rdx, %rdx, $hi 		# a[0]*a[0]
