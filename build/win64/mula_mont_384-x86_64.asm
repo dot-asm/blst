@@ -1254,9 +1254,6 @@ endif
 	adcx	r19,r19
 	adcx	r20,r20
 	adcx	r21,r21
-ifdef	__CRYPTOLINE__
-	cmovc	r21,r21
-endif
 
 
 	mulx	r11,rdx,rdx

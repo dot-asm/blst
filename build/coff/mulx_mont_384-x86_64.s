@@ -909,6 +909,9 @@ __mulx_384:
 	movq	8(%rbx),%rdx
 	adcxq	%rcx,%r12
 	adcxq	%rbp,%r13
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r13,%r13
+#endif
 	mulxq	%r14,%rax,%rcx
 	adcxq	%r8,%rax
 	adoxq	%rcx,%r9
@@ -935,6 +938,9 @@ __mulx_384:
 	adcxq	%rax,%r12
 	adoxq	%rbp,%r13
 	adcxq	%rbp,%r13
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r13,%r13
+#endif
 	mulxq	%r14,%rax,%rcx
 	adcxq	%r8,%rax
 	adoxq	%rcx,%r9
@@ -961,6 +967,9 @@ __mulx_384:
 	adcxq	%rax,%r12
 	adoxq	%rbp,%r13
 	adcxq	%rbp,%r13
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r13,%r13
+#endif
 	mulxq	%r14,%rax,%rcx
 	adcxq	%r8,%rax
 	adoxq	%rcx,%r9
@@ -987,6 +996,9 @@ __mulx_384:
 	adcxq	%rax,%r12
 	adoxq	%rbp,%r13
 	adcxq	%rbp,%r13
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r13,%r13
+#endif
 	mulxq	%r14,%rax,%rcx
 	adcxq	%r8,%rax
 	adoxq	%rcx,%r9
@@ -1013,6 +1025,9 @@ __mulx_384:
 	adcxq	%rax,%r12
 	adoxq	%rbp,%r13
 	adcxq	%rbp,%r13
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r13,%r13
+#endif
 	mulxq	%r14,%rax,%rcx
 	adcxq	%r8,%rax
 	adoxq	%rcx,%r9
@@ -1039,6 +1054,9 @@ __mulx_384:
 	adcxq	%rax,%r12
 	adoxq	%rbp,%r13
 	adcxq	%rbp,%r13
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r13,%r13
+#endif
 	movq	%r8,48(%rdi)
 	movq	%r9,56(%rdi)
 	movq	%r10,64(%rdi)
@@ -1146,6 +1164,9 @@ __sqrx_384:
 	movq	%r14,%rdx
 	adcq	%rax,%r12
 	adcq	$0,%r13
+#ifdef	__CRYPTOLINE__
+	cmovcq	%r13,%r13
+#endif
 
 
 	xorq	%r14,%r14
@@ -1166,6 +1187,9 @@ __sqrx_384:
 	adcxq	%rdi,%r13
 	adoxq	%r14,%rax
 	adcxq	%rax,%r14
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r14,%r14
+#endif
 
 
 	xorq	%r15,%r15
@@ -1182,6 +1206,9 @@ __sqrx_384:
 	adcxq	%rdi,%r14
 	adoxq	%r15,%rax
 	adcxq	%rax,%r15
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r15,%r15
+#endif
 
 
 	xorq	%rcx,%rcx
@@ -1194,6 +1221,9 @@ __sqrx_384:
 	adcxq	%rdi,%r15
 	adoxq	%rcx,%rax
 	adcxq	%rax,%rcx
+#ifdef	__CRYPTOLINE__
+	cmovoq	%rcx,%rcx
+#endif
 
 
 	mulxq	%rbp,%rdi,%rbx
@@ -1201,6 +1231,9 @@ __sqrx_384:
 	addq	%rdi,%rcx
 	movq	8(%rsp),%rdi
 	adcq	$0,%rbx
+#ifdef	__CRYPTOLINE__
+	cmovcq	%rbx,%rbx
+#endif
 
 
 	xorq	%rbp,%rbp
@@ -1254,6 +1287,9 @@ __sqrx_384:
 	mulxq	%rdx,%r8,%r9
 	adoxq	%r8,%rbx
 	adoxq	%r9,%rbp
+#ifdef	__CRYPTOLINE__
+	cmovoq	%rbp,%rbp
+#endif
 
 	movq	%rbx,80(%rdi)
 	movq	%rbp,88(%rdi)
@@ -1462,6 +1498,9 @@ __mulx_by_1_mont_384:
 	xorq	%r14,%r14
 	mulxq	0(%rbx),%rax,%rbp
 	adcxq	%rax,%r8
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r8,%r8
+#endif
 	adoxq	%rbp,%r9
 
 	mulxq	8(%rbx),%rax,%rbp
@@ -1485,12 +1524,18 @@ __mulx_by_1_mont_384:
 	adcxq	%rax,%r13
 	adoxq	%r14,%rbp
 	adcxq	%rbp,%r14
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r14,%r14
+#endif
 	imulq	%r9,%rdx
 
 
 	xorq	%r15,%r15
 	mulxq	0(%rbx),%rax,%rbp
 	adcxq	%rax,%r9
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r9,%r9
+#endif
 	adoxq	%rbp,%r10
 
 	mulxq	8(%rbx),%rax,%rbp
@@ -1514,12 +1559,18 @@ __mulx_by_1_mont_384:
 	adcxq	%rax,%r14
 	adoxq	%r15,%rbp
 	adcxq	%rbp,%r15
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r15,%r15
+#endif
 	imulq	%r10,%rdx
 
 
 	xorq	%r8,%r8
 	mulxq	0(%rbx),%rax,%rbp
 	adcxq	%rax,%r10
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r10,%r10
+#endif
 	adoxq	%rbp,%r11
 
 	mulxq	8(%rbx),%rax,%rbp
@@ -1543,12 +1594,18 @@ __mulx_by_1_mont_384:
 	adcxq	%rax,%r15
 	adoxq	%r8,%rbp
 	adcxq	%rbp,%r8
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r8,%r8
+#endif
 	imulq	%r11,%rdx
 
 
 	xorq	%r9,%r9
 	mulxq	0(%rbx),%rax,%rbp
 	adcxq	%rax,%r11
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r11,%r11
+#endif
 	adoxq	%rbp,%r12
 
 	mulxq	8(%rbx),%rax,%rbp
@@ -1572,12 +1629,18 @@ __mulx_by_1_mont_384:
 	adcxq	%rax,%r8
 	adoxq	%r9,%rbp
 	adcxq	%rbp,%r9
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r9,%r9
+#endif
 	imulq	%r12,%rdx
 
 
 	xorq	%r10,%r10
 	mulxq	0(%rbx),%rax,%rbp
 	adcxq	%rax,%r12
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r12,%r12
+#endif
 	adoxq	%rbp,%r13
 
 	mulxq	8(%rbx),%rax,%rbp
@@ -1601,12 +1664,18 @@ __mulx_by_1_mont_384:
 	adcxq	%rax,%r9
 	adoxq	%r10,%rbp
 	adcxq	%rbp,%r10
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r10,%r10
+#endif
 	imulq	%r13,%rdx
 
 
 	xorq	%r11,%r11
 	mulxq	0(%rbx),%rax,%rbp
 	adcxq	%rax,%r13
+#ifdef	__CRYPTOLINE__
+	cmovpq	%r13,%r13
+#endif
 	adoxq	%rbp,%r14
 
 	mulxq	8(%rbx),%rax,%rbp
@@ -1630,6 +1699,9 @@ __mulx_by_1_mont_384:
 	adcxq	%rax,%r10
 	adoxq	%r11,%rbp
 	adcxq	%rbp,%r11
+#ifdef	__CRYPTOLINE__
+	cmovoq	%r11,%r11
+#endif
 	
 #ifdef	__SGX_LVI_HARDENING__
 	popq	%rdx

@@ -1131,9 +1131,6 @@ __sqra_384:
 	adcxq	%r19,%r19
 	adcxq	%r20,%r20
 	adcxq	%r21,%r21
-#ifdef	__CRYPTOLINE__
-	cmovcq	%r21,%r21
-#endif
 
 
 	mulxq	%rdx,%rdx,%r11
