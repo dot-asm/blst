@@ -9,7 +9,7 @@
 #! adc \$0x0, $1v -> adcs carry $1v $1v 0@uint64 carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
 #! cmovb $1v, $1v -> assert true && carry = 0@1;\nassume carry = 0 && true
 #! cmovp $1v, $1v -> assert eqmod $1v 0 (2**64) && true;\nassume $1v = 0 && $1v = 0@64
-#! sbb $1v, $1v -> adcs carry $1v 0@uint64 0@uint64 carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! sbb $1v, $1v -> vpc $1v@uint64 carry
 
 $flavour = shift;
 $output  = shift;
