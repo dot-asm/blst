@@ -2,7 +2,7 @@ const std = @import("std");
 const blst = @import("blst");
 
 test "sign/verify" {
-    const password = [_]u8{'*'} ** 32;
+    const password: [32]u8 = @splat('*');
 
     var SK = blst.SecretKey{};
     SK.keygen(&password, null);
@@ -49,7 +49,7 @@ test "aggregateverify" {
     const mem = std.testing.allocator;
     const N = 3;
 
-    const password = [_]u8{'*'} ** 32;
+    const password: [32]u8 = @splat('*');
     var SK = blst.SecretKey{};
     defer SK.deinit();
 
