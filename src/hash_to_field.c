@@ -160,7 +160,7 @@ void blst_expand_message_xmd(unsigned char *bytes, size_t len_in_bytes,
     size_t buf_len = (len_in_bytes+31) & ((size_t)0-32);
     unsigned char *buf_ptr = bytes;
 
-    if (buf_len > 255*32)
+    if (buf_len == 0 || buf_len > 255*32)
         return;
 
     if (buf_len != len_in_bytes)
