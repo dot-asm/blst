@@ -198,7 +198,10 @@ size_t prefix##s_mult_wbits_precompute_sizeof(size_t wbits, size_t npoints) \
 void prefix##s_mult_wbits_precompute(ptype##_affine table[], size_t wbits, \
                                      const ptype##_affine *const points[], \
                                      size_t npoints) \
-{ ptype##s_precompute_wbits(table, wbits, points, npoints); }
+{ \
+    if (npoints > 0) \
+        ptype##s_precompute_wbits(table, wbits, points, npoints); \
+}
 
 #define POINTS_MULT_WBITS_IMPL(prefix, ptype, bits, field, one) \
 static void ptype##_gather_booth_wbits(ptype *p, const ptype##_affine row[], \
@@ -287,7 +290,13 @@ void prefix##s_mult_wbits(ptype *ret, const ptype##_affine table[], \
                           size_t wbits, size_t npoints, \
                           const byte *const scalars[], size_t nbits, \
                           ptype scratch[]) \
-{ ptype##s_mult_wbits(ret, table, wbits, npoints, scalars, nbits, scratch); }
+{ \
+    if (npoints == 0 || nbits == 0 || (nbits+7) < nbits) { \
+        vec_zero(ret, sizeof(*ret)); \
+        return; \
+    } \
+    ptype##s_mult_wbits(ret, table, wbits, npoints, scalars, nbits, scratch); \
+}
 
 PRECOMPUTE_WBITS_IMPL(blst_p1, POINTonE1, 384, fp, BLS12_381_Rx.p)
 POINTS_MULT_WBITS_IMPL(blst_p1, POINTonE1, 384, fp, BLS12_381_Rx.p)
@@ -446,7 +455,7 @@ void prefix##s_mult_pippenger(ptype *ret, \
                               const byte *const scalars[], size_t nbits, \
                               ptype##xyzz scratch[]) \
 { \
-    if (npoints == 0) { \
+    if (npoints == 0 || nbits == 0 || (nbits+7) < nbits) { \
         vec_zero(ret, sizeof(*ret)); \
         return; \
     } \
