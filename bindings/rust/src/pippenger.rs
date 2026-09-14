@@ -131,6 +131,10 @@ macro_rules! pippenger_mult_impl {
             type Output = $point;
 
             fn mult(&self, scalars: &[u8], nbits: usize) -> $point {
+                if nbits == 0 || nbits > (usize::MAX - 7) {
+                    panic!("invalid bit-length");
+                }
+
                 let npoints = self.len();
                 let nbytes = (nbits + 7) / 8;
 
