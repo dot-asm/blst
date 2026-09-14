@@ -505,7 +505,10 @@ void blst_sign_pk2_in_g2(unsigned char out[96], POINTonE1_affine *sig,
 void blst_p1_mult(POINTonE1 *out, const POINTonE1 *a,
                                   const byte *scalar, size_t nbits)
 {
-    if (nbits < 176) {
+    if (nbits == 0 || (nbits+7) < nbits) {
+        vec_zero(out, sizeof(*out));
+        return;
+    } else if (nbits < 176) {
         if (nbits)
             POINTonE1_mult_w4(out, a, scalar, nbits);
         else
