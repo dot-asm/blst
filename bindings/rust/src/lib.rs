@@ -378,7 +378,7 @@ impl<'p> Pairing<'p> {
         msg: &[u8],
         aug: &[u8],
     ) -> BLST_ERROR {
-        if scalar.len() < (nbits + 7) / 8 {
+        if nbits > (usize::MAX - 7) || scalar.len() < (nbits + 7) / 8 {
             panic!("scalar length mismatch");
         }
 
