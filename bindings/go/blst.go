@@ -1840,6 +1840,9 @@ func (p1 *P1) MultAssign(scalarIf interface{}, optional ...int) *P1 {
 		panic(fmt.Sprintf("unsupported type %T", val))
 	}
 	if len(optional) > 0 {
+		if optional[0] <= 0 || optional[0] > nbits {
+			panic("invalid nbits value")
+		}
 		nbits = optional[0]
 	}
 	C.blst_p1_mult(&p1.cgo, &p1.cgo, scalar, C.size_t(nbits))
@@ -1926,6 +1929,9 @@ func (acc *P1) MultNAccumulate(pointIf interface{}, scalarIf interface{},
 		panic(fmt.Sprintf("unsupported type %T", val))
 	}
 	if len(optional) > 0 {
+		if optional[0] <= 0 || optional[0] > nbits {
+			panic("invalid nbits value")
+		}
 		nbits = optional[0]
 	}
 	C.go_p1_mult_n_acc(&acc.cgo, x, affine, scalar, C.size_t(nbits))
@@ -2110,6 +2116,10 @@ func P1AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P1 {
 		panic(fmt.Sprintf("unsupported type %T", val))
 	}
 
+	if nbits <= 0 || (nbits+7) < nbits {
+		panic("invalid bit-length")
+	}
+
 	nbytes := (nbits + 7) / 8
 	var scalars []*C.byte
 	switch val := scalarsIf.(type) {
@@ -2123,10 +2133,13 @@ func P1AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P1 {
 		}
 		scalars = make([]*C.byte, npoints)
 		for i := range scalars {
+			if len(val[i]) < nbytes {
+				panic("index out of range")
+			}
 			scalars[i] = (*C.byte)(&val[i][0])
 		}
 	case []Scalar:
-		if len(val) < npoints {
+		if len(val) < npoints || nbits > 255 {
 			return nil
 		}
 		if nbits <= 248 {
@@ -2136,7 +2149,7 @@ func P1AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P1 {
 			}
 		}
 	case []*Scalar:
-		if len(val) < npoints {
+		if len(val) < npoints || nbits > 255 {
 			return nil
 		}
 		scalars = make([]*C.byte, npoints)
@@ -2659,6 +2672,9 @@ func (p2 *P2) MultAssign(scalarIf interface{}, optional ...int) *P2 {
 		panic(fmt.Sprintf("unsupported type %T", val))
 	}
 	if len(optional) > 0 {
+		if optional[0] <= 0 || optional[0] > nbits {
+			panic("invalid nbits value")
+		}
 		nbits = optional[0]
 	}
 	C.blst_p2_mult(&p2.cgo, &p2.cgo, scalar, C.size_t(nbits))
@@ -2745,6 +2761,9 @@ func (acc *P2) MultNAccumulate(pointIf interface{}, scalarIf interface{},
 		panic(fmt.Sprintf("unsupported type %T", val))
 	}
 	if len(optional) > 0 {
+		if optional[0] <= 0 || optional[0] > nbits {
+			panic("invalid nbits value")
+		}
 		nbits = optional[0]
 	}
 	C.go_p2_mult_n_acc(&acc.cgo, x, affine, scalar, C.size_t(nbits))
@@ -2929,6 +2948,10 @@ func P2AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P2 {
 		panic(fmt.Sprintf("unsupported type %T", val))
 	}
 
+	if nbits <= 0 || (nbits+7) < nbits {
+		panic("invalid bit-length")
+	}
+
 	nbytes := (nbits + 7) / 8
 	var scalars []*C.byte
 	switch val := scalarsIf.(type) {
@@ -2942,10 +2965,13 @@ func P2AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P2 {
 		}
 		scalars = make([]*C.byte, npoints)
 		for i := range scalars {
+			if len(val[i]) < nbytes {
+				panic("index out of range")
+			}
 			scalars[i] = (*C.byte)(&val[i][0])
 		}
 	case []Scalar:
-		if len(val) < npoints {
+		if len(val) < npoints || nbits > 255 {
 			return nil
 		}
 		if nbits <= 248 {
@@ -2955,7 +2981,7 @@ func P2AffinesMult(pointsIf interface{}, scalarsIf interface{}, nbits int) *P2 {
 			}
 		}
 	case []*Scalar:
-		if len(val) < npoints {
+		if len(val) < npoints || nbits > 255 {
 			return nil
 		}
 		scalars = make([]*C.byte, npoints)
