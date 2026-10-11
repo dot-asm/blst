@@ -262,7 +262,7 @@ jobs:
 
     - name: Zig
       run: |
-        which minisign > /dev/null 2>&1 || sudo apt-get -qqq install minisign
+        which minisign > /dev/null 2>&1 || sudo apt-get -qq install minisign > /dev/null
         curl https://ziglang.org/download/community-mirrors.txt -sSfo mirrors.txt && \
         for ver in 0.14.1 0.17.0; do (
             base_dir=zig-x86_64-linux-$ver
