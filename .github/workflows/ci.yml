@@ -262,7 +262,7 @@ jobs:
 
     - name: Zig
       run: |
-        which minisign > /dev/null 2>&1 || sudo apt-get -y install minisign
+        which minisign > /dev/null 2>&1 || sudo apt-get -y -q install minisign
         curl https://ziglang.org/download/community-mirrors.txt -sSfo mirrors.txt && \
         for ver in 0.14.1 0.17.0; do (
             base_dir=zig-x86_64-linux-$ver
@@ -279,6 +279,7 @@ jobs:
                 fi
             fi
             if [ -x ~/$base_dir/zig ]; then
+                echo
                 echo "--- test $base_dir"
                 PATH=~/$base_dir:$PATH
                 zig build test --summary new
