@@ -263,9 +263,6 @@ jobs:
     - name: Install Wasmtime
       run: if [ ! -d ~/.wasmtime/bin ]; then curl https://wasmtime.dev/install.sh -sSf | bash; fi
 
-    - name: cache
-      run: find ~/.cache/zig
-
     - name: Zig
       run: |
         which minisign > /dev/null 2>&1 || sudo apt-get -qq install minisign > /dev/null
