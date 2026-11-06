@@ -1,0 +1,32 @@
+name: rust-bsan
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'bindings/rust/src/*.rs'
+      - '.github/workflows/rust-bsan.yml'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'bindings/rust/src/*.rs'
+
+jobs:
+  rust-bsan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Environment
+      run: |
+        lscpu
+        echo ---
+        env | sort
+
+    - name: BorrowSanitizer
+      uses: docker://ghcr.io/borrowsanitizer/bsan:experimental
+      with:
+        args: >
+          sh -c "cd bindings/rust && cargo bsan test"
