@@ -3,7 +3,7 @@ name: rust-bsan
 on:
   push:
     branches:
-      - master 
+      - '**'
     paths:
       - 'bindings/rust/src/*.rs'
       - '.github/workflows/rust-bsan.yml'
@@ -31,7 +31,6 @@ jobs:
     - name: Calculate the cache key
       id: cache-key
       run: |
-         echo "${{ hashFiles('bindings/rust/src/*.rs') }}"
          KEY=`(echo "${{ hashFiles('bindings/rust/src/*.rs') }}" && \
                docker manifest inspect ghcr.io/borrowsanitizer/bsan:latest) \
               | sha1sum | awk '{print $1}'`
