@@ -29,8 +29,8 @@ jobs:
     - name: Calculate the cache key
       id: cache-key
       run: |
-         echo "${{ hashFiles('bindings/rust/src/*.rs') }}"
-         KEY=`(echo "${{ hashFiles('bindings/rust/src/*.rs') }}" && \
+         echo "${{ hashFiles('bindings/rust/src/**') }}"
+         KEY=`(echo "${{ hashFiles('bindings/rust/src/**') }}" && \
                docker manifest inspect ghcr.io/borrowsanitizer/bsan:latest) \
               | sha1sum | awk '{print $1}'`
          echo "value=$KEY" >> $GITHUB_OUTPUT
